@@ -1,9 +1,14 @@
+import { useAuth } from "@clerk/react-router";
+import { Navigate, useSearchParams } from "react-router";
 import { SignIn } from "@clerk/react-router";
 
 export default function SignInPage() {
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      <SignIn forceRedirectUrl="/app/dashboard" />
-    </div>
-  );
+  const { isLoaded, isSignedIn } = useAuth();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get("redirect_url") ?? "/app/dashboard";
+
+  if (!isLoaded) return null;
+  if (isSignedIn) return <Navigate to={redirectUrl} replace />;
+
+  return <SignIn forceRedirectUrl={redirectUrl} />;
 }
