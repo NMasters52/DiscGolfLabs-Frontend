@@ -5,7 +5,7 @@ export function RequireAuth({ children }) {
   const { isLoaded, isSignedIn } = useAuth();
   const location = useLocation();
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return <div>...loading</div>;
 
   if (!isSignedIn) {
     const returnTo = `${location.pathname}${location.search}`;
