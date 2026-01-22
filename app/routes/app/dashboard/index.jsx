@@ -1,35 +1,21 @@
 import { SignOutButton } from "@clerk/react-router";
-import { useUser, useSession } from "@clerk/react-router";
-import { useEffect } from "react";
+import useMe from "../../../queries/user";
 
 export default function Dashboard() {
-  const { user } = useUser();
-  const { session } = useSession();
+  const { data, error, isPending } = useMe();
 
-  useEffect(() => {
-    async function fetchUser() {
-      if (!session) return;
-      try {
-        const token = await session.getToken();
+  if (error) {
+    return <div>Error</div>;
+  }
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  if (isPending) {
+    return <div>Is Loading...</div>;
+  }
 
-        if (!res.ok) {
-          throw new Error("Token invalid");
-        }
-
-        const data = await res.json();
-        console.log(data);
-      } catch (err) {
-        console.error("failed to fetch user");
-      }
-    }
-    fetchUser();
-  }, [session]);
+  //testing that data is being fetched
+  if (data) {
+    console.table(data);
+  }
 
   return (
     <div>
@@ -37,7 +23,7 @@ export default function Dashboard() {
       <SignOutButton redirectUrl="/">
         <button>Sign Out</button>
       </SignOutButton>
-      <h1>Welcome, {user?.firstName}</h1>
+      <h1>Welcome, {data?.name || "guest"}</h1>
     </div>
   );
 }
