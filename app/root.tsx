@@ -16,6 +16,7 @@ import {
   UserButton,
   SignInButton,
 } from "@clerk/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,18 +49,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <ClerkProvider publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}>
-      <header>
-        <SignedOut>
-          <SignInButton mode="redirect" forceRedirectUrl="/app/dashboard" />
-        </SignedOut>
-      </header>
-      <main>
-        <Outlet />
-      </main>
-    </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider
+        publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+      >
+        <header>
+          <SignedOut>
+            <SignInButton mode="redirect" forceRedirectUrl="/app/dashboard" />
+          </SignedOut>
+        </header>
+        <main>
+          <Outlet />
+        </main>
+      </ClerkProvider>
+    </QueryClientProvider>
   );
 }
 
