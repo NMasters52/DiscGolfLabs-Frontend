@@ -1,5 +1,5 @@
 import { SignOutButton } from "@clerk/react-router";
-import useMe from "../../../queries/user";
+import useMe from "../../../queries/useMe";
 
 export default function Dashboard() {
   const { data, error, isPending } = useMe();
