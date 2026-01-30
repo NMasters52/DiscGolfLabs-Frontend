@@ -5,4 +5,7 @@ export const queryKeys = {
   enrollment: {
     check: (courseId) => ["enrollment", "check", courseId],
   },
+  course: {
+    bySlug: (slug) => ["course", slug],
+  },
 };
