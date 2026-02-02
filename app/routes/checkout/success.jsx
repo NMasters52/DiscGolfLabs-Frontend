@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { useCourse } from "@/queries/useCourse";
-import { checkEnrollment } from "@/api/enrollment";
+import useCourse from "../../queries/useCourse";
+import { fetchEnrollment } from "../../api/enrollment";
 import { useAuth } from "@clerk/clerk-react";
 
 const POLL_INTERVAL = 1500;
@@ -20,6 +20,8 @@ export default function CheckoutSuccess() {
   const [attempts, setAttempts] = useState(0);
 
   useEffect(() => {
+    console.log("✅ success mounted");
+
     if (!slug || !isSignedIn || !course?._id) return;
 
     let cancelled = false;
@@ -35,7 +37,7 @@ export default function CheckoutSuccess() {
 
       try {
         const token = await getToken();
-        const res = await checkEnrollment(token, course._id);
+        const res = await fetchEnrollment(token, course._id);
 
         if (res.enrolled) {
           navigate(`/courses/${slug}/learn`, { replace: true });
@@ -54,6 +56,7 @@ export default function CheckoutSuccess() {
 
     return () => {
       cancelled = true;
+      console.log("❌ success unmounted");
     };
   }, [slug, isSignedIn, course?._id, getToken, navigate]);
 

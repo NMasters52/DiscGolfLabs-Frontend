@@ -5,7 +5,7 @@ export default [
   route("sign-in", "routes/sign-in.jsx"),
   route("sign-up", "routes/sign-up.jsx"),
   route("courses/:slug", "routes/courses/_index.jsx"),
-  // route("checkout/success", "routes/checkout/success.jsx"), // not made yet
+  route("checkout/success", "routes/checkout/success.jsx"),
   route("app", "routes/app/_layout.jsx", [
     index("routes/app/_index.jsx"),
     route("dashboard", "routes/app/dashboard/index.jsx"),
