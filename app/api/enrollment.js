@@ -4,5 +4,10 @@ export async function fetchEnrollment(token, courseId) {
   const res = await fetch(`${url}/api/enrollments/check/${courseId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  if (!res.ok) {
+    throw new Error("Enrollment check failed");
+  }
+
   return res.json();
 }
