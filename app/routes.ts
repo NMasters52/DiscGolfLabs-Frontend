@@ -10,6 +10,7 @@ export default [
     index("routes/courses/index.jsx"),
     route("learn", "routes/courses/learn/_layout.jsx", [
       index("routes/courses/learn/index.jsx"),
+      route("day/:dayNumber", "routes/courses/learn/day.jsx"),
     ]),
   ]),
 

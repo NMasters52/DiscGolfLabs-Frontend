@@ -1,13 +1,9 @@
-import { useOutletContext } from "react-router";
+import { useOutletContext, Navigate } from "react-router";
 
 export default function LearnIndex() {
   const { course, enrollment } = useOutletContext();
 
-  return (
-    <div>
-      <h1>{course.title}</h1>
-      <p>You are enrolled.</p>
-      <p>Current day: {enrollment.currentDay}</p>
-    </div>
-  );
+  const day = Math.max(1, enrollment.currentDay);
+
+  return <Navigate to={`/courses/${course.slug}/learn/day/${day}`} replace />;
 }
