@@ -1,22 +1,46 @@
-import { useOutletContext, Navigate, useParams } from "react-router";
+import {
+  useOutletContext,
+  Navigate,
+  useParams,
+  useNavigate,
+} from "react-router";
+import useCompleteDay from "../../../queries/useCompleteDay";
 
 export default function LearnDay() {
   const { dayNumber } = useParams();
+  const navigate = useNavigate();
   const { course, enrollment } = useOutletContext();
+
+  if (!course || !enrollment) {
+    return null;
+  }
 
   const day = Number(dayNumber);
 
-  // invalid day
+  const {
+    mutate: completeDay,
+    isPending,
+    error,
+    isError,
+  } = useCompleteDay(course._id);
+
   if (Number.isNaN(day) || day < 1 || day > course.days.length) {
     return <Navigate to=".." replace />;
   }
 
-  // locked day
   if (day > enrollment.currentDay) {
     return <Navigate to=".." replace />;
   }
 
   const lesson = course.days.find((d) => d.dayNumber === day);
+
+  const handleComplete = () => {
+    completeDay(day, {
+      onSuccess: () => {
+        navigate(`/courses/${course.slug}/learn`, { replace: true });
+      },
+    });
+  };
 
   return (
     <div>
@@ -26,9 +50,11 @@ export default function LearnDay() {
 
       <p>{lesson.description}</p>
 
-      {/* video */}
-      {/* game */}
-      {/* complete button (next step) */}
+      <button onClick={handleComplete} disabled={isPending}>
+        {isPending ? "Completing…" : "Complete Day"}
+      </button>
+
+      {isError && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
   );
 }
