@@ -5,6 +5,7 @@ import {
   useNavigate,
 } from "react-router";
 import useCompleteDay from "../../../queries/useCompleteDay";
+import { PuttingLadderGame } from "../../../components/games/PuttingLadderGame";
 
 export default function LearnDay() {
   const { dayNumber } = useParams();
@@ -53,6 +54,8 @@ export default function LearnDay() {
       <button onClick={handleComplete} disabled={isPending}>
         {isPending ? "Completing…" : "Complete Day"}
       </button>
+
+      <PuttingLadderGame />
 
       {isError && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
