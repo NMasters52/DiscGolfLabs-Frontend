@@ -11,7 +11,7 @@ export function PuttingLadderGame() {
   } = usePuttingLadderGame({ puttsPerRound: 5 });
 
   if (isCompleted) {
-    console.log(getPayload());
+    console.table(getPayload());
   }
   return (
     <>
