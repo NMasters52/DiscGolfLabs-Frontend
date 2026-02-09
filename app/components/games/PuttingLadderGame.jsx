@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { usePuttingLadderGame } from "../../game/puttingLadder/usePuttingLadderGame";
+import { useCreateGameSession } from "../../queries/useCreateGameSession";
+import { useAuth } from "@clerk/react-router";
 
 export function PuttingLadderGame() {
   const {
@@ -10,9 +13,23 @@ export function PuttingLadderGame() {
     getPayload,
   } = usePuttingLadderGame({ puttsPerRound: 5 });
 
-  if (isCompleted) {
-    console.table(getPayload());
-  }
+  const createSession = useCreateGameSession("putting-course");
+
+  useEffect(() => {
+    if (!isCompleted) return;
+
+    const payload = getPayload();
+
+    createSession.mutate(payload, {
+      onSuccess: (data) => {
+        console.log("Game Session Saved:", data);
+      },
+      onError: (err) => {
+        console.error("Failed to save session:", err);
+      },
+    });
+  }, [isCompleted]);
+
   return (
     <>
       <h3>Current Distance: {currentDistance}</h3>
