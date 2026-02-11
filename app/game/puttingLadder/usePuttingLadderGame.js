@@ -62,6 +62,8 @@ export function usePuttingLadderGame({ puttsPerRound }) {
     isCompleted: state.status === "completed",
     currentDistance: state.currentDistance,
     puttsRemaining: state.puttsPerRound - state.puttsTakenInRound,
+    puttsMadeInRound: state.puttsMadeInRound,
+    madeByDistance: state.madeByDistance,
 
     getPayload,
   };
