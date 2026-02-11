@@ -1,29 +1,23 @@
-import { evaluateRoundOutcome } from "./rules";
-
-const INITIAL_DISTANCE = 10;
+import { evaluateRoundOutcome, MIN_DISTANCE } from "./rules";
 
 export function createInitialState(puttsPerRound) {
   return {
     status: "playing",
 
     puttsPerRound,
-    currentDistance: INITIAL_DISTANCE,
+    currentDistance: MIN_DISTANCE,
 
     puttsTakenInRound: 0,
-    makesInRound: 0,
-
-    totalPutts: 0,
-    maxDistanceReached: INITIAL_DISTANCE,
+    puttsMadeInRound: 0,
 
     madeByDistance: {},
 
     startedAt: Date.now(),
-    endedAt: null,
   };
 }
 
 export function onMake(state) {
-  const distance = state.currentDistance;
+  const distance = state.currentDistance.toString();
 
   return {
     ...state,
@@ -32,54 +26,65 @@ export function onMake(state) {
     totalPutts: state.totalPutts + 1,
     madeByDistance: {
       ...state.madeByDistance,
-      [distance]: (state.madeByDistance[distance] || 0) + 1,
+      [distance]: {
+        made: (state.madeByDistance[distance]?.made || 0) + 1,
+        attempted: (state.madeByDistance[distance]?.attempted || 0) + 1,
+      },
     },
   };
 }
 
 export function onMiss(state) {
+  const distance = state.currentDistance.toString();
   return {
     ...state,
     puttsTakenInRound: state.puttsTakenInRound + 1,
-    totalPutts: state.totalPutts + 1,
+
+    madeByDistance: {
+      ...state.madeByDistance,
+      [distance]: {
+        made: state.madeByDistance[distance]?.made || 0, // Don't increment
+        attempted: (state.madeByDistance[distance]?.attempted || 0) + 1, // Increment
+      },
+    },
   };
 }
 
 export function buildGameSessionPayload(state) {
+  const totalPutts = Object.values(state.madeByDistance).reduce(
+    (sum, stats) => sum + stats.attempted,
+    0,
+  );
+
   return {
-    totalPutts: state.totalPutts,
-    maxDistanceFt: state.maxDistanceReached,
-    durationSeconds: Math.floor((state.endedAt - state.startedAt) / 1000),
+    totalPutts,
+    maxDistanceFt: state.currentDistance,
+    durationSeconds: Math.floor((Date.now() - state.startedAt) / 1000),
     madeByDistance: state.madeByDistance,
   };
 }
 
 export function endRound(state) {
-  const outcome = evaluateRoundOutcome({
+  const { nextDistance, gameComplete } = evaluateRoundOutcome({
     currentDistance: state.currentDistance,
-    makes: state.makesInRound,
+    makes: state.puttsMadeInRound,
     puttsPerRound: state.puttsPerRound,
   });
 
-  if (outcome.gameComplete) {
+  if (gameComplete) {
     return {
       ...state,
       status: "completed",
-      endedAt: Date.now(),
-      maxDistanceReached: Math.max(
-        state.maxDistanceReached,
-        state.currentDistance,
-      ),
+      currentDistance: nextDistance,
+      puttsTakenInRound: 0,
+      puttsMadeInRound: 0,
     };
   }
-
-  const nextDistance = outcome.nextDistance;
 
   return {
     ...state,
     currentDistance: nextDistance,
     puttsTakenInRound: 0,
-    makesInRound: 0,
-    maxDistanceReached: Math.max(state.maxDistanceReached, nextDistance),
+    puttsMadeInRound: 0,
   };
 }
