@@ -6,6 +6,7 @@ import {
 } from "react-router";
 import useCompleteDay from "../../../queries/useCompleteDay";
 import { PuttingLadderGame } from "../../../components/games/PuttingLadderGame";
+import { PuttingProgressView } from "../../../components/games/PuttingProgressView";
 
 export default function LearnDay() {
   const { dayNumber } = useParams();
@@ -15,6 +16,8 @@ export default function LearnDay() {
   if (!course || !enrollment) {
     return null;
   }
+
+  console.log(course, enrollment);
 
   const day = Number(dayNumber);
 
@@ -56,6 +59,8 @@ export default function LearnDay() {
       </button>
 
       <PuttingLadderGame />
+
+      <PuttingProgressView gamSlug={course.gameSlug} courseId={course._id} />
 
       {isError && <p style={{ color: "red" }}>{error.message}</p>}
     </div>

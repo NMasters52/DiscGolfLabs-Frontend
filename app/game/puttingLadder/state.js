@@ -22,8 +22,7 @@ export function onMake(state) {
   return {
     ...state,
     puttsTakenInRound: state.puttsTakenInRound + 1,
-    makesInRound: state.makesInRound + 1,
-    totalPutts: state.totalPutts + 1,
+    puttsMadeInRound: state.puttsMadeInRound + 1,
     madeByDistance: {
       ...state.madeByDistance,
       [distance]: {

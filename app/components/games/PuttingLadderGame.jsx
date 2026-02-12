@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { usePuttingLadderGame } from "../../game/puttingLadder/usePuttingLadderGame";
 import { useCreateGameSession } from "../../queries/useCreateGameSession";
-import { useAuth } from "@clerk/react-router";
 
 export function PuttingLadderGame() {
   const {
@@ -29,6 +28,8 @@ export function PuttingLadderGame() {
       },
     });
   }, [isCompleted]);
+
+  console.log(currentDistance, puttsRemaining);
 
   return (
     <>

@@ -17,3 +17,21 @@ export async function createGameSession(gameSlug, payload, token) {
 
   return res.json();
 }
+
+export async function fetchGameSession(gameSlug, courseId, token) {
+  const url = import.meta.env.VITE_API_URL;
+  const params = new URLSearchParams();
+
+  if (courseId) params.append("courseId", courseId);
+  const res = await fetch(`${url}/api/games/${gameSlug}/sessions?${params}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch game sessions");
+  }
+
+  return res.json();
+}
