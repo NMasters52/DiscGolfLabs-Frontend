@@ -17,8 +17,6 @@ export default function LearnDay() {
     return null;
   }
 
-  console.log(course, enrollment);
-
   const day = Number(dayNumber);
 
   const {
