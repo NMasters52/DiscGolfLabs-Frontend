@@ -37,11 +37,7 @@ export default function LearnDay() {
   const lesson = course.days.find((d) => d.dayNumber === day);
 
   const handleComplete = () => {
-    completeDay(day, {
-      onSuccess: () => {
-        navigate(`/courses/${course.slug}/learn`, { replace: true });
-      },
-    });
+    completeDay(day);
   };
 
   return (
