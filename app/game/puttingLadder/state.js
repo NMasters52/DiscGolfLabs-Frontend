@@ -74,7 +74,7 @@ export function endRound(state) {
     return {
       ...state,
       status: "completed",
-      currentDistance: nextDistance,
+      currentDistance: MIN_DISTANCE,
       puttsTakenInRound: 0,
       puttsMadeInRound: 0,
     };

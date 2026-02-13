@@ -10,12 +10,15 @@ export function PuttingLadderGame({ courseId, dayNumber }) {
     miss,
     isCompleted,
     getPayload,
+    reset,
   } = usePuttingLadderGame({ puttsPerRound: 5 });
 
   const createSession = useCreateGameSession("putting-course");
 
   useEffect(() => {
     if (!isCompleted) return;
+
+    alert("Game Session Complete");
 
     const basePayload = getPayload();
     if (!basePayload) return;
@@ -29,6 +32,7 @@ export function PuttingLadderGame({ courseId, dayNumber }) {
     createSession.mutate(payload, {
       onSuccess: (data) => {
         console.log("Game Session Saved:", data);
+        reset();
       },
       onError: (err) => {
         console.error("Failed to save session:", err);
