@@ -12,8 +12,6 @@ export default function LearnLayout() {
     course?._id,
   );
 
-  console.log(course, enrollment);
-
   if (!isLoaded) {
     return <p>Loading session…</p>;
   }

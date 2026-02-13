@@ -36,8 +36,6 @@ export function PuttingLadderGame({ courseId, dayNumber }) {
     });
   }, [isCompleted]);
 
-  console.log(currentDistance, puttsRemaining);
-
   return (
     <>
       <h3>Current Distance: {currentDistance}</h3>

@@ -7,8 +7,6 @@ export function PuttingProgressView({ gameSlug, courseId }) {
     error,
   } = useGameSessions(gameSlug, courseId);
 
-  console.log("sessions response:", sessions);
-
   if (isLoading) return <div>Loading your progress...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (!sessions?.length)

@@ -44,9 +44,6 @@ export default function LearnDay() {
     });
   };
 
-  console.log("course in LearnDay:", course);
-  console.log("course.gameSlug:", course?.gameSlug);
-
   return (
     <div>
       <h1>
