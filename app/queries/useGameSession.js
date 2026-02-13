@@ -7,11 +7,11 @@ export function useGameSessions(gameSlug, courseId) {
   const { getToken } = useAuth();
 
   return useQuery({
-    queryKey: () => queryKeys.gameSession(gameSlug, courseId),
+    queryKey: queryKeys.gameSession.bySlug(gameSlug, courseId),
     queryFn: async () => {
       const token = await getToken();
       return fetchGameSession(gameSlug, courseId, token);
     },
-    enabled: !!gameSlug, // Only run if gameSlug exists
+    enabled: !!gameSlug && !!courseId,
   });
 }

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { usePuttingLadderGame } from "../../game/puttingLadder/usePuttingLadderGame";
 import { useCreateGameSession } from "../../queries/useCreateGameSession";
 
-export function PuttingLadderGame() {
+export function PuttingLadderGame({ courseId, dayNumber }) {
   const {
     currentDistance,
     puttsRemaining,
@@ -17,7 +17,14 @@ export function PuttingLadderGame() {
   useEffect(() => {
     if (!isCompleted) return;
 
-    const payload = getPayload();
+    const basePayload = getPayload();
+    if (!basePayload) return;
+
+    const payload = {
+      ...basePayload,
+      courseId,
+      dayNumber,
+    };
 
     createSession.mutate(payload, {
       onSuccess: (data) => {

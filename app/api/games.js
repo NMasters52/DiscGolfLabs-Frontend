@@ -33,5 +33,6 @@ export async function fetchGameSession(gameSlug, courseId, token) {
     throw new Error("Failed to fetch game sessions");
   }
 
+  console.log("API URL:", `${url}/api/games/${gameSlug}/sessions?${params}`);
   return res.json();
 }

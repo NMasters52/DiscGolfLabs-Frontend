@@ -44,6 +44,9 @@ export default function LearnDay() {
     });
   };
 
+  console.log("course in LearnDay:", course);
+  console.log("course.gameSlug:", course?.gameSlug);
+
   return (
     <div>
       <h1>
@@ -56,9 +59,9 @@ export default function LearnDay() {
         {isPending ? "Completing…" : "Complete Day"}
       </button>
 
-      <PuttingLadderGame />
+      <PuttingLadderGame courseId={course._id} dayNumber={day} />
 
-      <PuttingProgressView gamSlug={course.gameSlug} courseId={course._id} />
+      <PuttingProgressView gameSlug={course.slug} courseId={course._id} />
 
       {isError && <p style={{ color: "red" }}>{error.message}</p>}
     </div>
