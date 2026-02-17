@@ -6,17 +6,17 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
 import type { Route } from "./+types/root";
 import "./app.css";
 import {
   ClerkProvider,
   SignedIn,
   SignedOut,
-  UserButton,
   SignInButton,
 } from "@clerk/react-router";
+import { dark } from "@clerk/themes"; // Import Clerk's dark theme
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider, useTheme } from "next-themes"; // Import theme provider
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,7 +33,8 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning is required for next-themes to work
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,7 +42,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        {/* Wrap everything in ThemeProvider to manage 'light' vs 'dark' class */}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -51,13 +55,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 const queryClient = new QueryClient();
 
+// Helper component to access theme context and pass it to Clerk
+function ClerkThemeWrapper({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
+
+  return (
+    <ClerkProvider
+      publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
+      appearance={{
+        // Automatically switch Clerk to dark mode when the app is dark
+        baseTheme: resolvedTheme === "dark" ? dark : undefined,
+        variables: {
+          // Optional: Match Clerk's primary color to your Metallic Blue / Teal
+          colorPrimary: resolvedTheme === "dark" ? "#38A3A5" : "#22577A",
+        },
+      }}
+    >
+      {children}
+    </ClerkProvider>
+  );
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ClerkProvider
-        publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-      >
+      <ClerkThemeWrapper>
         <header>
+          {/* Temporary header - you'll likely replace this with a Navbar component */}
           <SignedOut>
             <SignInButton mode="redirect" forceRedirectUrl="/app/dashboard" />
           </SignedOut>
@@ -65,7 +89,7 @@ export default function App() {
         <main>
           <Outlet />
         </main>
-      </ClerkProvider>
+      </ClerkThemeWrapper>
     </QueryClientProvider>
   );
 }

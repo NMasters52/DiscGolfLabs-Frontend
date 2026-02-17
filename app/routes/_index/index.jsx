@@ -1,11 +1,5 @@
-import ThemeTest from "../../components/games/Test";
-
 const HomePage = () => {
-  return (
-    <>
-      <ThemeTest />
-    </>
-  );
+  return <></>;
 };
 
 export default HomePage;
