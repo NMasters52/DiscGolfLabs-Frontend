@@ -1,5 +1,7 @@
 import { SignOutButton } from "@clerk/react-router";
+
 import useMe from "../../../queries/useMe";
+import { Button } from "../../../components/ui/button";
 
 export default function Dashboard() {
   const { data, error, isPending } = useMe();
@@ -21,7 +23,7 @@ export default function Dashboard() {
     <div>
       <h1>Dashboard</h1>
       <SignOutButton redirectUrl="/">
-        <button>Sign Out</button>
+        <Button variant="destructive">Sign Out</Button>
       </SignOutButton>
       <h1>Welcome, {data?.name || "guest"}</h1>
     </div>

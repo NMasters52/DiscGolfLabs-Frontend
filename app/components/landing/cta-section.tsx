@@ -1,3 +1,5 @@
+import { Button } from "../ui/button";
+
 export const CtaSection = () => {
   return (
     <section className="relative bg-background py-24 lg:py-32 overflow-hidden">
@@ -24,18 +26,22 @@ export const CtaSection = () => {
           foundation of data, cognitive science, and relentless refinement.
         </p>
         <div className="mt-9 flex items-center justify-center gap-4">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3.5 text-[13px] font-bold text-primary-foreground hover:bg-primary/90 transition-colors tracking-wide uppercase shadow-[0_0_30px_rgba(109,234,249,0.25)]"
-          >
-            Request Access
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md border border-border bg-card/50 backdrop-blur-sm px-8 py-3.5 text-[13px] font-bold text-foreground hover:bg-card/80 transition-colors tracking-wide uppercase"
-          >
-            View Roadmap
-          </a>
+          <Button asChild className="shadow-[0_0_30px_rgba(109,234,249,0.25)]">
+            <a
+              href="#"
+              className="text-[13px] font-bold tracking-wide uppercase px-8 py-3.5"
+            >
+              Request Access
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a
+              href="#"
+              className="text-[13px] font-bold tracking-wide uppercase px-8 py-3.5"
+            >
+              View Roadmap
+            </a>
+          </Button>
         </div>
       </div>
     </section>

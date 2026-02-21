@@ -49,44 +49,44 @@ export const GeometricArt = ({ side }: GeometricArtProps) => {
 
 /* ---- Color definitions ---- */
 
-// Dark mode colors (brighter on dark background)
 const DARK_COLORS = {
   CYAN: "#6deaf9",
   CYAN_DIM: "rgba(109,234,249,0.4)",
-  CYAN_MID: "rgba(109,234,249,0.6)",
+  CYAN_MID: "rgba(109,234,249,0.8)", // Increased opacity for solidity
   CYAN_BRIGHT: "rgba(109,234,249,0.9)",
-  CYAN_GLOW: "rgba(109,234,249,0.15)",
+  CYAN_GLOW: "rgba(109,234,249,0.25)",
   BLUE: "rgba(28,81,129,0.5)",
   BLUE_DIM: "rgba(28,81,129,0.3)",
   GREEN_MID: "rgba(47,212,99,0.5)",
   GRID_SMALL: "rgba(109,234,249,0.025)",
   GRID_LARGE: "rgba(109,234,249,0.05)",
   NODE_LINE: (a: number) => `rgba(109,234,249,${a})`,
-  LABEL: "rgba(109,234,249,0.2)",
-  TARGET: "rgba(109,234,249,0.15)",
+  LABEL: "rgba(109,234,249,0.3)",
+  TARGET: "rgba(109,234,249,0.2)",
   DISC_INNER: "rgba(47,212,99,0.18)",
   CROSSHAIR: "rgba(232,236,244,0.08)",
   CROSSHAIR_CIRCLE: "rgba(232,236,244,0.06)",
+  BG_MASK: "#090c10", // Used to hide lines behind the band
 };
 
-// Light mode colors (darker for visibility on light background)
 const LIGHT_COLORS = {
   CYAN: "#0891b2",
   CYAN_DIM: "rgba(8,145,178,0.55)",
-  CYAN_MID: "rgba(8,145,178,0.7)",
+  CYAN_MID: "rgba(8,145,178,0.85)", // Increased opacity for solidity
   CYAN_BRIGHT: "rgba(8,145,178,0.95)",
-  CYAN_GLOW: "rgba(8,145,178,0.2)",
+  CYAN_GLOW: "rgba(8,145,178,0.25)",
   BLUE: "rgba(28,81,129,0.55)",
   BLUE_DIM: "rgba(28,81,129,0.4)",
   GREEN_MID: "rgba(22,163,74,0.55)",
   GRID_SMALL: "rgba(8,145,178,0.08)",
   GRID_LARGE: "rgba(8,145,178,0.12)",
   NODE_LINE: (a: number) => `rgba(8,145,178,${a + 0.15})`,
-  LABEL: "rgba(8,145,178,0.35)",
-  TARGET: "rgba(8,145,178,0.3)",
+  LABEL: "rgba(8,145,178,0.45)",
+  TARGET: "rgba(8,145,178,0.4)",
   DISC_INNER: "rgba(22,163,74,0.25)",
   CROSSHAIR: "rgba(8,145,178,0.15)",
   CROSSHAIR_CIRCLE: "rgba(8,145,178,0.1)",
+  BG_MASK: "#ffffff",
 };
 
 type Colors = typeof DARK_COLORS;
@@ -100,6 +100,21 @@ function draw(
 ) {
   const colors = isDark ? DARK_COLORS : LIGHT_COLORS;
   ctx.clearRect(0, 0, w, h);
+
+  /* ---- Radial Gradient to draw eye to center video ---- */
+  const innerEdgeX = side === "left" ? w : 0;
+  const grad = ctx.createRadialGradient(
+    innerEdgeX,
+    h / 2,
+    0,
+    innerEdgeX,
+    h / 2,
+    w,
+  );
+  grad.addColorStop(0, colors.CYAN_GLOW);
+  grad.addColorStop(1, "transparent");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
 
   /* ---- Micro-grid (lab paper) ---- */
   const gridSmall = 24;
@@ -135,131 +150,93 @@ function draw(
     ctx.stroke();
   }
 
-  /* ---- Basket schematics (3 baskets per side, asymmetric) ---- */
+  /* ---- Basket schematics - Positioned to frame the video ---- */
   if (side === "left") {
-    // Moved first basket down to avoid text overlap
-    drawBasket(ctx, w * 0.18, h * 0.28, 0.55, colors);
-    drawBasket(ctx, w * 0.45, h * 0.55, 0.65, colors);
-    drawBasket(ctx, w * 0.78, h * 0.82, 0.45, colors);
+    drawBasket(ctx, w * 0.15, h * 0.25, 0.5, colors);
+    drawBasket(ctx, w * 0.4, h * 0.8, 0.6, colors);
+    drawBasket(ctx, w * 0.85, h * 0.5, 0.7, colors); // Target basket near video
   } else {
-    drawBasket(ctx, w * 0.25, h * 0.85, 0.5, colors);
-    drawBasket(ctx, w * 0.62, h * 0.22, 0.6, colors);
-    drawBasket(ctx, w * 0.88, h * 0.58, 0.52, colors);
+    drawBasket(ctx, w * 0.15, h * 0.5, 0.7, colors); // Target basket near video
+    drawBasket(ctx, w * 0.6, h * 0.2, 0.6, colors);
+    drawBasket(ctx, w * 0.85, h * 0.85, 0.5, colors);
   }
 
-  /* ---- Flight trajectory arcs ---- */
+  /* ---- Flight trajectory arcs - Sweeping toward the video ---- */
   if (side === "left") {
+    // Main leading line toward video
     drawFlightArc(
       ctx,
-      w * 0.92,
-      h * 0.48,
-      w * 0.55,
-      h * 0.38,
-      w * 0.12,
-      h * 0.52,
+      w * 0.05,
+      h * 0.65,
+      w * 0.4,
+      h * 0.35,
+      w * 0.85,
+      h * 0.5, // Points directly to the inner basket
       colors.CYAN_MID,
       colors.CYAN_GLOW,
-    );
-    drawFlightArc(
-      ctx,
-      w * 0.78,
-      h * 0.94,
-      w * 0.42,
-      h * 0.92,
-      w * 0.1,
-      h * 0.96,
-      colors.BLUE,
-      "rgba(28,81,129,0.04)",
     );
   } else {
+    // Main leading line toward video
     drawFlightArc(
       ctx,
-      w * 0.08,
-      h * 0.5,
-      w * 0.45,
-      h * 0.4,
-      w * 0.88,
-      h * 0.54,
+      w * 0.95,
+      h * 0.35,
+      w * 0.6,
+      h * 0.65,
+      w * 0.15,
+      h * 0.5, // Points directly to the inner basket
       colors.CYAN_MID,
       colors.CYAN_GLOW,
-    );
-    drawFlightArc(
-      ctx,
-      w * 0.22,
-      h * 0.92,
-      w * 0.58,
-      h * 0.88,
-      w * 0.9,
-      h * 0.94,
-      colors.BLUE,
-      "rgba(28,81,129,0.04)",
     );
   }
 
   /* ---- Measurement dimension lines ---- */
   if (side === "left") {
+    drawDimension(ctx, w * 0.1, h * 0.75, w * 0.8, h * 0.75, "412 ft", colors);
     drawDimension(
       ctx,
-      w * 0.08,
-      h * 0.65,
-      w * 0.48,
-      h * 0.65,
-      "342 ft",
-      colors,
-    );
-    drawDimension(
-      ctx,
-      w * 0.6,
-      h * 0.08,
-      w * 0.6,
-      h * 0.36,
-      "12.4°",
+      w * 0.5,
+      h * 0.1,
+      w * 0.5,
+      h * 0.35,
+      "14.2°",
       colors,
       true,
     );
   } else {
+    drawDimension(ctx, w * 0.2, h * 0.75, w * 0.9, h * 0.75, "385 ft", colors);
     drawDimension(
       ctx,
-      w * 0.52,
-      h * 0.65,
-      w * 0.92,
-      h * 0.65,
-      "287 ft",
-      colors,
-    );
-    drawDimension(
-      ctx,
-      w * 0.4,
-      h * 0.08,
-      w * 0.4,
-      h * 0.36,
-      "8.7°",
+      w * 0.5,
+      h * 0.1,
+      w * 0.5,
+      h * 0.35,
+      "11.8°",
       colors,
       true,
     );
   }
 
-  /* ---- Disc profile views (5 discs per side, asymmetric) ---- */
+  /* ---- Disc profile views ---- */
   if (side === "left") {
-    drawDiscProfile(ctx, w * 0.08, h * 0.35, 14, 0.25, colors);
-    drawDiscProfile(ctx, w * 0.35, h * 0.18, 18, -0.4, colors);
-    drawDiscProfile(ctx, w * 0.72, h * 0.42, 12, 0.5, colors);
-    drawDiscProfile(ctx, w * 0.55, h * 0.75, 15, -0.15, colors);
-    drawDiscProfile(ctx, w * 0.85, h * 0.28, 11, 0.6, colors);
+    drawDiscProfile(ctx, w * 0.1, h * 0.65, 14, 0.2, colors);
+    drawDiscProfile(ctx, w * 0.25, h * 0.5, 16, 0.1, colors);
+    drawDiscProfile(ctx, w * 0.55, h * 0.4, 18, 0, colors);
+    drawDiscProfile(ctx, w * 0.75, h * 0.45, 15, -0.1, colors);
   } else {
-    drawDiscProfile(ctx, w * 0.12, h * 0.68, 13, -0.35, colors);
-    drawDiscProfile(ctx, w * 0.38, h * 0.42, 16, 0.45, colors);
-    drawDiscProfile(ctx, w * 0.65, h * 0.78, 14, -0.55, colors);
-    drawDiscProfile(ctx, w * 0.82, h * 0.15, 17, 0.3, colors);
-    drawDiscProfile(ctx, w * 0.92, h * 0.55, 12, -0.2, colors);
+    drawDiscProfile(ctx, w * 0.9, h * 0.35, 14, -0.2, colors);
+    drawDiscProfile(ctx, w * 0.75, h * 0.5, 16, -0.1, colors);
+    drawDiscProfile(ctx, w * 0.45, h * 0.6, 18, 0, colors);
+    drawDiscProfile(ctx, w * 0.25, h * 0.55, 15, 0.1, colors);
   }
 
   /* ---- Data-node scatter ---- */
   const rand = seededRandom(side === "left" ? 42 : 137);
   const nodes: { x: number; y: number }[] = [];
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
+    const xBias = side === "left" ? 0.4 + rand() * 0.6 : rand() * 0.6;
     nodes.push({
-      x: Math.round((rand() * w) / gridSmall) * gridSmall,
+      x: Math.round((xBias * w) / gridSmall) * gridSmall,
       y: Math.round((rand() * h) / gridSmall) * gridSmall,
     });
   }
@@ -268,10 +245,10 @@ function draw(
       const dx = nodes[i].x - nodes[j].x;
       const dy = nodes[i].y - nodes[j].y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 140 && dist > 30) {
-        const a = (1 - dist / 140) * 0.12;
+      if (dist < 150 && dist > 20) {
+        const a = (1 - dist / 150) * 0.15;
         ctx.strokeStyle = colors.NODE_LINE(a);
-        ctx.lineWidth = 0.6;
+        ctx.lineWidth = 0.8;
         ctx.beginPath();
         ctx.moveTo(nodes[i].x, nodes[i].y);
         ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -290,37 +267,17 @@ function draw(
     ctx.fill();
   }
 
-  /* ---- Crosshair markers ---- */
-  if (side === "left") {
-    drawCrosshair(ctx, w * 0.42, h * 0.42, colors);
-    drawCrosshair(ctx, w * 0.78, h * 0.62, colors);
-  } else {
-    drawCrosshair(ctx, w * 0.58, h * 0.42, colors);
-    drawCrosshair(ctx, w * 0.22, h * 0.6, colors);
-  }
-
   /* ---- Spec labels ---- */
   ctx.font = "700 9px monospace";
   ctx.fillStyle = colors.LABEL;
   if (side === "left") {
     ctx.textAlign = "left";
-    ctx.fillText("DGL-001", w * 0.08, h * 0.06);
-    ctx.fillText(
-      "SPD  13  |  GLI  5  |  TRN  -1  |  FAD  3",
-      w * 0.08,
-      h * 0.06 + 14,
-    );
-    ctx.fillText("FLIGHT  PROFILE", w * 0.62, h * 0.42);
+    ctx.fillText("DGL-001 [MAX DISTANCE]", w * 0.05, h * 0.08);
+    ctx.fillText("SPD 13 | GLI 5 | TRN -1 | FAD 3", w * 0.05, h * 0.08 + 14);
   } else {
     ctx.textAlign = "right";
-    ctx.fillText("DGL-002", w * 0.92, h * 0.06);
-    ctx.fillText(
-      "SPD  9  |  GLI  5  |  TRN  -2  |  FAD  1",
-      w * 0.92,
-      h * 0.06 + 14,
-    );
-    ctx.textAlign = "left";
-    ctx.fillText("RELEASE  DATA", w * 0.1, h * 0.42);
+    ctx.fillText("DGL-002 [CONTROL]", w * 0.95, h * 0.08);
+    ctx.fillText("SPD 9 | GLI 5 | TRN -2 | FAD 1", w * 0.95, h * 0.08 + 14);
   }
 }
 
@@ -337,45 +294,128 @@ function drawBasket(
   ctx.translate(x, y);
   ctx.scale(scale, scale);
 
-  ctx.strokeStyle = colors.CYAN_DIM;
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(0, -44);
-  ctx.lineTo(0, 44);
-  ctx.stroke();
+  // --- Center Pole ---
+  ctx.fillStyle = colors.CYAN_MID;
+  ctx.fillRect(-2, -50, 4, 110);
 
-  ctx.strokeStyle = colors.CYAN_MID;
+  // --- Chains ---
+  ctx.strokeStyle = colors.CYAN_DIM;
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.ellipse(0, -38, 24, 7, 0, 0, Math.PI * 2);
-  ctx.stroke();
+  const numChains = 6;
+  for (let i = -numChains; i <= numChains; i++) {
+    if (i === 0) continue; // Leave center open for pole
 
-  ctx.strokeStyle = colors.CYAN_DIM;
-  ctx.lineWidth = 0.7;
-  for (let i = -2; i <= 2; i++) {
+    // Outer to inner gathering loop
+    const startX = i * (24 / numChains);
+    const endX = i * 1.5; // gathers near the pole inside the basket
+
     ctx.beginPath();
-    ctx.moveTo(i * 9, -32);
-    ctx.lineTo(i * 6, 4);
+    ctx.moveTo(startX, -38);
+    // Draw sweeping chain curve dropping into the basket
+    ctx.quadraticCurveTo(startX * 0.8, -10, endX, 10);
     ctx.stroke();
   }
 
-  ctx.strokeStyle = colors.CYAN_MID;
+  // --- Top Band (Smaller and Solid) ---
+  // Background mask to hide pole/chains behind the band
+  ctx.fillStyle = colors.BG_MASK;
+  ctx.beginPath();
+  ctx.ellipse(0, -50, 26, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillRect(-26, -50, 52, 8);
+
+  // Solid colored cylinder fill
+  ctx.fillStyle = colors.CYAN_MID;
+  ctx.beginPath();
+  ctx.ellipse(0, -50, 26, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillRect(-26, -50, 52, 8);
+
+  // Cylinder top and bottom rims
+  ctx.strokeStyle = colors.CYAN_BRIGHT;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.ellipse(0, -50, 26, 4, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(0, -42, 26, 4, 0, 0, Math.PI * 2); // Reduced height from 12 to 8
+  ctx.stroke();
+
+  // --- Catching Tray (Cage) ---
+  ctx.strokeStyle = colors.CYAN_DIM; // Subdued tray slightly to let top band pop
+  ctx.lineWidth = 1.5;
+
+  // Upper Tray Ring
+  ctx.beginPath();
+  ctx.ellipse(0, 5, 30, 7, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Lower Tray Ring
+  ctx.beginPath();
+  ctx.ellipse(0, 22, 24, 6, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Tray Vertical Struts (connecting upper and lower rings)
   ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.ellipse(0, 4, 20, 6, 0, 0, Math.PI * 2);
-  ctx.stroke();
+  const numStruts = 7;
+  for (let i = -numStruts; i <= numStruts; i++) {
+    const ratio = i / numStruts;
+    const topX = ratio * 30;
+    const bottomX = ratio * 24;
 
+    // Add offset for 3D rim curve illusion
+    const topY = 5 + Math.sqrt(1 - ratio * ratio) * 7 * (i % 2 === 0 ? 1 : -1);
+    const bottomY =
+      22 + Math.sqrt(1 - ratio * ratio) * 6 * (i % 2 === 0 ? 1 : -1);
+
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.lineTo(bottomX, bottomY);
+    ctx.stroke();
+  }
+
+  // Inner Spoke Grid (connecting lower tray ring to center pole)
   ctx.strokeStyle = colors.CYAN_DIM;
-  ctx.lineWidth = 0.8;
+  ctx.lineWidth = 1;
+  for (let i = -numStruts; i <= numStruts; i += 2) {
+    const ratio = i / numStruts;
+    const rimX = ratio * 24;
+    const rimY = 22 + Math.sqrt(1 - ratio * ratio) * 6;
+
+    ctx.beginPath();
+    ctx.moveTo(rimX, rimY);
+    // Angle down to the central pole connection point
+    ctx.lineTo(0, 28);
+    ctx.stroke();
+  }
+
+  // --- Base ---
+  // Circular ground ring
+  ctx.strokeStyle = colors.CYAN_MID;
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(-14, 44);
-  ctx.lineTo(14, 44);
+  ctx.ellipse(0, 60, 22, 5, 0, 0, Math.PI * 2);
   ctx.stroke();
 
+  // Connecting base spokes (ring to pole)
+  ctx.lineWidth = 1;
+  const baseSpokes = [-18, -10, 0, 10, 18];
+  for (const xOffset of baseSpokes) {
+    const ratio = xOffset / 22;
+    const yOffset =
+      60 + Math.sqrt(1 - ratio * ratio) * 5 * (xOffset === 0 ? -1 : 1);
+
+    ctx.beginPath();
+    ctx.moveTo(xOffset, yOffset);
+    ctx.lineTo(0, 55); // Connect to pole slightly above ground
+    ctx.stroke();
+  }
+
+  // Target Label below
   ctx.fillStyle = colors.TARGET;
-  ctx.font = "700 7px monospace";
+  ctx.font = "700 8px monospace";
   ctx.textAlign = "center";
-  ctx.fillText("TARGET", 0, 58);
+  ctx.fillText("TARGET", 0, 78);
 
   ctx.restore();
 }
@@ -391,33 +431,38 @@ function drawFlightArc(
   color: string,
   glow: string,
 ) {
+  // Glow effect
   ctx.strokeStyle = glow;
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 16;
+  ctx.lineCap = "round";
   ctx.beginPath();
   ctx.moveTo(sx, sy);
   ctx.quadraticCurveTo(cx, cy, ex, ey);
   ctx.stroke();
 
+  // Solid center line
   ctx.strokeStyle = color;
-  ctx.lineWidth = 1.2;
-  ctx.setLineDash([6, 5]);
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 6]);
   ctx.beginPath();
   ctx.moveTo(sx, sy);
   ctx.quadraticCurveTo(cx, cy, ex, ey);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  for (const pt of [
-    { x: sx, y: sy },
-    { x: ex, y: ey },
-  ]) {
+  // Origin & Target markers
+  const markers = [
+    { x: sx, y: sy, r: 4 },
+    { x: ex, y: ey, r: 6 },
+  ];
+  for (const pt of markers) {
     ctx.fillStyle = glow;
     ctx.beginPath();
-    ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+    ctx.arc(pt.x, pt.y, pt.r * 2.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.arc(pt.x, pt.y, 2.5, 0, Math.PI * 2);
+    ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -434,7 +479,7 @@ function drawDimension(
 ) {
   const tk = 5;
   ctx.strokeStyle = colors.BLUE_DIM;
-  ctx.lineWidth = 0.7;
+  ctx.lineWidth = 1;
 
   ctx.beginPath();
   ctx.moveTo(x1, y1);
@@ -462,18 +507,18 @@ function drawDimension(
   }
 
   ctx.fillStyle = colors.LABEL;
-  ctx.font = "700 8px monospace";
+  ctx.font = "700 9px monospace";
   ctx.textAlign = "center";
   const mx = (x1 + x2) / 2;
   const my = (y1 + y2) / 2;
   if (vertical) {
     ctx.save();
-    ctx.translate(mx - 10, my);
+    ctx.translate(mx - 12, my);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText(label, 0, 0);
     ctx.restore();
   } else {
-    ctx.fillText(label, mx, my - 8);
+    ctx.fillText(label, mx, my - 10);
   }
 }
 
@@ -488,40 +533,30 @@ function drawDiscProfile(
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(tilt);
+
+  // Outer rim
   ctx.strokeStyle = colors.GREEN_MID;
-  ctx.lineWidth = 1;
+  ctx.fillStyle = "rgba(47,212,99,0.05)";
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.ellipse(0, 0, radius, radius * 0.35, 0, 0, Math.PI * 2);
+  ctx.fill();
   ctx.stroke();
+
+  // Inner dome
   ctx.strokeStyle = colors.DISC_INNER;
-  ctx.lineWidth = 0.6;
+  ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.ellipse(0, 0, radius * 0.55, radius * 0.18, 0, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.restore();
-}
 
-function drawCrosshair(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  colors: Colors,
-) {
-  const len = 12;
-  ctx.strokeStyle = colors.CROSSHAIR;
-  ctx.lineWidth = 0.8;
+  // Center point
+  ctx.fillStyle = colors.GREEN_MID;
   ctx.beginPath();
-  ctx.moveTo(x - len, y);
-  ctx.lineTo(x + len, y);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(x, y - len);
-  ctx.lineTo(x, y + len);
-  ctx.stroke();
-  ctx.strokeStyle = colors.CROSSHAIR_CIRCLE;
-  ctx.beginPath();
-  ctx.arc(x, y, 7, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.arc(0, 0, 1, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
 }
 
 function seededRandom(seed: number) {

@@ -1,5 +1,7 @@
 import { Target, BarChart3, Brain, Zap } from "lucide-react";
 
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+
 const features = [
   {
     id: "LAB 001",
@@ -52,24 +54,28 @@ export const Features = () => {
         {/* Feature grid -- glassmorphism cards */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
-            <div
+            <Card
               key={feature.id}
-              className="group relative rounded-lg border border-border bg-card/50 backdrop-blur-sm p-6 transition-all hover:border-primary/30 hover:bg-card/80 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]"
+              className="group relative bg-card/50 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card/80 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]"
             >
-              {/* Numerical silhouette label */}
-              <span className="inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-4">
-                {feature.id}
-              </span>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary/8 border border-primary/15">
-                <feature.icon className="h-5 w-5 text-primary" />
-              </div>
-              <h3 className="text-[15px] font-bold text-foreground mb-2 tracking-wide">
-                {feature.title}
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
+              <CardHeader className="pb-2">
+                {/* Numerical silhouette label */}
+                <span className="inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-4">
+                  {feature.id}
+                </span>
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-primary/8 border border-primary/15">
+                  <feature.icon className="h-5 w-5 text-primary" />
+                </div>
+                <CardTitle className="text-[15px] font-bold text-foreground tracking-wide">
+                  {feature.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>

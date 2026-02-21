@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { ArrowUpRight, Play } from "lucide-react";
 
+import { Button } from "../ui/button";
 import { GeometricArt } from "./geometric-art";
 
 export const Hero = () => {
@@ -63,18 +64,22 @@ export const Hero = () => {
 
         {/* CTAs */}
         <div className="mt-9 flex items-center justify-center gap-4">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-7 py-3 text-[13px] font-bold text-primary-foreground hover:bg-primary/90 transition-colors tracking-wide uppercase shadow-[0_0_24px_rgba(109,234,249,0.2)]"
-          >
-            Request Access
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md border border-border bg-card/50 backdrop-blur-sm px-7 py-3 text-[13px] font-bold text-foreground hover:bg-card/80 transition-colors tracking-wide uppercase"
-          >
-            Methodology
-          </a>
+          <Button asChild className="shadow-[0_0_24px_rgba(109,234,249,0.2)]">
+            <a
+              href="#"
+              className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
+            >
+              Request Access
+            </a>
+          </Button>
+          <Button variant="outline" asChild>
+            <a
+              href="#"
+              className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
+            >
+              Methodology
+            </a>
+          </Button>
         </div>
       </div>
 
@@ -130,9 +135,10 @@ const VideoPlayer = ({
   return (
     <>
       {!isPlaying ? (
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setIsPlaying(true)}
-          className="absolute inset-0 flex items-center justify-center bg-card group cursor-pointer"
+          className="absolute inset-0 flex items-center justify-center bg-card group cursor-pointer w-full h-full rounded-lg"
           aria-label="Play video"
         >
           {/* Glass overlay */}
@@ -147,7 +153,7 @@ const VideoPlayer = ({
               </span>
             </div>
           </div>
-        </button>
+        </Button>
       ) : (
         <iframe
           className="absolute inset-0 w-full h-full"

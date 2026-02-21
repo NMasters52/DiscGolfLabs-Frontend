@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import { ModeToggle } from "../mode-toggle";
+import { Button } from "../ui/button";
 
 const navLinks = [
   { label: "Platform", href: "#" },
@@ -86,23 +87,29 @@ export const Navbar = () => {
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-4">
           <ModeToggle />
-          <a
-            href="#"
-            className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors tracking-wide uppercase"
-          >
-            Sign in
-          </a>
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2 text-[13px] font-bold text-primary-foreground hover:bg-primary/90 transition-colors tracking-wide uppercase"
-          >
-            Join Lab
-          </a>
+          <Button variant="ghost" asChild>
+            <a
+              href="#"
+              className="text-[13px] font-medium tracking-wide uppercase"
+            >
+              Sign in
+            </a>
+          </Button>
+          <Button asChild>
+            <a
+              href="#"
+              className="text-[13px] font-bold tracking-wide uppercase"
+            >
+              Join Lab
+            </a>
+          </Button>
         </div>
 
         {/* Mobile toggle */}
-        <button
-          className="lg:hidden text-foreground p-2"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="lg:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
         >
@@ -111,7 +118,7 @@ export const Navbar = () => {
           ) : (
             <Menu className="h-5 w-5" />
           )}
-        </button>
+        </Button>
       </nav>
 
       {/* Mobile slide-down */}
@@ -132,18 +139,22 @@ export const Navbar = () => {
             <div className="flex justify-center">
               <ModeToggle />
             </div>
-            <a
-              href="#"
-              className="text-[13px] text-muted-foreground hover:text-foreground text-center py-2 tracking-wide uppercase"
-            >
-              Sign in
-            </a>
-            <a
-              href="#"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2.5 text-[13px] font-bold text-primary-foreground hover:bg-primary/90 transition-colors tracking-wide uppercase"
-            >
-              Join Lab
-            </a>
+            <Button variant="ghost" asChild>
+              <a
+                href="#"
+                className="text-[13px] text-muted-foreground tracking-wide uppercase"
+              >
+                Sign in
+              </a>
+            </Button>
+            <Button asChild>
+              <a
+                href="#"
+                className="text-[13px] font-bold tracking-wide uppercase"
+              >
+                Join Lab
+              </a>
+            </Button>
           </div>
         </div>
       )}

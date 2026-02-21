@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+
 import { usePuttingLadderGame } from "../../game/puttingLadder/usePuttingLadderGame";
 import { useCreateGameSession } from "../../queries/useCreateGameSession";
+import { Button } from "../ui/button";
 
 export function PuttingLadderGame({ courseId, dayNumber }) {
   const {
@@ -41,11 +43,15 @@ export function PuttingLadderGame({ courseId, dayNumber }) {
   }, [isCompleted]);
 
   return (
-    <>
+    <div className="flex flex-col items-center gap-4">
       <h3>Current Distance: {currentDistance}</h3>
       <h3>Putts Remaining: {puttsRemaining}</h3>
-      <button onClick={make}>✅ Make</button>
-      <button onClick={miss}>❌ Miss</button>
-    </>
+      <div className="flex gap-2">
+        <Button onClick={make}>✅ Make</Button>
+        <Button variant="destructive" onClick={miss}>
+          ❌ Miss
+        </Button>
+      </div>
+    </div>
   );
 }
