@@ -41,7 +41,7 @@ export const Hero = () => {
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
           <span className="font-mono text-[11px] tracking-[0.2em] uppercase">
-            Lab 001 -- Launching May 4, 2026
+            Putting Lab -- Launching May 4, 2026
           </span>
           <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
@@ -50,16 +50,15 @@ export const Hero = () => {
       {/* Headline block */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <p className="font-mono text-[11px] tracking-[0.35em] uppercase text-primary mb-5">
-          The Next Frontier of Performance
+          Time to take your game to the lab
         </p>
         <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-[4.5rem] leading-[1.06]">
-          {"Data-driven mastery for "}
-          <span className="text-primary">disc golf</span>
+          {"Stop guessing. "}
+          <span className="text-primary">Start improving. </span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-pretty text-[15px] text-muted-foreground leading-relaxed">
-          Build your foundation with science-backed coaching, flight-path
-          analytics, and cognitive training. Where the mind-body connection
-          meets the fairway.
+          A structured training system that turns mechanics into measurable
+          progress — and progress into long-term control.
         </p>
 
         {/* CTAs */}
@@ -69,7 +68,7 @@ export const Hero = () => {
               href="#"
               className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
             >
-              Request Access
+              Start Today
             </a>
           </Button>
           <Button variant="outline" asChild>
