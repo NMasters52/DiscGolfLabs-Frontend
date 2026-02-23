@@ -50,7 +50,7 @@ export const Hero = () => {
       {/* Headline block */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
         <p className="font-mono text-[11px] tracking-[0.35em] uppercase text-primary mb-5">
-          Time to take your game to the lab
+          IMPROVEMENT THAT STICKS
         </p>
         <h1 className="text-balance text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-[4.5rem] leading-[1.06]">
           {"Stop guessing. "}
