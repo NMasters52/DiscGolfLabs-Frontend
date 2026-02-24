@@ -10,7 +10,7 @@
 /* ---------------------------------------------------------------------------
    Theme
    Maps CSS custom properties → Tailwind utility tokens.
-   All color values are consumed via hsl(), so the raw variables store
+   All color values are consumed via hsl(), so raw variables store
    "H S% L%" channel values (no hsl() wrapper in the variable itself).
 --------------------------------------------------------------------------- */
 @theme inline {
@@ -72,7 +72,7 @@
     --muted: #f1f5f9;
     --muted-foreground: #475569;
 
-    --accent: #16a34a;
+    --accent: #22c55e;
     --accent-foreground: #ffffff;
 
     --destructive: #ef4444;
@@ -105,7 +105,7 @@
     --muted: #1e3a5f;
     --muted-foreground: #8b9cb8;
 
-    --accent: #2fd463;
+    --accent: #4ade80;
     --accent-foreground: #0a192f;
 
     --destructive: #ef4444;
@@ -119,8 +119,8 @@
   /* --- Global resets ------------------------------------------------------- */
 
   /*
-   * In v4 the default border color changed from gray-200 → currentColor.
-   * Applying border-border globally preserves the v3/ShadCN behavior where
+   * In v4, default border color changed from gray-200 → currentColor.
+   * Applying border-border globally preserves v3/ShadCN behavior where
    * every border picks up the --border design token automatically.
    */
   * {

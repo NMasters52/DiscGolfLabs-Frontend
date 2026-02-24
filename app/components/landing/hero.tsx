@@ -4,6 +4,7 @@ import { ArrowUpRight, Play } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { GeometricArt } from "./geometric-art";
+import { WaitlistForm } from "./waitlist-form";
 
 export const Hero = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -62,21 +63,14 @@ export const Hero = () => {
         </p>
 
         {/* CTAs */}
-        <div className="mt-9 flex items-center justify-center gap-4">
-          <Button asChild className="shadow-[0_0_24px_rgba(109,234,249,0.2)]">
-            <a
-              href="#"
-              className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
-            >
-              Start Today
-            </a>
-          </Button>
+        <div className="mt-9 flex flex-col items-center gap-4">
+          <WaitlistForm source="hero" showCount={true} />
           <Button variant="outline" asChild>
             <a
               href="#"
               className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
             >
-              Methodology
+              See Methodology
             </a>
           </Button>
         </div>
