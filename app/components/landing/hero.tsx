@@ -2,7 +2,6 @@ import { useState } from "react";
 
 import { ArrowUpRight, Play } from "lucide-react";
 
-import { Button } from "../ui/button";
 import { GeometricArt } from "./geometric-art";
 import { WaitlistForm } from "./waitlist-form";
 
@@ -65,14 +64,6 @@ export const Hero = () => {
         {/* CTAs */}
         <div className="mt-9 flex flex-col items-center gap-4">
           <WaitlistForm source="hero" showCount={true} />
-          <Button variant="outline" asChild>
-            <a
-              href="#"
-              className="text-[13px] font-bold tracking-wide uppercase px-7 py-3"
-            >
-              See Methodology
-            </a>
-          </Button>
         </div>
       </div>
 
@@ -128,10 +119,9 @@ const VideoPlayer = ({
   return (
     <>
       {!isPlaying ? (
-        <Button
-          variant="ghost"
+        <button
           onClick={() => setIsPlaying(true)}
-          className="absolute inset-0 flex items-center justify-center bg-card group cursor-pointer w-full h-full rounded-lg"
+          className="absolute inset-0 flex items-center justify-center bg-card group cursor-pointer w-full h-full rounded-lg border-0 bg-transparent"
           aria-label="Play video"
         >
           {/* Glass overlay */}
@@ -146,7 +136,7 @@ const VideoPlayer = ({
               </span>
             </div>
           </div>
-        </Button>
+        </button>
       ) : (
         <iframe
           className="absolute inset-0 w-full h-full"

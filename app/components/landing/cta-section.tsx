@@ -1,4 +1,3 @@
-import { Button } from "../ui/button";
 import { WaitlistForm } from "./waitlist-form";
 
 export const CtaSection = () => {
@@ -27,14 +26,6 @@ export const CtaSection = () => {
         </p>
         <div className="mt-9 flex flex-col items-center gap-4">
           <WaitlistForm source="cta" showCount={true} />
-          <Button variant="outline" asChild>
-            <a
-              href="#"
-              className="text-[13px] font-bold tracking-wide uppercase px-8 py-3.5"
-            >
-              See Methodology
-            </a>
-          </Button>
         </div>
       </div>
     </section>
