@@ -1,8 +1,8 @@
 const stats = [
-  { value: "14+", label: "Years in the field", id: "METRIC 001" },
-  { value: "200+", label: "1-on-1 Sessions", id: "METRIC 002" },
+  { value: "14+", label: "Years Coaching", id: "METRIC 001" },
+  { value: "200+", label: "Private Sessions", id: "METRIC 002" },
   { value: "20+", label: "Clinical Workshops", id: "METRIC 003" },
-  { value: "May 4", label: "System Launch", id: "METRIC 004" },
+  { value: "175+", label: "Tournaments Played", id: "METRIC 004" },
 ];
 
 export const Stats = () => {
