@@ -8,12 +8,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-} from "@clerk/react-router";
+import { ClerkProvider, SignedOut, SignInButton } from "@clerk/react-router";
 import { dark } from "@clerk/themes"; // Import Clerk's dark theme
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes"; // Import theme provider
@@ -63,7 +58,7 @@ function ClerkThemeWrapper({ children }: { children: React.ReactNode }) {
     <ClerkProvider
       publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
       appearance={{
-        // Automatically switch Clerk to dark mode when the app is dark
+        // Automatically switch Clerk to dark mode when app is dark
         baseTheme: resolvedTheme === "dark" ? dark : undefined,
         variables: {
           // Optional: Match Clerk's primary color to your Metallic Blue / Teal
