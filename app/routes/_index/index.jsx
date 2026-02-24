@@ -1,7 +1,6 @@
 import {
   Navbar,
   Hero,
-  TrustBar,
   Features,
   Stats,
   CtaSection,
@@ -13,7 +12,6 @@ const HomePage = () => {
     <main>
       <Navbar />
       <Hero />
-      <TrustBar />
       <Features />
       <Stats />
       <CtaSection />

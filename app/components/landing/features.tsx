@@ -4,32 +4,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 const features = [
   {
-    id: "LAB 001",
+    id: "Lab 001",
     icon: Target,
-    title: "Throw biomechanics",
+    title: "Root-Cause Analysis",
     description:
-      "Measure release angle, nose angle, spin rate, and velocity. Turn every rep into a controlled experiment.",
+      'We stop the "quick-fix" cycle. By breaking your form down to the fundamentals, we identify exactly where your power is leaking and rebuild your throw from the ground up.',
   },
   {
-    id: "LAB 002",
+    id: "Lab 002",
     icon: BarChart3,
-    title: "Flight analytics",
+    title: "Data Feedback",
     description:
-      "Model disc trajectories, overlay historical data, and isolate the variables that separate good rounds from great ones.",
+      "Stop wondering if you're getting better. Use interactive games and real-time data to see your progress in black and white, turning every practice session into a measurable win.",
   },
   {
-    id: "LAB 003",
+    id: "Lab 003",
     icon: Brain,
-    title: "Cognitive training",
+    title: "Pressure Practice",
     description:
-      "Sharpen course management, pre-shot routines, and pressure response. Where the mind-body connection drives lower scores.",
+      "Form is useless if it breaks under pressure. Our drills simulate the mental load of a competitive round, training your brain to stay calm and your mechanics to stay fluid when the shot matters.",
   },
   {
-    id: "LAB 004",
+    id: "Lab 004",
     icon: Zap,
-    title: "Adaptive programs",
-    description:
-      "Foundation-first coaching plans that evolve with your metrics. Every drill is calibrated to your current performance ceiling.",
+    title: "Adaptive Training",
+    description: `No more generic plans. The system evolves with you, serving up foundation-first coaching that adjusts to your stats. You’ll stop asking "why" and finally master the "how" and "when."`,
   },
 ];
 
@@ -40,14 +39,14 @@ export const Features = () => {
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
           <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
-            Research Modules
+            The System
           </p>
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            Precision tools for the modern player
+            Build a game that doesn't break.
           </h2>
           <p className="mt-4 text-muted-foreground text-[15px] leading-relaxed">
-            Every module is built around the same principle: measure, analyze,
-            adapt, repeat.
+            Stop watching YouTube tips and start using a structured process
+            designed to find your specific flaws and fix them for good.
           </p>
         </div>
 
