@@ -6,13 +6,9 @@
 - nav bar refactor to include nav links that will be used
 - add logo to nav bar. Need logo made first
 
-### Landing Page: Hero to do
+### Landing Page: Metrics
 
-- Badge at top - rename ✅
-- small line below it redo. ✅
-- hero text redo ✅
-- context text below title text redo ✅
-- redo buttons ✅
+- redo metrics
 
 ## Dashbaord
 
