@@ -3,6 +3,7 @@ import {
   Hero,
   Features,
   Stats,
+  SessionLogs,
   CtaSection,
   Footer,
 } from "../../components/landing";
@@ -14,6 +15,7 @@ const HomePage = () => {
       <Hero />
       <Features />
       <Stats />
+      <SessionLogs />
       <CtaSection />
       <Footer />
     </main>
