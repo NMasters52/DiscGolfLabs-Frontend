@@ -23,6 +23,8 @@ export function WaitlistForm({ source, showCount = true }: WaitlistFormProps) {
         onSuccess: (data: { alreadyJoined: boolean }) => {
           if (!data.alreadyJoined) {
             setShowSuccess(true);
+          } else {
+            setEmail("");
           }
         },
       },

@@ -98,7 +98,7 @@ export const SessionLogs = () => {
           </h2>
           <p className="mt-4 text-muted-foreground text-[15px] leading-relaxed">
             Real data from real players. Each log represents a documented
-            breakthrough, verified through our tracking system.
+            breakthrough.
           </p>
         </div>
 
@@ -164,8 +164,8 @@ export const SessionLogs = () => {
           </CarouselContent>
 
           {/* Navigation arrows - visible on larger screens */}
-          <CarouselPrevious className="hidden md:flex -left-4 lg:-left-6 border-border bg-card/80 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:border-primary/30" />
-          <CarouselNext className="hidden md:flex -right-4 lg:-right-6 border-border bg-card/80 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:border-primary/30" />
+          <CarouselPrevious className="hidden md:flex left-4 lg:left-8 size-12 rounded-full border-border bg-card/80 backdrop-blur-sm text-muted-foreground cursor-pointer hover:text-foreground hover:border-accent" />
+          <CarouselNext className="hidden md:flex right-4 lg:right-8 size-12 rounded-full border-border bg-card/80 backdrop-blur-sm text-muted-foreground cursor-pointer hover:text-foreground hover:border-accent" />
         </Carousel>
 
         {/* Progress bar */}
