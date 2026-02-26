@@ -6,22 +6,22 @@ import { ModeToggle } from "../mode-toggle";
 import { Button } from "../ui/button";
 
 const navLinks = [
-  { label: "Platform", href: "#" },
-  { label: "Methodology", href: "#" },
-  { label: "Programs", href: "#" },
-  { label: "Research", href: "#" },
-  { label: "Pricing", href: "#" },
+  { label: "Methodology", href: "/methodology" },
+  { label: "About", href: "/about" },
+  { label: "Testimonials", href: "/testimonials" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 export const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/70 backdrop-blur-xl">
+    <header className="sticky top-0 left-0 right-0 z-50 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo mark */}
         <a
-          href="#"
+          href="/"
           className="flex items-center gap-3"
           aria-label="Disc Golf Lab home"
         >
@@ -89,7 +89,7 @@ export const Navbar = () => {
           <ModeToggle />
           <Button variant="ghost" asChild>
             <a
-              href="#"
+              href="/sign-in"
               className="text-[13px] font-medium tracking-wide uppercase"
             >
               Sign in
@@ -97,7 +97,7 @@ export const Navbar = () => {
           </Button>
           <Button asChild>
             <a
-              href="#"
+              href="/sign-up"
               className="text-[13px] font-bold tracking-wide uppercase"
             >
               Join Lab
@@ -141,7 +141,7 @@ export const Navbar = () => {
             </div>
             <Button variant="ghost" asChild>
               <a
-                href="#"
+                href="/sign-in"
                 className="text-[13px] text-muted-foreground tracking-wide uppercase"
               >
                 Sign in
@@ -149,7 +149,7 @@ export const Navbar = () => {
             </Button>
             <Button asChild>
               <a
-                href="#"
+                href="/sign-up"
                 className="text-[13px] font-bold tracking-wide uppercase"
               >
                 Join Lab
