@@ -23,7 +23,7 @@ export default [
 
   route("app", "routes/app/_layout.jsx", [
     index("routes/app/_index.jsx"),
-    route("dashboard", "routes/app/dashboard/index.jsx"),
+    route("dashboard", "routes/app/dashboard/index.tsx"),
     route("test", "routes/app/dashboard/testPage.jsx"),
   ]),
 ] satisfies RouteConfig;

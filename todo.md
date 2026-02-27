@@ -4,9 +4,9 @@
 
 ## Landing Page
 
-- nav bar refactor to include nav links that will be used
 - add logo to nav bar. Need logo made first
 - review the sessions logs section and update the heads and subtext. It is not on brand
+- the sign in button doesnt work, but there is a sign in text that actually works that is at the top of the nav bar right now. have it hooked up to the sign in button
 
 ## sign in
 
@@ -22,6 +22,10 @@
 
 ## Dashbaord
 
-- Create a mobile first and desktop layout for what you want to do layout wise.
-- Create a user flow
-- list out what you want featured on the page
+-
+
+## pricing
+
+- user lands on page and sees 2 cards their eyes are drawn to the lifetime access
+- First card is on the left is a beautiful gradient. Almost like its out of a video game
+- Second card on the right is using the accent color as the border and to glow
