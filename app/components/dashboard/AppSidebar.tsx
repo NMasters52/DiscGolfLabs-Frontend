@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -19,6 +20,7 @@ import {
   BarChart3,
   User,
   LogOut,
+  Flame,
 } from "lucide-react";
 import { SignOutButton } from "@clerk/react-router";
 
@@ -102,6 +104,13 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="flex items-center gap-2 rounded-lg bg-[#FE6B36]/10 p-2 border border-[#FE6B36]">
+          <Flame className="h-4 w-4 text-[#FE6B36]" />
+          <p className="text-sm font-bold text-[#FE6B36]">3</p>
+          <p className="text-sm font-medium text-[#FE6B36]">Day Streak</p>
+        </div>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );

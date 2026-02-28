@@ -118,10 +118,10 @@ export function DesktopDashboard({ state }: DesktopDashboardProps) {
           {state === "inCourse" && (
             <Card className="col-span-1 row-span-1">
               <CardContent className="flex h-full flex-col items-center justify-center space-y-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500/10">
-                  <Flame className="h-6 w-6 text-orange-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#FE6B36]/10">
+                  <Flame className="h-6 w-6 text-[#FE6B36]" />
                 </div>
-                <p className="text-2xl font-bold">{streak}</p>
+                <p className="text-2xl font-bold text-[#FE6B36]">{streak}</p>
                 <p className="text-sm font-medium">Day Streak</p>
               </CardContent>
             </Card>
