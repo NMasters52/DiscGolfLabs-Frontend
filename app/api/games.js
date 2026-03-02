@@ -35,3 +35,19 @@ export async function fetchGameSession(gameSlug, courseId, token) {
 
   return res.json();
 }
+
+export async function fetchPuttingGameStats(token) {
+  const url = import.meta.env.VITE_API_URL;
+
+  const res = await fetch(`${url}/api/stats`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch putting game stats");
+  }
+
+  return res.json();
+}

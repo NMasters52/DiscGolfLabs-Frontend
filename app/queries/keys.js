@@ -12,4 +12,7 @@ export const queryKeys = {
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
+  puttingGame: {
+    stats: () => ["putting-game", "stats"],
+  },
 };

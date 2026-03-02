@@ -19,7 +19,7 @@
 
 ### dashbaord ui
 
-- Top line of dashabord. Keep but made it line
+- Top line of dashabord. get rid of it and make that top area a profile view not a logo. Take away the nav bar element it has with its blur effect. Add a welcome message to it
 - Streak badge. take away the streak from the dashbaord side nav. Put the profile at the bottom left.
 - Create a streak badge. Where to place it?
 - Dashboard colors. Nav vs the main area

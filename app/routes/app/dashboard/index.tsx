@@ -3,9 +3,13 @@ import { LayoutShell } from "~/components/dashboard/LayoutShell";
 import { InCourseLayout } from "~/components/dashboard/InCourseLayout";
 import { CourseCompleteLayout } from "~/components/dashboard/CourseCompleteLayout";
 import type { DashboardState } from "~/components/dashboard/data";
+import { usePuttingGameStats } from "~/queries/usePuttingGameStats";
 
 export default function Dashboard() {
   const [state, setState] = useState<DashboardState>("inCourse");
+  const { data: stats } = usePuttingGameStats();
+
+  console.log("Putting Game Stats:", stats);
 
   return (
     <LayoutShell>
