@@ -15,14 +15,55 @@
 - see about styling the sign in component
 - when you click sign up it brings you to a new page that isnt inside of my apps routing. See what that is about.
 
-## /learn route
-
-- when does it get redirected to
-- what purpose does it serve?
-
 ## Dashbaord
 
--
+### dashbaord ui
+
+- Top line of dashabord. Keep but made it line
+- Streak badge. take away the streak from the dashbaord side nav. Put the profile at the bottom left.
+- Create a streak badge. Where to place it?
+- Dashboard colors. Nav vs the main area
+- First row of cards on dashboard. To be 3 cards side to side to side.
+  - 1st card - continue course. Most appealing card.
+    - Use the progress component
+  - 2nd card - is your last putting session / how many makes.
+  - 3rd card - is their overall make rate, and how many putting rounds was used and if it is up or down from when they started
+- Second row below the cards will be the chart.
+- Third row below the charts will be the course and the days. Day 1-5 in an ordered list.
+  - Each day will have a button to click to go to that day and the button will change depending on the completion. Complete - orange. In progress - blue. Locked - gray.
+
+### dashboard navbar
+
+- take away day streak. put it back in the top right corner again.
+- Put the profile bit at the bottom and make it into a card.
+- Add Dashboard as a nav bar option
+- Take away putting course. Keep only the Courses
+- Take away the putting game. Keep just games
+- Take away seperated nav items
+- Keep sign out and stats
+- Styling: rounded, larger, more colorful, and different icons.
+  - Make the items more centered, larger in font, and an icon that best matches the item.
+  - Make the hover colors make it stand out.
+  - Hover should be active on the active link/nav link you are in
+  - Hover should make it look like a pill, fully rounded.
+- Colors for nav.
+  - Active link - grandient. Main color to accent green? or main color on hover/active
+- Make everything just 1.5x larger. Seens a little small atm
+- Mobile:
+  - Make buttons in nav larger.
+  - Course completed / course in progress need style work
+  - Course complete flow
+    - Showing course completed with stats from how they improved
+    - Putting card from your last sesssion
+    - new goal and to start a new putting session below
+    - Place to add your email for the email chain.
+  - Course Not Completed flow
+    - Progress card showing where they are at and to continue with the course
+    - day streak in orange badge form
+    - last session
+    - Extra practice card
+    - total progress
+    - focus insight
 
 ## pricing
 
