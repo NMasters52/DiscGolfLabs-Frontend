@@ -2,12 +2,16 @@ import { useIsMobile } from "~/hooks/use-mobile";
 import { MobileDashboard } from "./MobileDashboard";
 import { DesktopDashboard } from "./DesktopDashboard";
 
-export function InCourseLayout() {
+interface InCourseLayoutProps {
+  stats?: any;
+}
+
+export function InCourseLayout({ stats }: InCourseLayoutProps) {
   const isMobile = useIsMobile();
 
   return isMobile ? (
-    <MobileDashboard state="inCourse" />
+    <MobileDashboard state="inCourse" stats={stats} />
   ) : (
-    <DesktopDashboard state="inCourse" />
+    <DesktopDashboard state="inCourse" stats={stats} />
   );
 }

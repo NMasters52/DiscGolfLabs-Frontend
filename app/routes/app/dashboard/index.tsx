@@ -9,11 +9,9 @@ export default function Dashboard() {
   const [state, setState] = useState<DashboardState>("inCourse");
   const { data: stats } = usePuttingGameStats();
 
-  console.log("Putting Game Stats:", stats);
-
   return (
     <LayoutShell>
-      {state === "inCourse" && <InCourseLayout />}
+      {state === "inCourse" && <InCourseLayout stats={stats} />}
       {state === "courseComplete" && <CourseCompleteLayout />}
 
       {/* Debug controls for switching states */}

@@ -11,9 +11,10 @@ import {
 
 interface MobileDashboardProps {
   state: "inCourse" | "courseComplete";
+  stats?: any;
 }
 
-export function MobileDashboard({ state }: MobileDashboardProps) {
+export function MobileDashboard({ state, stats }: MobileDashboardProps) {
   return (
     <div className="flex flex-1 items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6 pb-20">

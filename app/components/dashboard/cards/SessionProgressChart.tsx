@@ -1,43 +1,60 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "~/components/ui/chart";
-import { AreaChart, Area, Tooltip, CartesianGrid, YAxis } from "recharts";
-import { mockChartData } from "../data";
+import { BarChart, Bar, Tooltip, CartesianGrid, YAxis, XAxis } from "recharts";
+
+interface SessionProgressChartProps {
+  stats?: any;
+}
 
 const chartConfig = {
   makeRate: {
-    label: "Make Rate",
+    label: "Make Rate %",
     theme: {
-      light: "#16a34a", // Green visible on light background
-      dark: "#22c55e", // Green visible on dark background
+      light: "#16a34a",
+      dark: "#22c55e",
     },
   },
 };
 
-export function SessionProgressChart() {
+export function SessionProgressChart({ stats }: SessionProgressChartProps) {
+  // Transform distance breakdown data into chart data
+  const chartData =
+    stats?.distanceBreakdown?.map((item: any) => ({
+      distance: `${item.distance}ft`,
+      makeRate: item.percentage,
+    })) || [];
+
   return (
     <Card className="col-span-4">
       <CardContent className="pt-6">
         <div className="mb-4">
-          <h3 className="text-sm font-semibold">Session Progress</h3>
+          <h3 className="text-sm font-semibold">Make Rate by Distance</h3>
           <p className="text-xs text-muted-foreground">
-            Make rate over recent sessions
+            Putting performance across distances
           </p>
         </div>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
-          <AreaChart accessibilityLayer data={mockChartData}>
+          <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <YAxis hide domain={[0, "auto"]} />
-            <Area
-              type="monotone"
+            <XAxis
+              dataKey="distance"
+              tick={{ fontSize: 12 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              domain={[0, 100]}
+              tick={{ fontSize: 12 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Bar
               dataKey="makeRate"
-              fill="#22c55e"
-              fillOpacity={0.2}
-              stroke="var(--color-makeRate)"
-              strokeWidth={2}
-              dot={{ r: 4 }}
+              fill="var(--color-makeRate)"
+              radius={[4, 4, 0, 0]}
             />
             <Tooltip content={<ChartTooltipContent />} />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
