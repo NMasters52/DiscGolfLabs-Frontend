@@ -12,15 +12,22 @@ import {
 interface MobileDashboardProps {
   state: "inCourse" | "courseComplete";
   stats?: any;
+  currentDay?: number;
+  totalDays?: number;
 }
 
-export function MobileDashboard({ state, stats }: MobileDashboardProps) {
+export function MobileDashboard({
+  state,
+  stats,
+  currentDay,
+  totalDays,
+}: MobileDashboardProps) {
   return (
     <div className="flex flex-1 items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6 pb-20">
         {state === "inCourse" && (
           <>
-            <CourseHeroCard />
+            <CourseHeroCard currentDay={currentDay} totalDays={totalDays} />
             <LastSessionCard />
             <FocusInsightCard />
             <PracticeModeCard />

@@ -2,12 +2,28 @@ import { useIsMobile } from "~/hooks/use-mobile";
 import { MobileDashboard } from "./MobileDashboard";
 import { DesktopDashboard } from "./DesktopDashboard";
 
-export function CourseCompleteLayout() {
+interface CourseCompleteLayoutProps {
+  currentDay?: number;
+  totalDays?: number;
+}
+
+export function CourseCompleteLayout({
+  currentDay,
+  totalDays,
+}: CourseCompleteLayoutProps) {
   const isMobile = useIsMobile();
 
   return isMobile ? (
-    <MobileDashboard state="courseComplete" />
+    <MobileDashboard
+      state="courseComplete"
+      currentDay={currentDay}
+      totalDays={totalDays}
+    />
   ) : (
-    <DesktopDashboard state="courseComplete" />
+    <DesktopDashboard
+      state="courseComplete"
+      currentDay={currentDay}
+      totalDays={totalDays}
+    />
   );
 }

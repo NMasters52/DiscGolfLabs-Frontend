@@ -2,18 +2,26 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 
-export function CourseHeroCard() {
-  const progress = 60;
+interface CourseHeroCardProps {
+  currentDay?: number;
+  totalDays?: number;
+}
+
+export function CourseHeroCard({
+  currentDay = 1,
+  totalDays = 5,
+}: CourseHeroCardProps) {
+  const progress = Math.round(((currentDay - 1) / totalDays) * 100);
 
   return (
     <Card className="border-l-4 border-l-primary">
       <CardContent className="space-y-4">
         <div>
           <h2 className="text-xl font-bold text-foreground">
-            Continue Day 3: Circle 1 Confidence
+            Continue Day {currentDay}: Circle 1 Confidence
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            3 of 5 days completed
+            {currentDay - 1} of {totalDays} days completed
           </p>
         </div>
 

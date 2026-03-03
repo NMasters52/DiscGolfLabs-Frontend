@@ -19,10 +19,6 @@
 
 ### dashbaord ui
 
-- Top line of dashabord. get rid of it and make that top area a profile view not a logo. Take away the nav bar element it has with its blur effect. Add a welcome message to it
-- Streak badge. take away the streak from the dashbaord side nav. Put the profile at the bottom left.
-- Create a streak badge. Where to place it?
-- Dashboard colors. Nav vs the main area
 - First row of cards on dashboard. To be 3 cards side to side to side.
   - 1st card - continue course. Most appealing card.
     - Use the progress component
@@ -31,6 +27,9 @@
 - Second row below the cards will be the chart.
 - Third row below the charts will be the course and the days. Day 1-5 in an ordered list.
   - Each day will have a button to click to go to that day and the button will change depending on the completion. Complete - orange. In progress - blue. Locked - gray.
+- breakpoint at desktop to close the navbar to avoid cards bunching up
+- Top line of dashboard. Get rid of it.
+- Streak badge. take away the streak from the dashbaord side nav.
 
 ### dashboard navbar
 
