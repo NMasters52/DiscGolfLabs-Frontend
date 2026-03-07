@@ -11,3 +11,4 @@ export { MakeRateCard } from "./MakeRateCard";
 export { TotalPuttsCard } from "./TotalPuttsCard";
 export { StreakCard } from "./StreakCard";
 export { WeakestDistanceCard } from "./WeakestDistanceCard";
+export { DiscGolfLabBackground } from "./DiscGolfLabBackground";

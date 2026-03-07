@@ -1,6 +1,7 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
+import { DiscGolfLabBackground } from "./DiscGolfLabBackground";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -30,43 +31,46 @@ export function MakeRateCard({ makeRate }: MakeRateCardProps) {
       className="h-full"
     >
       <Link to="#" className="block h-full">
-        <Card className="h-full bg-gradient-to-br from-primary/5 to-primary/10 hover:shadow-lg transition-all duration-300">
-          <CardContent className="flex h-full flex-col items-center justify-center space-y-3 p-6">
-            <div className="relative flex h-24 w-24 items-center justify-center">
-              <svg className="h-24 w-24 -rotate-90 transform">
-                <circle
-                  cx="48"
-                  cy="48"
-                  r="45"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                  className="text-primary/20"
-                />
-                <motion.circle
-                  cx="48"
-                  cy="48"
-                  r="45"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                  className="text-primary"
-                  strokeLinecap="round"
-                  initial={{ strokeDashoffset: circumference }}
-                  animate={{ strokeDashoffset }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  style={{
-                    strokeDasharray: circumference,
-                  }}
-                />
-              </svg>
-              <span className="absolute text-2xl font-bold text-primary">
-                {percentage}%
-              </span>
-            </div>
-            <p className="text-sm font-medium">Make Rate</p>
-            <p className="text-xs text-muted-foreground">Overall</p>
-          </CardContent>
+        <Card className="relative h-full overflow-hidden hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">
+          <DiscGolfLabBackground variant="putting" density={12} />
+          <div className="relative z-10 flex h-full items-center justify-center">
+            <CardContent className="flex h-full flex-col items-center justify-center space-y-3 p-6">
+              <div className="relative flex h-24 w-24 items-center justify-center">
+                <svg className="h-24 w-24 -rotate-90 transform">
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="45"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    className="text-primary/20"
+                  />
+                  <motion.circle
+                    cx="48"
+                    cy="48"
+                    r="45"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    className="text-primary"
+                    strokeLinecap="round"
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    style={{
+                      strokeDasharray: circumference,
+                    }}
+                  />
+                </svg>
+                <span className="absolute text-2xl font-bold text-primary">
+                  {percentage}%
+                </span>
+              </div>
+              <p className="text-sm font-medium">Make Rate</p>
+              <p className="text-xs text-muted-foreground">Overall</p>
+            </CardContent>
+          </div>
         </Card>
       </Link>
     </motion.div>
