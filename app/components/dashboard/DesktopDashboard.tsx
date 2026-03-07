@@ -1,11 +1,18 @@
-import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Flame, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   SessionProgressChart,
   EmailSignupSection,
   CourseHeroCard,
+  MakeRateCard,
+  TotalPuttsCard,
+  StreakCard,
+  WeakestDistanceCard,
 } from "./cards";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 
 interface DesktopDashboardProps {
   state: "inCourse" | "courseComplete";
@@ -51,58 +58,57 @@ export function DesktopDashboard({
           </div>
 
           {/* Make Rate Card */}
-          <Card className="md:col-span-1">
-            <CardContent className="flex h-full flex-col items-center justify-center space-y-2">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-primary">
-                <span className="text-2xl font-bold">
-                  {Math.round(makeRate)}%
-                </span>
-              </div>
-              <p className="text-sm font-medium">Make Rate</p>
-              <p className="text-xs text-muted-foreground">Overall</p>
-            </CardContent>
-          </Card>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0, duration: 0.5 }}
+            className="h-full"
+          >
+            <MakeRateCard makeRate={makeRate} />
+          </motion.div>
 
           {/* Total Putts Card */}
-          <Card className="md:col-span-1">
-            <CardContent className="flex h-full flex-col items-center justify-center space-y-2">
-              <p className="text-3xl font-bold">{totalPuttsMade}</p>
-              <p className="text-sm font-medium">Putts Made</p>
-              <p className="text-xs text-muted-foreground">
-                {sessionCount} sessions
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.15, duration: 0.5 }}
+            className="h-full"
+          >
+            <TotalPuttsCard
+              totalPuttsMade={totalPuttsMade}
+              sessionCount={sessionCount}
+            />
+          </motion.div>
 
           {/* Streak Card */}
-          <Card className="md:col-span-1">
-            <CardContent className="flex h-full flex-col items-center justify-center space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#FE6B36]/10">
-                <Flame className="h-6 w-6 text-[#FE6B36]" />
-              </div>
-              <p className="text-2xl font-bold text-[#FE6B36]">
-                {currentStreak}
-              </p>
-              <p className="text-sm font-medium">Current Streak</p>
-              <p className="text-xs text-muted-foreground">
-                Best: {longestStreak}
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="h-full"
+          >
+            <StreakCard
+              currentStreak={currentStreak}
+              longestStreak={longestStreak}
+            />
+          </motion.div>
 
           {/* Weakest Distance Card */}
-          <Card className="md:col-span-1">
-            <CardContent className="flex h-full flex-col items-center justify-center space-y-2">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive/10">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              </div>
-              <p className="text-2xl font-bold">{weakestDistanceValue}ft</p>
-              <p className="text-sm font-medium">Weakest Distance</p>
-              <p className="text-xs text-muted-foreground">
-                {Math.round(weakestDistanceRate)}% make rate
-              </p>
-            </CardContent>
-          </Card>
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.45, duration: 0.5 }}
+            className="h-full"
+          >
+            <WeakestDistanceCard
+              weakestDistanceValue={weakestDistanceValue}
+              weakestDistanceRate={weakestDistanceRate}
+            />
+          </motion.div>
 
           {/* Bottom Full-Width Graph */}
           <div className="md:col-span-4">

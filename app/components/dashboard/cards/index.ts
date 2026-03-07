@@ -7,3 +7,7 @@ export { NewGoalCard } from "./NewGoalCard";
 export { OverallStatsCard } from "./OverallStatsCard";
 export { EmailSignupSection } from "./EmailSignupSection";
 export { SessionProgressChart } from "./SessionProgressChart";
+export { MakeRateCard } from "./MakeRateCard";
+export { TotalPuttsCard } from "./TotalPuttsCard";
+export { StreakCard } from "./StreakCard";
+export { WeakestDistanceCard } from "./WeakestDistanceCard";
