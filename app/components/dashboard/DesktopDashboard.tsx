@@ -1,7 +1,11 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Flame, AlertTriangle } from "lucide-react";
-import { SessionProgressChart, EmailSignupSection } from "./cards";
+import {
+  SessionProgressChart,
+  EmailSignupSection,
+  CourseHeroCard,
+} from "./cards";
 
 interface DesktopDashboardProps {
   state: "inCourse" | "courseComplete";
@@ -37,61 +41,14 @@ export function DesktopDashboard({
       <div className="mx-auto w-full max-w-6xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Hero Tile - spans full width */}
-          <Card className="md:col-span-4 border-l-4 border-l-primary">
-            <CardContent className="h-full flex flex-col justify-between">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">
-                  {state === "inCourse"
-                    ? `Continue Day ${currentDay}`
-                    : "Course Complete"}
-                </h2>
-                <p className="text-muted-foreground">
-                  {state === "inCourse"
-                    ? `${currentDay - 1} of ${totalDays} days completed`
-                    : "You Improved"}
-                </p>
-              </div>
-
-              {state === "inCourse" ? (
-                <div>
-                  <div className="mt-4 mb-4">
-                    <div className="flex items-center justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-medium">
-                        {Math.round(progressPercentage)}%
-                      </span>
-                    </div>
-                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary transition-all duration-500 ease-out"
-                        style={{ width: `${progressPercentage}%` }}
-                      />
-                    </div>
-                  </div>
-                  <Button className="w-full" size="lg">
-                    Continue Course
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-2 pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Distance Gained
-                    </span>
-                    <span className="text-lg font-bold text-accent">
-                      +{distanceGained}ft
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      Consistency
-                    </span>
-                    <span className="text-lg font-bold text-accent">+18%</span>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <div className="md:col-span-4">
+            <CourseHeroCard
+              state={state}
+              currentDay={currentDay}
+              totalDays={totalDays}
+              stats={stats}
+            />
+          </div>
 
           {/* Make Rate Card */}
           <Card className="md:col-span-1">

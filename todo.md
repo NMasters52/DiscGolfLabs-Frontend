@@ -15,22 +15,6 @@
 - see about styling the sign in component
 - when you click sign up it brings you to a new page that isnt inside of my apps routing. See what that is about.
 
-## Dashbaord
-
-### dashbaord ui
-
-- First row of cards on dashboard. To be 3 cards side to side to side.
-  - 1st card - continue course. Most appealing card.
-    - Use the progress component
-  - 2nd card - is your last putting session / how many makes.
-  - 3rd card - is their overall make rate, and how many putting rounds was used and if it is up or down from when they started
-- Second row below the cards will be the chart.
-- Third row below the charts will be the course and the days. Day 1-5 in an ordered list.
-  - Each day will have a button to click to go to that day and the button will change depending on the completion. Complete - orange. In progress - blue. Locked - gray.
-- breakpoint at desktop to close the navbar to avoid cards bunching up
-- Top line of dashboard. Get rid of it.
-- Streak badge. take away the streak from the dashbaord side nav.
-
 ### dashboard navbar
 
 - take away day streak. put it back in the top right corner again.
