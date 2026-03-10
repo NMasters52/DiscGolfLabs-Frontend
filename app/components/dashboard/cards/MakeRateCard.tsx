@@ -44,7 +44,7 @@ export function MakeRateCard({ makeRate }: MakeRateCardProps) {
                     stroke="currentColor"
                     strokeWidth="4"
                     fill="none"
-                    className="text-primary/20"
+                    className="text-green-600/20"
                   />
                   <motion.circle
                     cx="48"
@@ -53,7 +53,7 @@ export function MakeRateCard({ makeRate }: MakeRateCardProps) {
                     stroke="currentColor"
                     strokeWidth="4"
                     fill="none"
-                    className="text-primary"
+                    className="text-green-600"
                     strokeLinecap="round"
                     initial={{ strokeDashoffset: circumference }}
                     animate={{ strokeDashoffset }}
