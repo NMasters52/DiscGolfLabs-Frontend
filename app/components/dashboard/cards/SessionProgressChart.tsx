@@ -53,7 +53,7 @@ export function SessionProgressChart({ stats }: SessionProgressChartProps) {
               fill="var(--color-makeRate)"
               radius={[4, 4, 0, 0]}
             />
-            <Tooltip content={<ChartTooltipContent />} />
+            <Tooltip content={<ChartTooltipContent />} cursor={false} />
           </BarChart>
         </ChartContainer>
       </CardContent>
