@@ -31,7 +31,7 @@ export function MakeRateCard({ makeRate }: MakeRateCardProps) {
       className="h-full"
     >
       <Link to="#" className="block h-full">
-        <Card className="relative h-full overflow-hidden hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">
+        <Card className="relative h-full overflow-hidden hover:shadow-lg hover:shadow-green-600/20 transition-all duration-300">
           <DiscGolfLabBackground variant="putting" density={12} />
           <div className="relative z-10 flex h-full items-center justify-center">
             <CardContent className="flex h-full flex-col items-center justify-center space-y-3 p-6">
