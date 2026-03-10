@@ -44,11 +44,13 @@ export function TotalPuttsCard({
           <DiscGolfLabBackground variant="accuracy" density={14} />
           <div className="relative z-10 flex h-full items-center justify-center">
             <CardContent className="flex h-full flex-col items-center justify-center space-y-3 p-6">
-              <motion.p className="text-3xl font-bold text-accent">
+              <motion.p className="text-3xl font-bold text-card-foreground">
                 {rounded}
               </motion.p>
-              <p className="text-sm font-medium">Putts Made</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-card-foreground">
+                Putts Made
+              </p>
+              <p className="text-xs text-card-foreground">
                 {sessionCount} sessions
               </p>
             </CardContent>

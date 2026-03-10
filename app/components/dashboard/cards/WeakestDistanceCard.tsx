@@ -49,11 +49,13 @@ export function WeakestDistanceCard({
               >
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </motion.div>
-              <p className="text-2xl font-bold text-destructive">
+              <p className="text-2xl font-bold text-card-foreground">
                 {weakestDistanceValue}ft
               </p>
-              <p className="text-sm font-medium">Weakest Distance</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-card-foreground">
+                Weakest Distance
+              </p>
+              <p className="text-xs text-card-foreground">
                 {Math.round(weakestDistanceRate)}% make rate
               </p>
             </CardContent>

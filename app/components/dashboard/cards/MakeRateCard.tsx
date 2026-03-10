@@ -63,12 +63,14 @@ export function MakeRateCard({ makeRate }: MakeRateCardProps) {
                     }}
                   />
                 </svg>
-                <span className="absolute text-2xl font-bold text-primary">
+                <span className="absolute text-2xl font-bold text-card-foreground">
                   {percentage}%
                 </span>
               </div>
-              <p className="text-sm font-medium">Make Rate</p>
-              <p className="text-xs text-muted-foreground">Overall</p>
+              <p className="text-sm font-medium text-card-foreground">
+                Make Rate
+              </p>
+              <p className="text-xs text-card-foreground">Overall</p>
             </CardContent>
           </div>
         </Card>

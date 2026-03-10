@@ -47,11 +47,13 @@ export function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
               >
                 <Flame className="h-6 w-6 text-[#FE6B36]" />
               </motion.div>
-              <p className="text-2xl font-bold text-[#FE6B36]">
+              <p className="text-2xl font-bold text-card-foreground">
                 {currentStreak}
               </p>
-              <p className="text-sm font-medium">Current Streak</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm font-medium text-card-foreground">
+                Current Streak
+              </p>
+              <p className="text-xs text-card-foreground">
                 Best: {longestStreak}
               </p>
             </CardContent>
