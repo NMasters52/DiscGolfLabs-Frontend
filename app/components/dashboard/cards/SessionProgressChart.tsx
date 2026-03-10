@@ -1,6 +1,7 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { ChartContainer, ChartTooltipContent } from "~/components/ui/chart";
 import { BarChart, Bar, Tooltip, CartesianGrid, YAxis, XAxis } from "recharts";
+import "./SessionProgressChart.css";
 
 interface SessionProgressChartProps {
   stats?: any;

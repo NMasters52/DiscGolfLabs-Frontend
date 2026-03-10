@@ -1,0 +1,7 @@
+.recharts-bar-rectangle {
+  transition: opacity 0.2s ease-in-out;
+}
+
+.recharts-bar-rectangle:hover {
+  opacity: 0.4;
+}
