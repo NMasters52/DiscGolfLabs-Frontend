@@ -24,7 +24,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
         <div className="flex min-h-screen w-full">
           <AppSidebar />
           <SidebarInset>
-            <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-muted/30 px-4">
+            <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b bg-muted dark:bg-sidebar px-4">
               <div className="flex flex-1 items-center justify-between">
                 <h1 className="text-lg font-semibold">Dashboard</h1>
                 <div className="flex items-center gap-3">
