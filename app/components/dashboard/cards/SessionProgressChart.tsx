@@ -11,8 +11,8 @@ const chartConfig = {
   makeRate: {
     label: "Make Rate %",
     theme: {
-      light: "#16a34a",
-      dark: "#22c55e",
+      light: "#22c55e",
+      dark: "#4ade80",
     },
   },
 };
@@ -26,8 +26,27 @@ export function SessionProgressChart({ stats }: SessionProgressChartProps) {
     })) || [];
 
   return (
-    <Card className="col-span-4">
-      <CardContent className="pt-6">
+    <Card className="col-span-4 relative overflow-hidden">
+      {/* Glassmorphism background */}
+      <div className="absolute inset-0">
+        {/* Subtle radial glow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent" />
+
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, currentColor 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+
+        {/* Edge fade masks */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background/80" />
+      </div>
+
+      <CardContent className="pt-6 relative z-10">
         <div className="mb-4">
           <h3 className="text-sm font-semibold">Make Rate by Distance</h3>
           <p className="text-xs text-muted-foreground">
