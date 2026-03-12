@@ -1,0 +1,52 @@
+# Cline Rules
+
+## Available Skills
+
+This project has three agent skills. Use them when the task matches.
+
+### Feature Design
+
+Trigger: User wants to plan or design a new feature before building it.
+File: @.cline/skills/FEATURE_DESIGN.md
+
+### Feature Coder
+
+Trigger: User has an approved FDD and wants to implement it.
+File: @.cline/skills/FEATURE_CODER.md
+
+### Feature Auditor
+
+Trigger: User wants a read-only code review of a built feature.
+File: @.cline/skills/FEATURE_AUDITOR.md
+**Hard constraint: this agent may never write, modify, or create any file.**
+
+## General Rules
+
+- Always read the relevant skill file before starting that type of task
+- Never begin building a feature without an approved FDD from FEATURE_DESIGN
+- Match existing codebase conventions — check before introducing new patterns
+
+```
+
+---
+
+## How You'd Actually Use Them Day-to-Day
+
+**Starting a feature:**
+```
+
+Let's build a session history page. Use @.cline/skills/FEATURE_DESIGN.md
+
+```
+
+**Building from the plan:**
+```
+
+Plan is approved. Build it using @.cline/skills/FEATURE_CODER.md and @docs/session-history-FDD.md
+
+```
+
+**Running an audit:**
+```
+
+Audit src/features/session-history using @.cline/skills/FEATURE_AUDITOR.md
