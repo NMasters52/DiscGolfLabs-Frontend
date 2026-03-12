@@ -1,9 +1,7 @@
 import { Card, CardContent } from "~/components/ui/card";
 import { Trophy } from "lucide-react";
-import { mockUser } from "../data";
 
 export function CourseCompleteHeroCard() {
-  const { improvement } = mockUser;
   const distanceGained =
     improvement.currentDistance - improvement.startDistance;
   const consistencyGain = 18;

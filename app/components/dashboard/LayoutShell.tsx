@@ -6,7 +6,6 @@ import {
 } from "~/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Badge } from "~/components/ui/badge";
-import { mockUser } from "./data";
 import { Separator } from "~/components/ui/separator";
 import { ThemeProvider } from "~/components/theme-provider";
 import { ModeToggle } from "~/components/mode-toggle";
@@ -16,8 +15,6 @@ interface LayoutShellProps {
 }
 
 export function LayoutShell({ children }: LayoutShellProps) {
-  const { streak } = mockUser;
-
   return (
     <ThemeProvider defaultTheme="dark" storageKey="discgolf-theme">
       <SidebarProvider>

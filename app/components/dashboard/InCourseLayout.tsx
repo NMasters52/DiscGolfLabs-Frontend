@@ -6,12 +6,19 @@ interface InCourseLayoutProps {
   stats?: any;
   currentDay?: number;
   totalDays?: number;
+  lastSession?: {
+    maxDistance: number;
+    makeRate: number;
+    attempts: number;
+    date: string;
+  } | null;
 }
 
 export function InCourseLayout({
   stats,
   currentDay,
   totalDays,
+  lastSession,
 }: InCourseLayoutProps) {
   const isMobile = useIsMobile();
 
@@ -21,6 +28,7 @@ export function InCourseLayout({
       stats={stats}
       currentDay={currentDay}
       totalDays={totalDays}
+      lastSession={lastSession}
     />
   ) : (
     <DesktopDashboard

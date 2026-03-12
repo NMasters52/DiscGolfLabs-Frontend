@@ -14,6 +14,12 @@ interface MobileDashboardProps {
   stats?: any;
   currentDay?: number;
   totalDays?: number;
+  lastSession?: {
+    maxDistance: number;
+    makeRate: number;
+    attempts: number;
+    date: string;
+  } | null;
 }
 
 export function MobileDashboard({
@@ -21,6 +27,7 @@ export function MobileDashboard({
   stats,
   currentDay,
   totalDays,
+  lastSession,
 }: MobileDashboardProps) {
   return (
     <div className="flex flex-1 items-center justify-center bg-muted/30 p-4">
@@ -28,7 +35,7 @@ export function MobileDashboard({
         {state === "inCourse" && (
           <>
             <CourseHeroCard currentDay={currentDay} totalDays={totalDays} />
-            <LastSessionCard />
+            <LastSessionCard lastSession={lastSession} />
             <FocusInsightCard />
             <PracticeModeCard />
           </>

@@ -1,9 +1,33 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { mockUser } from "../data";
 import { DiscGolfLabBackground } from "./DiscGolfLabBackground";
 
-export function LastSessionCard() {
-  const { lastSession } = mockUser;
+interface LastSessionCardProps {
+  lastSession?: {
+    maxDistance: number;
+    makeRate: number;
+    attempts: number;
+    date: string;
+  } | null;
+}
+
+export function LastSessionCard({ lastSession }: LastSessionCardProps) {
+  if (!lastSession) {
+    return (
+      <Card className="relative overflow-hidden">
+        <DiscGolfLabBackground variant="putting" density={10} />
+        <div className="relative z-10">
+          <CardContent>
+            <h3 className="text-base font-semibold text-card-foreground mb-3">
+              Last Session
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              No recent sessions. Start a putting session to add one!
+            </p>
+          </CardContent>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="relative overflow-hidden">
