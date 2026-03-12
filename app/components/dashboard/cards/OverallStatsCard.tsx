@@ -1,10 +1,10 @@
 import { Card, CardContent } from "~/components/ui/card";
-import { mockUser } from "../data";
 import { TrendingUp, Trophy } from "lucide-react";
 import { DiscGolfLabBackground } from "./DiscGolfLabBackground";
 
 export function OverallStatsCard() {
-  const { overallMakeRate, personalBest } = mockUser;
+  const overallMakeRate = 0.68;
+  const personalBest = 45;
 
   return (
     <Card className="relative overflow-hidden">

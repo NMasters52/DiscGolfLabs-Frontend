@@ -2,8 +2,9 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Trophy } from "lucide-react";
 
 export function CourseCompleteHeroCard() {
-  const distanceGained =
-    improvement.currentDistance - improvement.startDistance;
+  const currentDistance = 350;
+  const startDistance = 280;
+  const distanceGained = currentDistance - startDistance;
   const consistencyGain = 18;
 
   return (
