@@ -15,7 +15,7 @@ interface MobileDashboardProps {
   currentDay?: number;
   totalDays?: number;
   lastSession?: {
-    maxDistance: number;
+    makes: number;
     makeRate: number;
     attempts: number;
     date: string;

@@ -30,7 +30,7 @@ export default function Dashboard() {
   const lastSession =
     sessions?.length > 0
       ? {
-          maxDistance: sessions[sessions.length - 1].maxDistanceFt,
+          makes: sessions[sessions.length - 1].overall.made,
           makeRate: sessions[sessions.length - 1].overall.percentage / 100,
           attempts: sessions[sessions.length - 1].overall.attempted,
           date: new Date(
