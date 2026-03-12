@@ -32,7 +32,7 @@ export function LastSessionCard({ lastSession }: LastSessionCardProps) {
   return (
     <Card className="relative overflow-hidden">
       <DiscGolfLabBackground variant="putting" density={10} />
-      <div className="relative z-10 bg-background/75">
+      <div className="relative z-10 bg-background/75 dark:bg-background/0">
         <CardContent>
           <h3 className="text-base font-semibold text-card-foreground mb-3">
             Last Session
