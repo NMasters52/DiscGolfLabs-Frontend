@@ -91,6 +91,33 @@
     --ring: #0891b2;
 
     --radius: 0.5rem;
+
+    /* Zone gradients - light mode (cooler colors for light backgrounds) */
+    --zone-hot-fill: linear-gradient(
+      90deg,
+      hsl(160, 84%, 39%),
+      hsl(160, 84%, 49%)
+    );
+    --zone-good-fill: linear-gradient(
+      90deg,
+      hsl(195, 80%, 45%),
+      hsl(205, 85%, 50%)
+    );
+    --zone-ok-fill: linear-gradient(
+      90deg,
+      hsl(40, 92%, 45%),
+      hsl(45, 93%, 50%)
+    );
+    --zone-work-fill: linear-gradient(
+      90deg,
+      hsl(25, 90%, 50%),
+      hsl(30, 90%, 55%)
+    );
+    --zone-drill-fill: linear-gradient(
+      90deg,
+      hsl(0, 84%, 55%),
+      hsl(0, 84%, 60%)
+    );
   }
 
   /* --- Dark theme (Disc Golf Lab) ---------------------------------------- */
@@ -122,6 +149,33 @@
     --border: #2d4a6f;
     --input: #2d4a6f;
     --ring: #6deaf9;
+
+    /* Zone gradients - dark mode (warm/neon colors) */
+    --zone-hot-fill: linear-gradient(
+      90deg,
+      hsl(142, 76%, 36%),
+      hsl(142, 71%, 45%)
+    );
+    --zone-good-fill: linear-gradient(
+      90deg,
+      hsl(185, 80%, 40%),
+      hsl(195, 85%, 45%)
+    );
+    --zone-ok-fill: linear-gradient(
+      90deg,
+      hsl(35, 92%, 50%),
+      hsl(45, 93%, 47%)
+    );
+    --zone-work-fill: linear-gradient(
+      90deg,
+      hsl(15, 90%, 50%),
+      hsl(25, 95%, 53%)
+    );
+    --zone-drill-fill: linear-gradient(
+      90deg,
+      hsl(0, 84%, 60%),
+      hsl(0, 90%, 50%)
+    );
   }
 
   /* --- Global resets ------------------------------------------------------- */

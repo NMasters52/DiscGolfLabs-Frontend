@@ -67,33 +67,39 @@ interface ZoneColors {
 function zoneColors(tag: ZoneTag): ZoneColors {
   switch (tag) {
     case "HOT":
+      return {
+        fill: "var(--zone-hot-fill)",
+        text: "text-slate-900 dark:text-green-400",
+        tagBg: "bg-accent/30 dark:bg-accent/10",
+        tagText: "text-primary dark:text-accent",
+      };
     case "GOOD":
       return {
-        fill: "linear-gradient(90deg, hsl(142, 76%, 36%), hsl(142, 71%, 45%))",
-        text: "text-accent",
-        tagBg: "bg-accent/10",
-        tagText: "text-accent",
+        fill: "var(--zone-good-fill)",
+        text: "text-slate-900 dark:text-green-400",
+        tagBg: "bg-accent/30 dark:bg-accent/10",
+        tagText: "text-primary dark:text-accent",
       };
     case "OK":
       return {
-        fill: "linear-gradient(90deg, hsl(35, 92%, 50%), hsl(45, 93%, 47%))",
-        text: "text-yellow-500",
-        tagBg: "bg-yellow-500/10",
-        tagText: "text-yellow-500",
+        fill: "var(--zone-ok-fill)",
+        text: "text-slate-900 dark:text-orange-400",
+        tagBg: "bg-orange-500/30 dark:bg-orange-500/10",
+        tagText: "text-primary dark:text-orange-500",
       };
     case "WORK":
       return {
-        fill: "linear-gradient(90deg, hsl(15, 90%, 50%), hsl(25, 95%, 53%))",
-        text: "text-orange-500",
-        tagBg: "bg-orange-500/10",
-        tagText: "text-orange-500",
+        fill: "var(--zone-work-fill)",
+        text: "text-slate-900 dark:text-orange-400",
+        tagBg: "bg-orange-600/30 dark:bg-orange-500/10",
+        tagText: "text-primary dark:text-orange-500",
       };
     case "DRILL":
       return {
-        fill: "linear-gradient(90deg, hsl(0, 84%, 60%), hsl(0, 90%, 50%))",
-        text: "text-destructive",
-        tagBg: "bg-destructive/10",
-        tagText: "text-destructive",
+        fill: "var(--zone-drill-fill)",
+        text: "text-slate-900 dark:text-red-400",
+        tagBg: "bg-red-500/30 dark:bg-destructive/10",
+        tagText: "text-primary dark:text-destructive",
       };
   }
 }
@@ -201,7 +207,7 @@ export function DistanceZones({
                 {/* Tag pill */}
                 <span
                   className={cn(
-                    "text-[7px] font-bold tracking-wider px-1.5 py-0.5 rounded-[3px] w-[28px] text-center shrink-0",
+                    "text-[7px] font-bold tracking-wider px-1.5 py-0.5 rounded-[3px] min-w-[32px] text-center shrink-0",
                     colors.tagBg,
                     colors.tagText,
                   )}
