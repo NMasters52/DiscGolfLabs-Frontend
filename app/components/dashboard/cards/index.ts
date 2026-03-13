@@ -12,3 +12,5 @@ export { TotalPuttsCard } from "./TotalPuttsCard";
 export { StreakCard } from "./StreakCard";
 export { WeakestDistanceCard } from "./WeakestDistanceCard";
 export { DiscGolfLabBackground } from "./DiscGolfLabBackground";
+export { QuickStats } from "./QuickStats";
+export { DistanceZones } from "./DistanceZones";
