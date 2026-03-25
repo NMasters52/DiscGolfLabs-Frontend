@@ -1,6 +1,7 @@
 # Feature Coder Skill
 
 Use this skill when a user says something like:
+
 - "Let's build the feature. Use @FEATURE_DESIGN.md and the feature coder skill"
 - "Time to implement — use feature-coder with @[FDD file]"
 - "Start building from the FDD"
@@ -33,6 +34,7 @@ Before writing a single line of code, read the entire FDD and answer these quest
 - Are there any shared utilities, types, or hooks that need to exist before anything else can work?
 
 Then scan the existing codebase for:
+
 - Folder structure and naming conventions
 - Existing components or hooks this feature can reuse or extend
 - The API layer pattern (where fetch calls live, how they're structured)
@@ -50,16 +52,19 @@ Then scan the existing codebase for:
 Classify the feature as one of the following before planning:
 
 **SMALL** — A contained change. Examples: adding a button with an API call, a new field on a form, a new column in a table, a simple new component on an existing page.
+
 - Touches: 1–3 files
 - Endpoints: 0–1 new
 - Judgment: Can be built in one shot with no phases needed
 
 **MEDIUM** — A real feature with multiple moving parts but contained scope. Examples: a new dashboard card with its own data, a filterable list view, a settings panel.
+
 - Touches: 4–10 files
 - Endpoints: 1–3
 - Judgment: Build in phases, pause between phases for review
 
 **LARGE** — A feature that spans multiple pages, many components, several endpoints, or introduces a new major section of the app.
+
 - Touches: 10+ files
 - Endpoints: 3+
 - Judgment: Full step-by-step with explicit approval before each phase
@@ -73,9 +78,11 @@ State the classification clearly before showing the build plan.
 Before ordering steps, map the dependencies:
 
 For every file to be created or modified, ask:
+
 > "Does anything else need to exist before this file will work?"
 
 Use this to identify:
+
 - **Foundation items** — must be built first (types, shared hooks, API layer, DB schema)
 - **Mid-layer items** — depend on foundation (hooks that call APIs, utility functions)
 - **UI items** — depend on mid-layer (components that consume hooks and types)
@@ -116,20 +123,20 @@ Produce the full build plan ordered by dependency safety. Use this format:
 ---
 
 **Phase 1 — Foundation**
-*Everything else depends on this. Must be complete before any UI work begins.*
+_Everything else depends on this. Must be complete before any UI work begins._
 
 - [ ] Step 1: Create `src/types/[feature].types.ts` — defines all interfaces from the FDD
 - [ ] Step 2: Create `src/api/[feature]Api.ts` — implements all API contracts from the FDD
 - [ ] Step 3: [backend/DB tasks if applicable]
 
 **Phase 2 — Data Layer**
-*Hooks and state logic. Depends on Phase 1 being complete.*
+_Hooks and state logic. Depends on Phase 1 being complete._
 
 - [ ] Step 4: Create `src/features/[feature]/hooks/use[Feature]Data.ts` — data fetching hook
 - [ ] Step 5: Create `src/features/[feature]/hooks/use[Feature]Filters.ts` — filter state logic (if applicable)
 
 **Phase 3 — Components**
-*UI layer. Depends on Phase 2 being complete.*
+_UI layer. Depends on Phase 2 being complete._
 
 - [ ] Step 6: Create `src/features/[feature]/components/[Feature]Root.tsx` — top-level container
 - [ ] Step 7: Create `src/features/[feature]/components/[Feature]Card.tsx`
@@ -137,7 +144,7 @@ Produce the full build plan ordered by dependency safety. Use this format:
 - [ ] Step 9: Create `src/features/[feature]/components/[Feature]Empty.tsx` — empty/error states
 
 **Phase 4 — Integration**
-*Wire everything into the app. Depends on Phase 3 being complete.*
+_Wire everything into the app. Depends on Phase 3 being complete._
 
 - [ ] Step 10: Modify `src/pages/[Page].tsx` — add feature to the page
 - [ ] Step 11: Add route if needed
@@ -145,7 +152,7 @@ Produce the full build plan ordered by dependency safety. Use this format:
 
 ---
 
-*Any flagged dependency conflicts, open questions from the FDD, or missing information are listed here before building begins.*
+_Any flagged dependency conflicts, open questions from the FDD, or missing information are listed here before building begins._
 
 ---
 
@@ -162,26 +169,33 @@ After producing the build plan, say:
 ## Phase 3 — Building
 
 ### SMALL features — One Shot
+
 Build all steps in sequence without stopping. Report when complete with a summary of every file created or modified.
 
 ### MEDIUM features — Phased
+
 Build one phase at a time. After completing each phase, report:
+
 ```
 ✅ Phase [N] complete
 Files created: [list]
 Files modified: [list]
 Ready for Phase [N+1] — say "continue" to proceed, or let me know if you want to review first.
 ```
+
 Wait for the user to say continue before moving to the next phase.
 
 ### LARGE features — Step-by-step
+
 Build one step at a time. After each step:
+
 ```
 ✅ Step [N] complete — [filename]
 What was done: [1-2 sentence summary]
 Next: Step [N+1] — [filename] ([what it does])
 Say "next" to continue, or ask questions before I proceed.
 ```
+
 Wait for user confirmation before each step.
 
 ---
@@ -199,6 +213,7 @@ Regardless of complexity, always follow these rules while building:
 **Handle the edge cases from the FDD.** The FDD listed loading, empty, and error states — implement them. Don't skip them for "later."
 
 **Flag deviations.** If you discover something during the build that contradicts or wasn't covered by the FDD, stop and flag it:
+
 ```
 🚩 FDD DEVIATION
 While building [file], I found that [issue].
