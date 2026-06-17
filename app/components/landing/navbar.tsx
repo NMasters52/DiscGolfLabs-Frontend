@@ -19,56 +19,16 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 left-0 right-0 z-50 border-b border-border bg-background/70 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        {/* Logo mark */}
         <a
           href="/"
-          className="flex items-center gap-3"
           aria-label="Disc Golf Lab home"
+          className=" flex shrink-0 items-center justify-center overflow-hidden h-10 w-20"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-md bg-card border border-border">
-            {/* Abstract disc + flask icon */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
-            >
-              <circle
-                cx="10"
-                cy="10"
-                r="7"
-                stroke="#6deaf9"
-                strokeWidth="1.2"
-              />
-              <ellipse
-                cx="10"
-                cy="10"
-                rx="4"
-                ry="1.5"
-                stroke="#6deaf9"
-                strokeWidth="0.8"
-                opacity="0.5"
-              />
-              <line
-                x1="10"
-                y1="3"
-                x2="10"
-                y2="0"
-                stroke="#2fd463"
-                strokeWidth="1.2"
-              />
-              <circle cx="10" cy="0" r="1" fill="#2fd463" opacity="0.6" />
-            </svg>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-foreground text-sm font-bold tracking-wide uppercase leading-tight">
-              Disc Golf Lab
-            </span>
-            <span className="text-[9px] font-mono text-muted-foreground tracking-[0.25em] uppercase leading-tight">
-              Foundation First
-            </span>
-          </div>
+          <img
+            src="/logos/dgl-logo.png"
+            alt="Disc Golf Lab"
+            className="h-full w-full object-cover scale-120 [filter:brightness(0)_invert(1)]"
+          />
         </a>
 
         {/* Desktop nav links */}
