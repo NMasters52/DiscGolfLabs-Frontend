@@ -28,7 +28,7 @@ export const Navbar = () => {
           <img
             src="/logos/dgl-logo.png"
             alt="Disc Golf Lab"
-            className="h-full w-full object-cover scale-120 [filter:brightness(0)_invert(1)]"
+            className="h-full w-full object-cover scale-120 [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)]"
           />
         </Link>
 
