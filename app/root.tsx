@@ -8,7 +8,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { ClerkProvider, SignedOut, SignInButton } from "@clerk/react-router";
+import { ClerkProvider } from "@clerk/react-router";
 import { dark } from "@clerk/themes"; // Import Clerk's dark theme
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes"; // Import theme provider
@@ -75,12 +75,6 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ClerkThemeWrapper>
-        <header>
-          {/* Temporary header - you'll likely replace this with a Navbar component */}
-          <SignedOut>
-            <SignInButton mode="redirect" forceRedirectUrl="/app/dashboard" />
-          </SignedOut>
-        </header>
         <main>
           <Outlet />
         </main>
