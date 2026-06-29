@@ -59,8 +59,8 @@ export const Hero = () => {
           <span className="text-primary">Start improving. </span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-pretty text-[15px] text-muted-foreground leading-relaxed">
-          A feedback-driven system designed to diagnose mechanical flaws,
-          quantify progress, and build a self-correcting game.
+          We provide a feedback-driven system designed to help you self-diagnose
+          your game, gain valuable feedback, and build real progress.
         </p>
 
         {/* CTAs */}
