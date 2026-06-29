@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 import { ArrowUpRight, Play } from "lucide-react";
 
@@ -35,8 +36,9 @@ export const Hero = () => {
 
       {/* Top badge */}
       <div className="relative z-10 mb-10 mt-8 lg:mt-0">
-        <a
-          href="#"
+        <Link
+          to="/pricing"
+          prefetch="intent"
           className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card/60 backdrop-blur-sm px-5 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
@@ -44,7 +46,7 @@ export const Hero = () => {
             Putting Lab -- Launching May 4, 2026
           </span>
           <ArrowUpRight className="h-3.5 w-3.5" />
-        </a>
+        </Link>
       </div>
 
       {/* Headline block */}
