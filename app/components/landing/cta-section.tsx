@@ -2,7 +2,7 @@ import { WaitlistForm } from "./waitlist-form";
 
 export const CtaSection = () => {
   return (
-    <section className="relative bg-background py-24 lg:py-32 overflow-hidden">
+    <section className="relative bg-background pt-16 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
       {/* Ambient glow */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -24,7 +24,7 @@ export const CtaSection = () => {
         <p className="mx-auto mt-4 max-w-lg text-muted-foreground text-[15px] leading-relaxed">
           Beta testing starts May 4. Join the waitlist for early access.
         </p>
-        <div className="mt-9 flex flex-col items-center gap-4">
+        <div className="mt-6 flex flex-col items-center gap-4">
           <WaitlistForm source="cta" showCount={true} />
         </div>
       </div>

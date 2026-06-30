@@ -6,9 +6,9 @@ const features = [
   {
     id: "Lab 001",
     icon: Target,
-    title: "Root-Cause Analysis",
+    title: "Foundations",
     description:
-      'We stop the "quick-fix" cycle. By breaking your form down to the fundamentals, we identify exactly where your power is leaking and rebuild your throw from the ground up.',
+      'We stop the "quick-fix" cycle. By breaking your form down to the fundamentals. We take the core principles of each form, create drills for them, and reinforce them with tracking your progress.',
   },
   {
     id: "Lab 002",
@@ -20,21 +20,22 @@ const features = [
   {
     id: "Lab 003",
     icon: Brain,
-    title: "Pressure Practice",
+    title: "Tournament Translation",
     description:
-      "Form is useless if it breaks under pressure. Our drills simulate the mental load of a competitive round, training your brain to stay calm and your mechanics to stay fluid when the shot matters.",
+      "Form is useless if it breaks under pressure. Our drills can be used to simulate the mental load of a competitive round or tournament. Training your brain to stay calm and your mechanics to stay fluid when the shot matters.",
   },
   {
     id: "Lab 004",
     icon: Zap,
-    title: "Adaptive Training",
-    description: `No more generic plans. The system evolves with you, serving up foundation-first coaching that adjusts to your stats. You’ll stop asking "why" and finally master the "how" and "when."`,
+    title: "The \u201CWhy\u201D",
+    description:
+      "Stop relying on the temporary boost that fades a few days after a lesson or clinic. We teach self-diagnosable systems so you can recognize, fix, and adapt your own form. The goal is to make your knowledge a tool you can use for life—not something that depends on having a coach beside you.",
   },
 ];
 
 export const Features = () => {
   return (
-    <section className="relative bg-background py-24 lg:py-32">
+    <section className="relative bg-background pt-14 pb-24 lg:pt-16 lg:pb-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
@@ -45,8 +46,8 @@ export const Features = () => {
             Build a game that doesn't break.
           </h2>
           <p className="mt-4 text-muted-foreground text-[15px] leading-relaxed">
-            Stop watching YouTube tips and start using a structured process
-            designed to find your specific flaws and fix them for good.
+            Stop watching YouTube tutorials and start using a structured process
+            to practice. The most progress is gained from experience.
           </p>
         </div>
 

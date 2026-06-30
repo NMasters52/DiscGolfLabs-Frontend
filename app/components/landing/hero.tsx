@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 import { ArrowUpRight, Play } from "lucide-react";
 
@@ -35,8 +36,9 @@ export const Hero = () => {
 
       {/* Top badge */}
       <div className="relative z-10 mb-10 mt-8 lg:mt-0">
-        <a
-          href="#"
+        <Link
+          to="/pricing"
+          prefetch="intent"
           className="inline-flex items-center gap-2.5 rounded-full border border-border bg-card/60 backdrop-blur-sm px-5 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
@@ -44,7 +46,7 @@ export const Hero = () => {
             Putting Lab -- Launching May 4, 2026
           </span>
           <ArrowUpRight className="h-3.5 w-3.5" />
-        </a>
+        </Link>
       </div>
 
       {/* Headline block */}
@@ -57,8 +59,8 @@ export const Hero = () => {
           <span className="text-primary">Start improving. </span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-pretty text-[15px] text-muted-foreground leading-relaxed">
-          A feedback-driven system designed to diagnose mechanical flaws,
-          quantify progress, and build a self-correcting game.
+          We provide a feedback-driven system designed to help you self-diagnose
+          your game, gain valuable feedback, and build real progress.
         </p>
 
         {/* CTAs */}
@@ -68,7 +70,7 @@ export const Hero = () => {
       </div>
 
       {/* Video section with geometric art as full background */}
-      <div className="relative z-10 mt-20 w-full px-6 pb-12 lg:pb-24">
+      <div className="relative z-10 mt-20 w-full px-6 pb-8 lg:pb-12">
         {/* Mobile: just the video */}
         <div className="lg:hidden mx-auto max-w-lg">
           <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-card shadow-[0_0_40px_rgba(109,234,249,0.08)]">

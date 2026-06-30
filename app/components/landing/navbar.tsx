@@ -116,7 +116,7 @@ export function Navbar() {
         {/* Desktop CTA */}
         <div className="hidden lg:flex items-center gap-4">
           <ModeToggle />
-          <Button variant="ghost" asChild>
+          <Button variant="green-hover" asChild>
             <Link
               to="/sign-in"
               className="text-[13px] font-medium tracking-wide uppercase"
@@ -138,7 +138,7 @@ export function Navbar() {
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
-              variant="ghost"
+              variant="green-hover"
               size="icon"
               className="lg:hidden min-h-[44px] min-w-[44px]"
               aria-label="Open menu"

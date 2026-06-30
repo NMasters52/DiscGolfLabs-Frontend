@@ -1,7 +1,7 @@
 const stats = [
   { value: "14+", label: "Years Coaching", id: "METRIC 001" },
-  { value: "200+", label: "Private Sessions", id: "METRIC 002" },
-  { value: "20+", label: "Clinical Workshops", id: "METRIC 003" },
+  { value: "200+", label: "Private Lessons", id: "METRIC 002" },
+  { value: "20+", label: "Community Clinics", id: "METRIC 003" },
   { value: "175+", label: "Tournaments Played", id: "METRIC 004" },
 ];
 
