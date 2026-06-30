@@ -70,7 +70,7 @@ export const Hero = () => {
       </div>
 
       {/* Video section with geometric art as full background */}
-      <div className="relative z-10 mt-20 w-full px-6 pb-12 lg:pb-24">
+      <div className="relative z-10 mt-20 w-full px-6 pb-8 lg:pb-12">
         {/* Mobile: just the video */}
         <div className="lg:hidden mx-auto max-w-lg">
           <div className="relative aspect-video rounded-lg overflow-hidden border border-border bg-card shadow-[0_0_40px_rgba(109,234,249,0.08)]">
