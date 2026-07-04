@@ -1,3 +1,5 @@
-export default function Methodology() {
-  return <div>Methodology page</div>;
+import { Methodology } from "../../components/landing/methodology";
+
+export default function MethodologyPage() {
+  return <Methodology />;
 }
