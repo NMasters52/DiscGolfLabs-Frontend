@@ -173,3 +173,27 @@
   cursor: pointer;
   color: var(--accent);
 }
+
+/* ===========================================================================
+   Methodology page — motion utilities (V1/V2/V3 design exploration)
+   =========================================================================== */
+@keyframes m-rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes m-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes m-grow-y {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+.m-rise   { animation: m-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.m-fade   { animation: m-fade 1s ease both; }
+.m-grow-y { animation: m-grow-y 1.1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .m-rise, .m-fade, .m-grow-y { animation: none; }
+}
