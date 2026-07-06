@@ -35,7 +35,7 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="relative bg-background pt-14 pb-24 lg:pt-16 lg:pb-32">
+    <section className="relative bg-slate-300 pt-14 pb-24 dark:bg-background lg:pt-16 lg:pb-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center mb-16">
@@ -56,7 +56,7 @@ export const Features = () => {
           {features.map((feature) => (
             <Card
               key={feature.id}
-              className="group relative bg-card/50 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card/80 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]"
+              className="group relative border-slate-200 bg-card shadow-md shadow-foreground/10 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl dark:border-border"
             >
               <CardHeader className="pb-2">
                 {/* Numerical silhouette label */}
