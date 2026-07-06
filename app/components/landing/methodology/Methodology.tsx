@@ -1,36 +1,143 @@
-import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 
-import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
-import { Progress } from "../../ui/progress";
 import { cn } from "../../../lib/utils";
 import { pillars, methodologyMeta } from "./data";
+import type { Pillar } from "./data";
+import { fadeUp, fadeIn, staggerContainer } from "../../../lib/motion/variants";
 
-const rise = (delay: number) => ({ animationDelay: `${delay}ms` });
+const viewport = { once: true, margin: "-80px" } as const;
+
+/**
+ * Render `text` with key phrases bolded in cyan (`text-primary`).
+ * Phrases are matched case-insensitively.
+ */
+function renderHighlighted(text: string, highlights?: string[]): ReactNode {
+  if (!highlights || highlights.length === 0) return text;
+  const escaped = highlights.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const re = new RegExp(`(${escaped.join("|")})`, "gi");
+  return text.split(re).map((part, i) =>
+    highlights.some((h) => h.toLowerCase() === part.toLowerCase()) ? (
+      <strong key={i} className="font-semibold text-primary">
+        {part}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    ),
+  );
+}
+
+/** One card treatment per pillar — A/B compare, pick a winner. */
+function PillarCard({ p, left }: { p: Pillar; left: boolean }) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border border-slate-200 bg-card p-5 shadow-md shadow-foreground/10 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl dark:border-border",
+        left ? "lg:col-start-1 lg:mr-12 lg:text-right" : "lg:col-start-2 lg:ml-12",
+      )}
+    >
+      {/* shared eyebrow — phase / code */}
+      <div
+        className={cn(
+          "flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground",
+          left && "lg:justify-end",
+        )}
+      >
+        <span className="text-primary">Phase {p.index}</span>
+        <span className="text-muted-foreground/50">/</span>
+        <span>{p.code}</span>
+      </div>
+
+      <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground">
+        {p.title}
+      </h3>
+
+      {/* ---- per-pillar focal treatment ---- */}
+      {p.id === "p01" && (
+        <>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {renderHighlighted(p.description, p.highlights)}
+          </p>
+          <ul
+            className={cn(
+              "mt-4 space-y-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/80",
+              left && "lg:flex lg:flex-col lg:items-end",
+            )}
+          >
+            {p.tags.map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <Check className="size-3 text-accent" />
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {p.id === "p02" && (
+        <>
+          <p className="mt-1 text-[15px] font-medium italic text-primary/90">
+            {p.tagline}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {renderHighlighted(p.description, p.highlights)}
+          </p>
+        </>
+      )}
+
+      {p.id === "p03" && (
+        <>
+          <p className="mt-1 text-[15px] font-medium italic text-primary">
+            {p.tagline}
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {renderHighlighted(p.description, p.highlights)}
+          </p>
+        </>
+      )}
+
+      {p.id === "p04" && (
+        <>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {renderHighlighted(p.description, p.highlights)}
+          </p>
+          <ul
+            className={cn(
+              "mt-4 space-y-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/80",
+              left && "lg:flex lg:flex-col lg:items-end",
+            )}
+          >
+            {p.tags.map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <Check className="size-3 text-accent" />
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
 
 /**
  * V3 — Protocol.
  * The methodology as a sequential training protocol: an overall progress bar,
  * a vertical spine with numbered nodes that alternate sides on desktop, glass
- * step cards with phase tags + deliverables, and an "outcome" terminus.
+ * step cards, and an "outcome" terminus.
  */
 export function Methodology() {
   const { eyebrow, headingLead, headingAccent, intro } = methodologyMeta;
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const t = setTimeout(() => setProgress(100), 150);
-    return () => clearTimeout(t);
-  }, []);
 
   return (
-    <section className="relative overflow-hidden bg-background pt-24 pb-32 lg:pt-28">
+    <section className="relative overflow-hidden bg-slate-300 pt-24 pb-32 dark:bg-background lg:pt-28">
       {/* atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.05] dark:opacity-[0.035]"
+        className="pointer-events-none absolute inset-0 opacity-[0.08] dark:opacity-[0.035]"
         style={{
           backgroundImage:
             "linear-gradient(var(--primary) 1px, transparent 1px), linear-gradient(90deg, var(--primary) 1px, transparent 1px)",
@@ -48,60 +155,89 @@ export function Methodology() {
 
       <div className="relative z-10 mx-auto max-w-4xl px-6">
         {/* header */}
-        <div className="text-center">
-          <p
-            className="m-rise font-mono text-[11px] uppercase tracking-[0.35em] text-primary"
-            style={rise(0)}
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+          className="text-center"
+        >
+          <motion.p
+            variants={fadeUp}
+            className="font-mono text-[11px] uppercase tracking-[0.35em] text-primary"
           >
             {eyebrow}
-          </p>
-          <h2
-            className="m-rise mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
-            style={rise(80)}
+          </motion.p>
+          <motion.h2
+            variants={fadeUp}
+            className="mt-5 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
           >
-            {headingLead} <span className="text-primary">{headingAccent}</span>
-          </h2>
-          <p
-            className="m-rise mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground"
-            style={rise(160)}
+            {headingLead} <span className="shimmer-text">{headingAccent}</span>
+          </motion.h2>
+          <motion.p
+            variants={fadeUp}
+            className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground"
           >
             {intro}
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* protocol progress */}
-        <div
-          className="m-fade mt-12 rounded-xl border border-border bg-card/40 px-5 py-4 backdrop-blur-sm"
-          style={rise(220)}
+        <motion.div
+          variants={fadeIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+          className="mt-12 rounded-xl border border-slate-200 bg-card px-5 py-4 shadow-md shadow-foreground/10 backdrop-blur-sm dark:border-border"
         >
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            <span>Protocol // DGL-Training</span>
-            <span>4 Phases</span>
+          <div className="flex flex-col items-start gap-1 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+            <span>Protocol // DiscGolfLabs - Training Specs</span>
+            <span>
+              Phases: 4
+              <span aria-hidden className="terminal-cursor" />
+            </span>
           </div>
-          <Progress value={progress} className="mt-3 h-1.5" />
-        </div>
+          {/* track + fill — no state, no effect */}
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-primary/15">
+            <motion.div
+              className="h-full rounded-full bg-primary"
+              initial={{ width: "0%" }}
+              whileInView={{ width: "100%" }}
+              viewport={viewport}
+              transition={{ duration: 1, ease: "easeOut" }}
+            />
+          </div>
+        </motion.div>
 
         {/* timeline */}
         <div className="relative mt-10">
-          {/* spine */}
+          {/* spine — static base */}
           <div
             aria-hidden
-            className="absolute bottom-0 left-5 top-0 w-px -translate-x-1/2 bg-linear-to-b from-primary/40 via-primary/20 to-transparent lg:left-1/2"
+            className="absolute bottom-0 left-5 top-0 w-px -translate-x-1/2 bg-linear-to-b from-primary/60 via-primary/30 to-transparent lg:left-1/2"
           />
-          <div
+          {/* spine — scaleY reveal */}
+          <motion.div
             aria-hidden
-            className="m-grow-y absolute bottom-0 left-5 top-0 w-px -translate-x-1/2 bg-linear-to-b from-primary via-primary/40 to-transparent lg:left-1/2"
+            variants={fadeIn}
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={viewport}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
             style={{ transformOrigin: "top" }}
+            className="absolute bottom-0 left-5 top-0 w-px -translate-x-1/2 bg-linear-to-b from-primary via-primary/40 to-transparent lg:left-1/2"
           />
 
           <ol className="space-y-8">
             {pillars.map((p, i) => {
               const left = i % 2 === 0;
               return (
-                <li
+                <motion.li
                   key={p.id}
-                  className="m-rise relative pl-14 lg:grid lg:grid-cols-2 lg:gap-12 lg:pl-0"
-                  style={rise(320 + i * 120)}
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={viewport}
+                  className="relative pl-14 lg:grid lg:grid-cols-2 lg:gap-12 lg:pl-0"
                 >
                   {/* node */}
                   <div className="absolute left-5 top-1 -translate-x-1/2 lg:left-1/2">
@@ -111,70 +247,25 @@ export function Methodology() {
                   </div>
 
                   {/* card */}
-                  <div
-                    className={cn(
-                      "rounded-xl border border-border bg-card/50 p-5 backdrop-blur-sm transition-colors hover:border-primary/30",
-                      left
-                        ? "lg:col-start-1 lg:mr-12 lg:text-right"
-                        : "lg:col-start-2 lg:ml-12"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground",
-                        left && "lg:justify-end"
-                      )}
-                    >
-                      <span className="text-primary">Phase {p.index}</span>
-                      <span className="text-muted-foreground/50">/</span>
-                      <span>{p.code}</span>
-                    </div>
-                    <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground">
-                      {p.title}
-                    </h3>
-                    <p className="mt-1 text-[15px] font-medium italic text-primary/90">
-                      {p.tagline}
-                    </p>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                      {p.description}
-                    </p>
-                    <div
-                      className={cn(
-                        "mt-4 flex flex-wrap gap-1.5",
-                        left && "lg:justify-end"
-                      )}
-                    >
-                      {p.tags.map((t) => (
-                        <Badge
-                          key={t}
-                          variant="outline"
-                          className="font-mono text-[9px] tracking-wider text-muted-foreground"
-                        >
-                          {t}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/70">
-                      <Check className="mr-1.5 inline size-3 align-middle text-accent" />
-                      <span className="text-muted-foreground">Deliverable —</span>{" "}
-                      {p.practice}
-                    </p>
-                  </div>
-                </li>
+                  <PillarCard p={p} left={left} />
+                </motion.li>
               );
             })}
 
-            {/* outcome terminus */}
-            <li
-              className="m-rise relative pl-14 lg:grid lg:grid-cols-2 lg:gap-12 lg:pl-0"
-              style={rise(320 + pillars.length * 120)}
+            {/* outcome terminus — narrower, centered; node hovers above the card */}
+            <motion.li
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewport}
+              className="relative pl-14 lg:col-span-2 lg:flex lg:flex-col lg:items-center lg:gap-4 lg:pl-0"
             >
-              <div className="absolute left-5 top-1 -translate-x-1/2 lg:left-1/2">
+              <div className="absolute left-5 top-1 -translate-x-1/2 lg:static lg:translate-x-0">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-accent/50 bg-background shadow-[0_0_24px_rgba(47,212,99,0.25)]">
                   <Check className="h-4 w-4 text-accent" />
                 </div>
               </div>
-              <div className="rounded-xl border border-accent/30 bg-accent/5 p-5 lg:col-start-2 lg:ml-12">
+              <div className="w-full rounded-xl border border-accent/30 bg-accent/5 p-5 lg:max-w-xl">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
                   Outcome
                 </p>
@@ -187,12 +278,18 @@ export function Methodology() {
                 </p>
                 <Button asChild size="sm" className="mt-4 group">
                   <Link to="/pricing">
-                    Start training
-                    <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
+                    <motion.span
+                      className="inline-flex items-center"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      Start training
+                      <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
+                    </motion.span>
                   </Link>
                 </Button>
               </div>
-            </li>
+            </motion.li>
           </ol>
         </div>
       </div>
