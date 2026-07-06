@@ -75,7 +75,7 @@ export const SessionLogs = () => {
   }, [api]);
 
   return (
-    <section className="relative bg-background py-24 lg:py-32 overflow-hidden">
+    <section className="relative bg-slate-300 py-24 dark:bg-background lg:py-32 overflow-hidden">
       {/* Ambient glow */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
@@ -117,7 +117,7 @@ export const SessionLogs = () => {
                 key={log.id}
                 className="pl-4 md:pl-6 basis-full md:basis-1/2 lg:basis-1/2"
               >
-                <div className="h-full bg-card/30 backdrop-blur-sm border border-border rounded-lg p-6 transition-all hover:border-primary/30 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]">
+                <div className="h-full rounded-lg border border-slate-200 bg-card p-6 shadow-md shadow-foreground/10 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl dark:border-border">
                   {/* Top row: Status */}
                   <div className="flex items-center justify-end mb-4">
                     <span className="font-mono text-[10px] tracking-[0.15em] text-primary/70">

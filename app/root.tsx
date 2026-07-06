@@ -12,6 +12,7 @@ import { ClerkProvider } from "@clerk/react-router";
 import { dark } from "@clerk/themes"; // Import Clerk's dark theme
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes"; // Import theme provider
+import { MotionConfig } from "motion/react";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -75,9 +76,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ClerkThemeWrapper>
-        <main>
-          <Outlet />
-        </main>
+        <MotionConfig reducedMotion="user">
+          <main>
+            <Outlet />
+          </main>
+        </MotionConfig>
       </ClerkThemeWrapper>
     </QueryClientProvider>
   );
