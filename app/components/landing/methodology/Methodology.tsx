@@ -133,7 +133,7 @@ export function Methodology() {
   const { eyebrow, headingLead, headingAccent, intro } = methodologyMeta;
 
   return (
-    <section className="relative overflow-hidden bg-slate-300 pt-24 pb-32 dark:bg-background lg:pt-28">
+    <section className="relative overflow-hidden bg-background pt-24 pb-32 lg:pt-28">
       {/* atmosphere */}
       <div
         aria-hidden
