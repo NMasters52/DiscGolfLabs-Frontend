@@ -10,7 +10,7 @@ export const Hero = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-slate-300 pt-20 dark:bg-background">
+    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-background pt-20 dark:bg-background">
       {/* Subtle grid overlay - darker in light mode */}
       <div
         className="absolute inset-0 opacity-[0.08] dark:opacity-[0.03]"

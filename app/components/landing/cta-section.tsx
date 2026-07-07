@@ -2,7 +2,7 @@ import { WaitlistForm } from "./waitlist-form";
 
 export const CtaSection = () => {
   return (
-    <section className="relative bg-slate-300 pt-16 pb-24 dark:bg-background lg:pt-20 lg:pb-32 overflow-hidden">
+    <section className="relative bg-background pt-16 pb-24 lg:pt-20 lg:pb-32 overflow-hidden">
       {/* Ambient glow */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"

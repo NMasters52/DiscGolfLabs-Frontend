@@ -75,7 +75,7 @@ export const SessionLogs = () => {
   }, [api]);
 
   return (
-    <section className="relative bg-slate-300 py-24 dark:bg-background lg:py-32 overflow-hidden">
+    <section className="relative bg-background py-24 lg:py-32 overflow-hidden">
       {/* Ambient glow */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"

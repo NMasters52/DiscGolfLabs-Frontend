@@ -80,7 +80,7 @@
     --muted: #eceef1;
     --muted-foreground: #6e6e73;
 
-    --accent: #15803d;
+    --accent: #10b84e;
     --accent-foreground: #ffffff;
 
     --destructive: #ef4444;
@@ -178,8 +178,14 @@
    Methodology page — terminal cursor blink
    =========================================================================== */
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  50.01%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .terminal-cursor {
@@ -193,16 +199,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .terminal-cursor { animation: none; }
-  .shimmer-text { animation: none; }
+  .terminal-cursor {
+    animation: none;
+  }
+  .shimmer-text {
+    animation: none;
+  }
 }
 
 /* ===========================================================================
    Methodology page — accent word shimmer (cyan → green sweep)
    =========================================================================== */
 @keyframes shimmer-sweep {
-  0%   { background-position: 200% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .shimmer-text {
