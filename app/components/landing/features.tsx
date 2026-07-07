@@ -57,7 +57,6 @@ export const Features = () => {
             <Card
               key={feature.id}
               className="group relative border-slate-200 bg-card shadow-md shadow-foreground/10 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl dark:border-border"
-            >
               <CardHeader className="pb-2">
                 {/* Numerical silhouette label */}
                 <span className="inline-block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-4">
