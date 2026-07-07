@@ -12,6 +12,7 @@ export interface Pillar {
   metricLabel: string;
   metricValue: string;
   tags: string[];
+  highlights?: string[];
 }
 
 export const methodologyMeta = {
@@ -19,7 +20,7 @@ export const methodologyMeta = {
   headingLead: "Method over",
   headingAccent: "magic.",
   intro:
-    "Disc Golf Lab isn't a swing tip. It's a four-pillar system that diagnoses your form, measures every rep, and holds up when the pressure is real.",
+    "Disc Golf Labs isn't a swing tip. It's a stress tested system that gives you the tools to diagnos your form, measures every rep, and prepares you for when the pressure is real.",
   documentId: "DGL-METHOD-V1",
 } as const;
 
@@ -33,10 +34,12 @@ export const pillars: Pillar[] = [
     tagline: "Mechanics before miracles.",
     description:
       "We end the quick-fix cycle. Your putting stroke gets broken down to its fundamentals — grip, stance, weight transfer, release — and rebuilt deliberately. Each principle earns its own drill and its own progress tracker before you move on.",
-    practice: "Isolate one mechanic per session. Measure it. Advance only when it's automatic.",
+    practice:
+      "Isolate one mechanic per session. Measure it. Advance only when it's automatic.",
     metricLabel: "Form factors",
     metricValue: "06",
     tags: ["Stance", "Grip", "Release"],
+    highlights: ["fundamentals", "deliberately", "progress tracker"],
   },
   {
     id: "p02",
@@ -51,6 +54,7 @@ export const pillars: Pillar[] = [
     metricLabel: "Data / session",
     metricValue: "40+",
     tags: ["Make %", "Distance", "Streak"],
+    highlights: ["measurable outcome", "make rate", "streaks"],
   },
   {
     id: "p03",
@@ -61,10 +65,12 @@ export const pillars: Pillar[] = [
     tagline: "Pressure is a skill.",
     description:
       "Form is useless if it collapses under pressure. Our drills simulate the mental load of a competitive round, training your mind to stay calm and your mechanics to stay fluid when the shot actually matters.",
-    practice: "Train under simulated stakes. Raise your floor, not just your ceiling.",
+    practice:
+      "Train under simulated stakes. Raise your floor, not just your ceiling.",
     metricLabel: "Pressure drills",
     metricValue: "12",
     tags: ["Focus", "Tempo", "Nerves"],
+    highlights: ["pressure", "competitive round", "stay fluid"],
   },
   {
     id: "p04",
@@ -79,5 +85,6 @@ export const pillars: Pillar[] = [
     metricLabel: "Self-diagnosis",
     metricValue: "100%",
     tags: ["Diagnose", "Adapt", "Ownership"],
+    highlights: ["self-diagnosable", "tool for life", "recognize, fix, and adapt"],
   },
 ];
