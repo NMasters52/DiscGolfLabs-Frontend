@@ -56,7 +56,7 @@ export const Features = () => {
           {features.map((feature) => (
             <Card
               key={feature.id}
-              className="group relative bg-card/50 backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card/80 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]"
+              className="group relative bg-card backdrop-blur-sm transition-all hover:border-primary/30 hover:bg-card/80 hover:shadow-[0_0_40px_rgba(109,234,249,0.06)]"
             >
               <CardHeader className="pb-2">
                 {/* Numerical silhouette label */}
