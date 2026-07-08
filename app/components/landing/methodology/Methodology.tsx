@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { ArrowRight, Check } from "lucide-react";
 
 import { Button } from "../../ui/button";
+import { Badge } from "../../ui/badge";
 import { cn } from "../../../lib/utils";
 import { pillars, methodologyMeta } from "./data";
 import type { Pillar } from "./data";
@@ -17,7 +18,9 @@ const viewport = { once: true, margin: "-80px" } as const;
  */
 function renderHighlighted(text: string, highlights?: string[]): ReactNode {
   if (!highlights || highlights.length === 0) return text;
-  const escaped = highlights.map((h) => h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const escaped = highlights.map((h) =>
+    h.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  );
   const re = new RegExp(`(${escaped.join("|")})`, "gi");
   return text.split(re).map((part, i) =>
     highlights.some((h) => h.toLowerCase() === part.toLowerCase()) ? (
@@ -30,95 +33,45 @@ function renderHighlighted(text: string, highlights?: string[]): ReactNode {
   );
 }
 
-/** One card treatment per pillar — A/B compare, pick a winner. */
+/** Unified pillar card — phase → title → tagline → description → checks. */
 function PillarCard({ p, left }: { p: Pillar; left: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200 bg-card p-5 shadow-md shadow-foreground/10 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl dark:border-border",
-        left ? "lg:col-start-1 lg:mr-12 lg:text-right" : "lg:col-start-2 lg:ml-12",
+        "rounded-xl border border-border/80 bg-card p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_rgba(15,23,42,0.045)] dark:border-border dark:shadow-none",
+        left ? "lg:col-start-1 lg:mr-12" : "lg:col-start-2 lg:ml-12",
       )}
     >
-      {/* shared eyebrow — phase / code */}
-      <div
-        className={cn(
-          "flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground",
-          left && "lg:justify-end",
-        )}
-      >
+      {/* eyebrow — phase / code */}
+      <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
         <span className="text-primary">Phase {p.index}</span>
         <span className="text-muted-foreground/50">/</span>
         <span>{p.code}</span>
       </div>
 
-      <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground">
+      <h3 className="mt-2 text-xl font-semibold tracking-tight text-foreground">
         {p.title}
       </h3>
 
-      {/* ---- per-pillar focal treatment ---- */}
-      {p.id === "p01" && (
-        <>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {renderHighlighted(p.description, p.highlights)}
-          </p>
-          <ul
-            className={cn(
-              "mt-4 space-y-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/80",
-              left && "lg:flex lg:flex-col lg:items-end",
-            )}
+      <p className="mt-1 text-[15px] font-medium italic text-foreground/70">
+        {p.tagline}
+      </p>
+
+      <p className="mt-3 text-sm leading-relaxed text-foreground/80">
+        {renderHighlighted(p.description, p.highlights)}
+      </p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {p.tags.map((tag) => (
+          <Badge
+            key={tag}
+            variant="outline"
+            className="border-accent/30 bg-accent/10 text-foreground"
           >
-            {p.tags.map((t) => (
-              <li key={t} className="flex items-center gap-2">
-                <Check className="size-3 text-accent" />
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {p.id === "p02" && (
-        <>
-          <p className="mt-1 text-[15px] font-medium italic text-primary/90">
-            {p.tagline}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {renderHighlighted(p.description, p.highlights)}
-          </p>
-        </>
-      )}
-
-      {p.id === "p03" && (
-        <>
-          <p className="mt-1 text-[15px] font-medium italic text-primary">
-            {p.tagline}
-          </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {renderHighlighted(p.description, p.highlights)}
-          </p>
-        </>
-      )}
-
-      {p.id === "p04" && (
-        <>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            {renderHighlighted(p.description, p.highlights)}
-          </p>
-          <ul
-            className={cn(
-              "mt-4 space-y-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-foreground/80",
-              left && "lg:flex lg:flex-col lg:items-end",
-            )}
-          >
-            {p.tags.map((t) => (
-              <li key={t} className="flex items-center gap-2">
-                <Check className="size-3 text-accent" />
-                <span>{t}</span>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+            {tag}
+          </Badge>
+        ))}
+      </div>
     </div>
   );
 }
@@ -187,7 +140,7 @@ export function Methodology() {
           initial="hidden"
           whileInView="visible"
           viewport={viewport}
-          className="mt-12 rounded-xl border border-slate-200 bg-card px-5 py-4 shadow-md shadow-foreground/10 backdrop-blur-sm dark:border-border"
+          className="mt-12 rounded-xl border border-border/80 bg-card px-5 py-4 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_rgba(15,23,42,0.045)] dark:border-border dark:shadow-none"
         >
           <div className="flex flex-col items-start gap-1 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <span>Protocol // DiscGolfLabs - Training Specs</span>
@@ -197,7 +150,7 @@ export function Methodology() {
             </span>
           </div>
           {/* track + fill — no state, no effect */}
-          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-primary/15">
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted dark:bg-primary/15">
             <motion.div
               className="h-full rounded-full bg-primary"
               initial={{ width: "0%" }}
@@ -265,16 +218,16 @@ export function Methodology() {
                   <Check className="h-4 w-4 text-accent" />
                 </div>
               </div>
-              <div className="w-full rounded-xl border border-accent/30 bg-accent/5 p-5 lg:max-w-xl">
+              <div className="relative w-full overflow-hidden rounded-xl border-2 border-accent/35 bg-card p-6 lg:max-w-xl">
                 <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
                   Outcome
                 </p>
-                <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground">
+                <h3 className="mt-2 text-xl font-semibold tracking-tight text-foreground">
                   A self-correcting game.
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  You diagnose your own misses, adapt on the fly, and keep
-                  improving — no coach required.
+                <p className="mt-2 text-sm leading-relaxed text-foreground/80">
+                  You will have the ability to diagnose your own misses and play
+                  more consistent rounds. Giving you the keys to your game.
                 </p>
                 <Button asChild size="sm" className="mt-4 group">
                   <Link to="/pricing">
