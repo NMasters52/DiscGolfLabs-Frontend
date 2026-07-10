@@ -12,7 +12,6 @@ export interface Pillar {
   metricLabel: string;
   metricValue: string;
   tags: string[];
-  highlights?: string[];
 }
 
 export const methodologyMeta = {
@@ -39,7 +38,6 @@ export const pillars: Pillar[] = [
     metricLabel: "Form factors",
     metricValue: "06",
     tags: ["Stance", "Grip", "Release"],
-    highlights: ["fundamentals", "deliberately", "progress tracker"],
   },
   {
     id: "p02",
@@ -54,7 +52,6 @@ export const pillars: Pillar[] = [
     metricLabel: "Data / session",
     metricValue: "40+",
     tags: ["Make %", "Distance", "Streak"],
-    highlights: ["measurable outcome", "make rate", "streaks"],
   },
   {
     id: "p03",
@@ -70,7 +67,6 @@ export const pillars: Pillar[] = [
     metricLabel: "Pressure drills",
     metricValue: "12",
     tags: ["Focus", "Tempo", "Nerves"],
-    highlights: ["pressure", "competitive round", "stay fluid"],
   },
   {
     id: "p04",
@@ -85,6 +81,5 @@ export const pillars: Pillar[] = [
     metricLabel: "Self-diagnosis",
     metricValue: "100%",
     tags: ["Diagnose", "Adapt", "Ownership"],
-    highlights: ["self-diagnosable", "tool for life", "recognize, fix, and adapt"],
   },
 ];
