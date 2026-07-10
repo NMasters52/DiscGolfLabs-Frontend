@@ -12,7 +12,6 @@ export interface Pillar {
   metricLabel: string;
   metricValue: string;
   tags: string[];
-  highlights?: string[];
 }
 
 export const methodologyMeta = {
@@ -33,13 +32,12 @@ export const pillars: Pillar[] = [
     title: "Foundations",
     tagline: "Mechanics before miracles.",
     description:
-      "We end the quick-fix cycle. Your putting stroke gets broken down to its fundamentals — grip, stance, weight transfer, release — and rebuilt deliberately. Each principle earns its own drill and its own progress tracker before you move on.",
+      "We end the quick-fix cycle. Your putting stroke gets broken down to its fundamentals: grip, stance, weight transfer, and release. Each principle earns its own drill and progress tracking.",
     practice:
       "Isolate one mechanic per session. Measure it. Advance only when it's automatic.",
     metricLabel: "Form factors",
     metricValue: "06",
     tags: ["Stance", "Grip", "Release"],
-    highlights: ["fundamentals", "deliberately", "progress tracker"],
   },
   {
     id: "p02",
@@ -49,12 +47,11 @@ export const pillars: Pillar[] = [
     title: "Data Feedback",
     tagline: "Progress you can see.",
     description:
-      "Stop wondering if you're getting better. Interactive games and real-time data turn every session into a measurable outcome — make rate, distance zones, and streaks rendered in black and white.",
+      "Stop wondering if you're getting better. Interactive games and real-time data turn every session into a measurable outcome. We provide make rate, distance zones, and what distances need more practice.",
     practice: "Log every session. Trust the trend, not the single make.",
     metricLabel: "Data / session",
     metricValue: "40+",
     tags: ["Make %", "Distance", "Streak"],
-    highlights: ["measurable outcome", "make rate", "streaks"],
   },
   {
     id: "p03",
@@ -70,7 +67,6 @@ export const pillars: Pillar[] = [
     metricLabel: "Pressure drills",
     metricValue: "12",
     tags: ["Focus", "Tempo", "Nerves"],
-    highlights: ["pressure", "competitive round", "stay fluid"],
   },
   {
     id: "p04",
@@ -80,11 +76,10 @@ export const pillars: Pillar[] = [
     title: "The “Why”",
     tagline: "Become your own coach.",
     description:
-      "Stop depending on the temporary boost that fades days after a clinic. We teach self-diagnosable systems so you can recognize, fix, and adapt your own form — knowledge that becomes a tool for life, not a crutch that needs a coach beside you.",
+      "Stop depending on the temporary boost that fades days after a clinic. We teach self-diagnosable systems so you can recognize, fix, and adapt your own form. It becomes knowledge that is a tool for life, not a crutch that needs a coach beside you.",
     practice: "Diagnose the miss before you re-throw. Own the fix.",
     metricLabel: "Self-diagnosis",
     metricValue: "100%",
     tags: ["Diagnose", "Adapt", "Ownership"],
-    highlights: ["self-diagnosable", "tool for life", "recognize, fix, and adapt"],
   },
 ];
