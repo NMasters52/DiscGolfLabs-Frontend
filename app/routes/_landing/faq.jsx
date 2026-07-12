@@ -1,3 +1,5 @@
-export default function FAQ() {
-  return <div>FAQ page</div>;
+import { Faq } from "../../components/landing/faq";
+
+export default function FaqPage() {
+  return <Faq />;
 }
