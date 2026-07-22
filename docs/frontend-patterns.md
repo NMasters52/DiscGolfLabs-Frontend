@@ -1,6 +1,6 @@
 # Frontend Patterns
 
-> Status: **stub** — conventions to follow when building UI here. Consolidate from `.clinerules/` and the codebase over time.
+> Status: **stub** — conventions to follow when building UI here. Convention candidates salvaged from the removed `.clinerules/` setup live in [`_to-consolidate.md`](_to-consolidate.md); fold them in here over time.
 
 ## Styling
 - Tailwind v4 utilities; shadcn/ui components live in `app/components/ui/`.
@@ -17,4 +17,4 @@
 
 ## Code style
 - TypeScript-first. For existing `.js/.jsx` modules (game, queries, api), match the file's current language when editing; prefer TS for new files.
-- *(Pull specific rules from `.clinerules/` and codify them here.)*
+- *(Convention candidates to fold in live in [`_to-consolidate.md`](_to-consolidate.md).)*
