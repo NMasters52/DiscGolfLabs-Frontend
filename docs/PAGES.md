@@ -200,9 +200,20 @@ Post-payment success page. Shown after successful enrollment purchase.
 
 **File:** `app/components/require-auth.jsx`
 
-Wraps protected routes. Redirects to `/sign-in` if not authenticated.
+Reusable auth-only wrapper. Checks Clerk's `isSignedIn`; if not authenticated, redirects to `/sign-in?redirect_url=<current path>` so the user returns after signing in. Data-free — it gates on identity only and knows nothing about resources or enrollment.
 
 Used in:
 
-- `/app/*` routes
-- `/courses/:slug/learn/*` routes
+- `/app/*` (via `routes/app/_layout.jsx:6`) — the only consumer.
+
+---
+
+### Learn route guard (inline, not `RequireAuth`)
+
+**File:** `routes/courses/learn/_layout.jsx:15-33`
+
+The `/courses/:slug/learn/*` routes do **not** use `RequireAuth` — they guard inline (behavior documented under the `/courses/learn/_layout.jsx` entry in Course Learning Routes above). The divergence is load-bearing, not an oversight:
+
+1. **Different failure destination.** `RequireAuth` redirects to `/sign-in`; the learn guard redirects to `/courses/:slug` (the public course page). A signed-in-but-not-enrolled user should land on the course page to enroll, not on a sign-in form they don't need.
+2. **Authorization, not just authentication.** `RequireAuth` answers "are you logged in?" The learn guard answers "are you logged in **and enrolled in this course**?" Enrollment is per-resource data that must be fetched — a data-free gate can't express it.
+3. **The guard owns the data loading anyway.** The layout loads `course` + `enrollment` and passes them to children via `<Outlet context>`; the enrollment check runs against that same fetched data, so wrapping in `RequireAuth` would split one coherent gate into two.

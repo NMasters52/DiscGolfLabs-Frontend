@@ -4,7 +4,7 @@
 
 ## Styling
 - Tailwind v4 utilities; shadcn/ui components live in `app/components/ui/`.
-- Theme colors: primary Metallic Blue `#22577A` / Teal `#38A3A5`, accent Cyan `#6DEAF9`. Dark mode via `next-themes`.
+- Theme colors (tokens in `app/app.css`, consumed as Tailwind utilities): `--primary` teal `#0e7490` (light) / `#6deaf9` (dark); `--accent` green `#10b84e` (light) / `#33cb6b` (dark). The `#22577A` / `#38A3A5` "Metallic Blue / Teal" values are **Clerk-only** (`appearance.variables.colorPrimary` in `app/root.tsx:66`) and are not wired into the theme. Dark mode via `next-themes`.
 - Typography: Inter; monospace for data/labels.
 
 ## Components

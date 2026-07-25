@@ -137,8 +137,9 @@ app/
 
 ### Color Palette
 
-- **Primary**: Metallic Blue (`#22577A`) and Teal (`#38A3A5`)
-- **Accents**: Cyan (`#6DEAF9`) for highlights and interactions
+- **Primary**: Teal — `#0e7490` (light), `#6deaf9` (dark)
+- **Accent**: Green — `#10b84e` (light), `#33cb6b` (dark); used for highlights, hovers, and accents
+- **Clerk UI only**: The legacy Metallic Blue (`#22577A`) / Teal (`#38A3A5`) values are applied only to Clerk's components via `colorPrimary` (`app/root.tsx:66`), not the app theme
 - **Neutral Gradients**: Sophisticated background effects
 - **Dark Mode**: Full support with seamless theme transitions
 
