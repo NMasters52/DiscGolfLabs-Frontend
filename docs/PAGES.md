@@ -6,6 +6,12 @@ File-based routing via React Router v7. Route definitions in `app/routes.ts`.
 
 ## Landing Routes (Public)
 
+**Layout:** `routes/_landing/_layout.jsx`
+
+Pathless layout that wraps every public marketing route. Renders the global `Navbar` above and `Footer` below an `<Outlet />` for the page content. Defined as the parent route in `routes.ts:4`; children: `/`, `/methodology`, `/about`, `/testimonials`, `/faq`, `/pricing`, `/courses/:slug`.
+
+---
+
 ### `/`
 
 **File:** `routes/_landing/index.jsx`
