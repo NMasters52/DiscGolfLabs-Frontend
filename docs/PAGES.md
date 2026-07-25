@@ -131,6 +131,18 @@ Test/debug page for dashboard components.
 
 ## Course Learning Routes
 
+### `/courses/learn/_layout.jsx`
+
+**File:** `routes/courses/learn/_layout.jsx`
+
+Pathless parent of `/courses/:slug/learn` and `/courses/:slug/learn/day/:dayNumber` (`routes.ts:17`).
+Loads `course` via `useCourse(slug)` and `enrollment` via `useEnrollment(course._id)`, gates access
+(redirects to `/courses/:slug` if not signed in or `enrollment.enrolled` is false), and passes
+`{ course, enrollment }` to children through `<Outlet context={...} />` — the source of the
+outlet-context data the day route consumes.
+
+---
+
 ### `/courses/:slug/learn`
 
 **File:** `routes/courses/learn/index.jsx`
