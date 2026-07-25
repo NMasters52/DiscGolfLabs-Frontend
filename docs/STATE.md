@@ -92,7 +92,7 @@ const { data, isLoading } = useCourses();
 
 ---
 
-### useGameSession(gameSlug, courseId)
+### useGameSessions(gameSlug, courseId)
 
 Fetches game sessions for a specific game and course.
 
@@ -173,22 +173,39 @@ mutate(3); // day number
 
 **on success:** invalidates `enrollment.check` query for this course
 
-````
+---
 
-### useWaitlist(email)
+### useJoinWaitlist()
 
-Mutation hook for waitlist signup.
+Mutation hook for adding an email to the launch waitlist. Defined in `app/queries/useWaitlist.js`; posts to `/api/waitlist/join` via `joinWaitlist` in `app/api/waitlist.js`. Pre-launch only.
 
 ```js
-const { mutate, isPending, isSuccess, error } = useWaitlist(email);
-````
+const { mutate, isPending, isError, error, data } = useJoinWaitlist();
+```
 
 **Usage:**
 
 ```js
-mutate("user@example.com");
-`` alert("Email already on waitlist");
-    });
-  });
-});
+mutate({ email: "user@example.com", source: "hero" });
 ```
+
+| Field  | Type                          | Required               | Description |
+| ------ | ----------------------------- | ---------------------- | ----------- |
+| email  | string                        | yes                    | Signup email |
+| source | `"hero" \| "cta" \| "footer"` | no (default: `"hero"`) | Placement the signup came from (set by the parent that renders `WaitlistForm`); stored per-entry for attribution |
+
+**Returns:** API response — includes `alreadyJoined` (true if the email was already on the list).
+
+**On success:** invalidates `["waitlist", "count"]` so `useWaitlistCount()` refreshes.
+
+---
+
+### useWaitlistCount()
+
+Polls the current waitlist signup count. Defined in `app/queries/useWaitlist.js`; fetches `/api/waitlist/count` via `fetchWaitlistCount` in `app/api/waitlist.js`. Pre-launch only.
+
+```js
+const { data } = useWaitlistCount();
+```
+
+**Refetch:** every 60s (`refetchInterval: 60000`) — keeps the displayed count fresh.
