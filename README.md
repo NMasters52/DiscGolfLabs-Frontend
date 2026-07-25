@@ -63,8 +63,13 @@ app/
 ├── components/
 │   ├── dashboard/          # Dashboard-specific components
 │   │   ├── cards/          # Data visualization cards
+│   │   ├── AppSidebar.tsx
+│   │   ├── CourseCompleteLayout.tsx
+│   │   ├── InCourseLayout.tsx
+│   │   ├── LayoutShell.tsx
 │   │   ├── MobileDashboard.tsx
-│   │   └── DesktopDashboard.tsx
+│   │   ├── DesktopDashboard.tsx
+│   │   └── data.ts
 │   ├── games/              # Interactive training games
 │   │   ├── PuttingLadderGame.jsx
 │   │   └── PuttingProgressView.jsx
@@ -72,21 +77,40 @@ app/
 │   │   ├── hero.tsx
 │   │   ├── features.tsx
 │   │   ├── stats.tsx
-│   │   └── session-logs.tsx
-│   └── ui/                 # Reusable UI components (shadcn/ui)
+│   │   ├── session-logs.tsx
+│   │   ├── cta-section.tsx
+│   │   ├── waitlist-form.tsx
+│   │   ├── navbar.tsx
+│   │   ├── footer.tsx
+│   │   ├── geometric-art.tsx
+│   │   ├── index.ts
+│   │   └── methodology/
+│   ├── ui/                 # Reusable UI components (shadcn/ui)
+│   ├── mode-toggle.tsx     # Dark/light theme toggle
+│   ├── require-auth.jsx    # Auth guard wrapper
+│   └── theme-provider.tsx  # next-themes provider
 ├── game/                   # Game logic and state management
 │   └── puttingLadder/
 │       ├── usePuttingLadderGame.js
-│       └── state.js
+│       ├── state.js
+│       └── rules.js
 ├── hooks/                  # Custom React hooks
 │   └── use-mobile.ts
 ├── lib/                    # Utility functions
-│   └── utils.ts
+│   ├── utils.ts
+│   └── motion/
+│       └── variants.ts
 ├── queries/                # React Query hooks for data fetching
+│   ├── keys.js             # Centralized query-key factory
+│   ├── useMe.js
 │   ├── useCourses.js
+│   ├── useCourse.js
+│   ├── useEnrollment.js
+│   ├── useCompleteDay.js
 │   ├── useGameSession.js
+│   ├── useCreateGameSession.js
 │   ├── usePuttingGameStats.js
-│   └── useEnrollment.js
+│   └── useWaitlist.js
 ├── routes/                 # File-based routing
 │   ├── _landing/           # Public landing pages
 │   ├── app/                # Authenticated app routes
@@ -175,15 +199,6 @@ app/
 - **Immutable Updates**: Functional state management in game logic
 - **State Machines**: Clear state transitions (playing → completed)
 - **Payload Building**: Structured data for session persistence
-
-## 📊 Codebase Statistics
-
-- **Total Lines of Code**: ~6,700+ lines
-- **TypeScript Coverage**: 100% for new components
-- **Routes**: 12+ route configurations
-- **Components**: 30+ reusable components
-- **Custom Hooks**: 5+ specialized hooks
-- **API Endpoints**: 5+ server routes
 
 ## 🎯 Development Practices
 

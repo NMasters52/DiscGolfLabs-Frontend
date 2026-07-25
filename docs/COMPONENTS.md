@@ -186,6 +186,8 @@ Interactive putting practice game with make/miss buttons.
 | courseId  | string | yes      | MongoDB ObjectId of course  |
 | dayNumber | number | yes      | Current day being practiced |
 
+> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
+
 ```tsx
 <PuttingLadderGame courseId="abc123" dayNumber={1} />
 ```
@@ -202,6 +204,8 @@ Shows progress visualization for putting game sessions.
 | -------- | ------ | -------- | -------------------------- |
 | gameSlug | string | yes      | Slug of the game type      |
 | courseId | string | yes      | MongoDB ObjectId of course |
+
+> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
 
 ```tsx
 <PuttingProgressView gameSlug="putting-course" courseId="abc123" />
@@ -227,8 +231,8 @@ Email capture form for waitlist.
 
 | Prop      | Type    | Required | Description                    |
 | --------- | ------- | -------- | ------------------------------ |
-| source    | string  | no       | Tracking source (e.g., "hero") |
-| showCount | boolean | no       | Display current waitlist count |
+| source    | "hero" \| "cta" \| "footer" | yes      | Signup placement — set by the parent that renders the form (hero/cta/footer) |
+| showCount | boolean                      | no (default: true) | Display current waitlist count |
 
 ```tsx
 <WaitlistForm source="hero" showCount={true} />

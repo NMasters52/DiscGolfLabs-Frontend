@@ -14,7 +14,7 @@ React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack 
 | Folder | Responsibility |
 |---|---|
 | `app/routes/` | route components + loaders/actions, split by domain (`_landing`, `app`, `courses`, `checkout`) |
-| `app/components/` | UI: `landing/`, `dashboard/`, `games/`, `ui/` (shadcn) |
+| `app/components/` | UI: `landing/`, `dashboard/`, `games/`, `ui/` (shadcn) + top-level `mode-toggle.tsx`, `require-auth.jsx`, `theme-provider.tsx` |
 | `app/game/` | game logic + state (e.g. Putting Ladder) |
 | `app/queries/` | TanStack Query hooks |
 | `app/api/` | server-side resource routes |

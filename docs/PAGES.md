@@ -16,7 +16,7 @@ Pathless layout that wraps every public marketing route. Renders the global `Nav
 
 **File:** `routes/_landing/index.jsx`
 
-Marketing homepage. Renders Hero, Features, Stats, CTA sections.
+Marketing homepage. Renders Hero, Features, Stats, SessionLogs, CTA sections.
 
 ---
 

@@ -97,7 +97,7 @@ const { data, isLoading } = useCourses();
 Fetches game sessions for a specific game and course.
 
 ```js
-const { data, isLoading } = useGameSession(gameSlug, courseId);
+const { data, isLoading } = useGameSessions(gameSlug, courseId);
 ```
 
 | Param    | Type   | Required | Description                             |
@@ -189,9 +189,9 @@ const { mutate, isPending, isError, error, data } = useJoinWaitlist();
 mutate({ email: "user@example.com", source: "hero" });
 ```
 
-| Field  | Type                          | Required               | Description |
-| ------ | ----------------------------- | ---------------------- | ----------- |
-| email  | string                        | yes                    | Signup email |
+| Field  | Type                          | Required               | Description                                                                                                      |
+| ------ | ----------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| email  | string                        | yes                    | Signup email                                                                                                     |
 | source | `"hero" \| "cta" \| "footer"` | no (default: `"hero"`) | Placement the signup came from (set by the parent that renders `WaitlistForm`); stored per-entry for attribution |
 
 **Returns:** API response — includes `alreadyJoined` (true if the email was already on the list).
