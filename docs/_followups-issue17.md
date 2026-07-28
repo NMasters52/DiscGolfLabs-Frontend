@@ -158,7 +158,7 @@ The three overlap on the folder list but disagree on granularity (e.g. README li
 
 **Proposed solution:** Out of audit scope — **flag only, do not fix here.** When the code sub-issues are touched, change both `app/queries/useCompleteDay.js:2` and `app/routes/checkout/success.jsx:5` to `import { useAuth } from "@clerk/react-router";` and verify `getToken()` behaves identically. (React-Router build wires `@clerk/react-router` into the router context; mixing packages can yield a `getToken` that never resolves.)
 
-**Status:** `Unblocked — but out of audit scope (flag only)`
+**Status:** ✅ **Resolved (2026-07-28)** — fixed out-of-band: both `app/queries/useCompleteDay.js:2` and `app/routes/checkout/success.jsx:5` now import from `@clerk/react-router`. Repo-wide grep for `@clerk/clerk-react` returns zero source hits; `npm run build` is green; `useAuth()` usage (`getToken`/`isSignedIn`) is identical to the sibling queries.
 
 ---
 
@@ -219,4 +219,4 @@ Cross-check against source: `app/queries/useCreateGameSession.js` defines `useCr
 
 Every candidate on the audit list was checked against current source. **None were rejected** — all eight (items 1–9 above, with 7 and 8 being multi-part) reproduced on disk with the cited line numbers. Nothing was omitted.
 
-One scope note rather than a rejection: candidate 7 surfaced a **second** site with the same Clerk-package mistake (`app/routes/checkout/success.jsx:5`) that was not on the original candidate list; it is flagged inside section 7 rather than dropped.
+One scope note rather than a rejection: candidate 7 surfaced a **second** site with the same Clerk-package mistake (`app/routes/checkout/success.jsx:5`) that was not on the original candidate list; it is flagged inside section 7 rather than dropped. **Update (2026-07-28):** both Clerk-package sites (item 7) have since been fixed — see that section.
