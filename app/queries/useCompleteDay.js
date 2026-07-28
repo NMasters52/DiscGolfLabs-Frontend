@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/react-router";
 import { completeDay } from "../api/enrollment";
 import { queryKeys } from "./keys";
 

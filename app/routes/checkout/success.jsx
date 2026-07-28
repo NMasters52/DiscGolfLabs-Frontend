@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import useCourse from "../../queries/useCourse";
 import { fetchEnrollment } from "../../api/enrollment";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/react-router";
 
 const POLL_INTERVAL = 1500;
 const TIMEOUT_MS = 20000;
