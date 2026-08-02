@@ -1,6 +1,10 @@
 # Pages & Routes
 
-File-based routing via React Router v7. Route definitions in `app/routes.ts`.
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+
+## Why
+
+Every route — file, params, data, and guards. File-based via React Router v7; route config in `app/routes.ts`.
 
 ---
 
@@ -217,3 +221,11 @@ The `/courses/:slug/learn/*` routes do **not** use `RequireAuth` — they guard 
 1. **Different failure destination.** `RequireAuth` redirects to `/sign-in`; the learn guard redirects to `/courses/:slug` (the public course page). A signed-in-but-not-enrolled user should land on the course page to enroll, not on a sign-in form they don't need.
 2. **Authorization, not just authentication.** `RequireAuth` answers "are you logged in?" The learn guard answers "are you logged in **and enrolled in this course**?" Enrollment is per-resource data that must be fetched — a data-free gate can't express it.
 3. **The guard owns the data loading anyway.** The layout loads `course` + `enrollment` and passes them to children via `<Outlet context>`; the enrollment check runs against that same fetched data, so wrapping in `RequireAuth` would split one coherent gate into two.
+
+---
+
+## See also
+
+- `architecture.md` — layers & data flow
+- `auth.md` — auth wiring
+- `COMPONENTS.md` — components rendered by these routes

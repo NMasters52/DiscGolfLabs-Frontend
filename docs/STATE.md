@@ -1,12 +1,16 @@
 # State Management
 
-React Query v5 handles all server state. No global client state beyond React hooks and Clerk auth.
+> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-07-29
+
+## Why
+
+TanStack Query v5 owns all server state; no global client store beyond React hooks + Clerk. Query keys + every hook below.
 
 ---
 
 ## Query Keys
 
-Defined in `app/queries/keys.js`:
+Query keys are the **array tuples** TanStack Query uses as cache addresses. In this app they live in one place — `app/queries/keys.js` — and every hook imports them. They exist to be **shared**, not defined inline.
 
 ```js
 queryKeys = {
@@ -19,6 +23,38 @@ queryKeys = {
   puttingGame: { stats: () => ["putting-game", "stats"] },
 };
 ```
+
+### Why one file, why this shape
+
+A query key is referenced from **two places that don't know about each other**:
+
+1. the **query hook** that registers the cache entry (e.g. `useGameSession` → `queryKeys.gameSession.bySlug(...)`), and
+2. the **mutation** that later invalidates it (e.g. `useCreateGameSession` calls `invalidateQueries` with the _same_ key — see [useCreateGameSession.js](../app/queries/useCreateGameSession.js)).
+
+If either side inlined the tuple, a typo or reordered argument would silently break invalidation — the mutation succeeds, the refetch never fires, the UI shows stale data with no error. `keys.js` is the contract that keeps producer and consumer in sync; centralizing it also means a rename catches every call site at once.
+
+- **Nested object** → mirrors the cache hierarchy. Keys are matched by prefix, so `["course", "all"]` and `["course", slug]` share an ancestor and can be invalidated together via `["course"]`. The nesting makes that grouping visible, and `queryKeys.course.` gives autocomplete instead of a magic string.
+- **Factory functions** → the array carries runtime args (`courseId`, `slug`), so it can't be a constant. The no-arg keys (`me`, `all`, `stats`) are functions too, for one consistent access shape: every key is a call, never a property read.
+
+### How to use them
+
+Register a query by importing the key and calling it:
+
+```js
+import { queryKeys } from "./keys";
+
+useQuery({ queryKey: queryKeys.enrollment.check(courseId), queryFn: ... });
+```
+
+Invalidate from a mutation using the **same** key — this is what ties a write back to the read it affects:
+
+```js
+queryClient.invalidateQueries({
+  queryKey: queryKeys.gameSession.bySlug(gameSlug, courseId),
+});
+```
+
+**Rule:** never inline a key array. If you're about to write `["course", slug]` by hand, add it to `keys.js` first, it may already be there.
 
 ---
 
@@ -46,12 +82,10 @@ Fetches enrollment status for a course.
 const { data, isLoading } = useEnrollment(courseId);
 ```
 
-| Param           | Type    | Required | Default                 | Description |
-| --------------- | ------- | -------- | ----------------------- | ----------- |
-| courseId        | string  | yes      | MongoDB ObjectId        |
-| options.enabled | boolean | no true  | Set to false to disable |
-
-    </section>
+| Param           | Type    | Required | Default | Description                        |
+| --------------- | ------- | -------- | ------- | ---------------------------------- |
+| courseId        | string  | yes      | —       | MongoDB ObjectId of the course     |
+| options.enabled | boolean | no       | true    | Set to `false` to disable fetching |
 
 **Returns:** `{ enrolled, currentDay, totalDays, courseId }` or null
 `data` is undefined.
@@ -135,8 +169,6 @@ const { mutate, isPending, isError } = useCreateGameSession(gameSlug);
 | gameSlug | string | yes      | Game type slug (e.g., "putting-course") |
 | courseId | string | yes      | MongoDB ObjectId                        |
 
-````
-
 **Usage:**
 
 ```js
@@ -147,7 +179,7 @@ mutate({
   putts: [...],
   finalDistance: 25
 });
-````
+```
 
 **On success:** invalidates `gameSession.bySlug` and `puttingGame.stats` queries.
 
@@ -209,3 +241,11 @@ const { data } = useWaitlistCount();
 ```
 
 **Refetch:** every 60s (`refetchInterval: 60000`) — keeps the displayed count fresh.
+
+---
+
+## See also
+
+- `PAGES.md` — where each hook is consumed
+- `COMPONENTS.md` — components that read this state
+- `ENV.md` — the API base URL the queries call

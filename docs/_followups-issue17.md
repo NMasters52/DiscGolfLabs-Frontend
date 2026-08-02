@@ -1,10 +1,14 @@
 # Issue #17 Audit — Open Follow-ups
 
-> Temporary audit artifact for the **Issue #17** documentation audit. Companion to `_audit-issue17.html`.
+> Temporary audit artifact for the **Issue #17** documentation audit.
 >
-> This file catalogs the **other** still-open issues found during the audit — i.e. everything **not** already covered by the three code sub-issues **#18 / #19 / #20**, which are tracked separately and intentionally excluded here.
+> **Status (2026-07-29):** The documentation standardization pass resolved items **1–7** and the
+> `STATE.md` rendering bugs (the Clerk item §7 was fixed earlier; the rest by the template retrofit +
+> index + de-triplication). The **only remaining open work is the two backend-gated items** —
+> §8 (`overallMakeRate` → nested `overall.makeRate`, **API #12**) and §9 (`useCreateGameSession` payload
+> wording, **API #13**). These are moving to a separate branch; this file stays until that branch is set up.
 >
-> **Delete this file once every item below is resolved.** Each entry has been re-verified against source on disk (paths + line numbers cited).
+> **Delete this file once those two gated items are resolved.**
 
 ## Table of Contents
 

@@ -1,6 +1,11 @@
 # Project Overview — Frontend
 
-> Part of **Disc Golf Labs**. Frontend repo. Pair with the API (`DiscGolfLabs-api`).
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+> Frontend repo for **Disc Golf Labs**. Pair with the API (`DiscGolfLabs-api`).
+
+## Why
+
+What the Disc Golf Labs frontend is, its core capabilities, and where this repo fits. Start here.
 
 ## Product
 
@@ -24,4 +29,9 @@ This is the client. It renders UI, manages game + UI state (TanStack Query, Reac
 
 React Router v7 · React 19 · TypeScript · Vite · Tailwind v4 · shadcn/ui · TanStack Query v5 · Clerk · Recharts.
 
-See also: `architecture.md`, `frontend-patterns.md`, `routes.md`, `auth.md`.
+## See also
+
+- `architecture.md` — layers & data flow
+- `frontend-patterns.md` — code & styling conventions
+- `PAGES.md` — routes & guards
+- `auth.md` — auth wiring

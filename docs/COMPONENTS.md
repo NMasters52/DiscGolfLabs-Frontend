@@ -1,10 +1,158 @@
 # Components
 
-Reusable components in `app/components/`. shadcn/ui primitives in `ui/` are not documented here — see [shadcn/ui docs](https://ui.shadcn.com).
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+
+## Why
+
+Reusable, domain-specific components with props + usage, ordered foundation-first (providers/guards → games → layouts → content). shadcn/ui primitives in `ui/` aren't cataloged here — see [shadcn/ui docs](https://ui.shadcn.com).
+
+---
+
+## App Foundation
+
+Cross-cutting providers and route guards. Wrapped once around the app or individual routes.
+
+### ThemeProvider
+
+Wraps app with `next-themes` for dark/light mode.
+
+```tsx
+<ThemeProvider>{children}</ThemeProvider>
+```
+
+---
+
+### ModeToggle
+
+Toggle button for switching themes.
+
+```tsx
+<ModeToggle />
+```
+
+---
+
+### RequireAuth
+
+Route guard that redirects unauthenticated users.
+
+```tsx
+<RequireAuth>
+  <ProtectedContent />
+</RequireAuth>
+```
+
+---
+
+## Game Components
+
+Core interactive practice games and their progress views.
+
+### PuttingLadderGame
+
+Interactive putting practice game with make/miss buttons.
+
+| Prop      | Type   | Required | Description                 |
+| --------- | ------ | -------- | --------------------------- |
+| courseId  | string | yes      | MongoDB ObjectId of course  |
+| dayNumber | number | yes      | Current day being practiced |
+
+> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
+
+```tsx
+<PuttingLadderGame courseId="abc123" dayNumber={1} />
+```
+
+Auto-saves session to API on completion via `useCreateGameSession`.
+
+---
+
+### PuttingProgressView
+
+Shows progress visualization for putting game sessions.
+
+| Prop     | Type   | Required | Description                |
+| -------- | ------ | -------- | -------------------------- |
+| gameSlug | string | yes      | Slug of the game type      |
+| courseId | string | yes      | MongoDB ObjectId of course |
+
+> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
+
+```tsx
+<PuttingProgressView gameSlug="putting-course" courseId="abc123" />
+```
+
+---
+
+## Layouts & Navigation
+
+Structural shells and nav — pages compose content inside these.
+
+### LayoutShell
+
+Wrapper component providing consistent dashboard layout structure.
+
+```tsx
+<LayoutShell>{children}</LayoutShell>
+```
+
+---
+
+### AppSidebar
+
+Sidebar navigation for authenticated app.
+
+```tsx
+<AppSidebar />
+```
+
+---
+
+### InCourseLayout
+
+Layout for active course progress. Renders course hero, stats, and progress chart.
+
+| Prop       | Type   | Required | Description           |
+| ---------- | ------ | -------- | --------------------- |
+| stats      | object | no       | Game stats for charts |
+| currentDay | number | no       | Current day in course |
+| totalDays  | number | no       | Total days in course  |
+
+```tsx
+<InCourseLayout stats={stats} currentDay={2} totalDays={5} />
+```
+
+---
+
+### CourseCompleteLayout
+
+Layout shown when course is completed.
+
+| Prop       | Type   | Required | Description          |
+| ---------- | ------ | -------- | -------------------- |
+| currentDay | number | no       | Final day completed  |
+| totalDays  | number | no       | Total days in course |
+
+```tsx
+<CourseCompleteLayout currentDay={5} totalDays={5} />
+```
+
+---
+
+### DesktopDashboard / MobileDashboard
+
+Responsive dashboard layouts. Render appropriate card layouts for viewport.
+
+```tsx
+<DesktopDashboard stats={stats} />
+<MobileDashboard stats={stats} />
+```
 
 ---
 
 ## Dashboard Cards
+
+Leaf content rendered inside dashboard layouts.
 
 ### CourseHeroCard
 
@@ -111,109 +259,9 @@ Email capture section for course complete flow.
 
 ---
 
-## Dashboard Layouts
-
-### LayoutShell
-
-Wrapper component providing consistent dashboard layout structure.
-
-```tsx
-<LayoutShell>{children}</LayoutShell>
-```
-
----
-
-### InCourseLayout
-
-Layout for active course progress. Renders course hero, stats, and progress chart.
-
-| Prop       | Type   | Required | Description           |
-| ---------- | ------ | -------- | --------------------- |
-| stats      | object | no       | Game stats for charts |
-| currentDay | number | no       | Current day in course |
-| totalDays  | number | no       | Total days in course  |
-
-```tsx
-<InCourseLayout stats={stats} currentDay={2} totalDays={5} />
-```
-
----
-
-### CourseCompleteLayout
-
-Layout shown when course is completed.
-
-| Prop       | Type   | Required | Description          |
-| ---------- | ------ | -------- | -------------------- |
-| currentDay | number | no       | Final day completed  |
-| totalDays  | number | no       | Total days in course |
-
-```tsx
-<CourseCompleteLayout currentDay={5} totalDays={5} />
-```
-
----
-
-### AppSidebar
-
-Sidebar navigation for authenticated app.
-
-```tsx
-<AppSidebar />
-```
-
----
-
-### DesktopDashboard / MobileDashboard
-
-Responsive dashboard layouts. Render appropriate card layouts for viewport.
-
-```tsx
-<DesktopDashboard stats={stats} />
-<MobileDashboard stats={stats} />
-```
-
----
-
-## Game Components
-
-### PuttingLadderGame
-
-Interactive putting practice game with make/miss buttons.
-
-| Prop      | Type   | Required | Description                 |
-| --------- | ------ | -------- | --------------------------- |
-| courseId  | string | yes      | MongoDB ObjectId of course  |
-| dayNumber | number | yes      | Current day being practiced |
-
-> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
-
-```tsx
-<PuttingLadderGame courseId="abc123" dayNumber={1} />
-```
-
-Auto-saves session to API on completion via `useCreateGameSession`.
-
----
-
-### PuttingProgressView
-
-Shows progress visualization for putting game sessions.
-
-| Prop     | Type   | Required | Description                |
-| -------- | ------ | -------- | -------------------------- |
-| gameSlug | string | yes      | Slug of the game type      |
-| courseId | string | yes      | MongoDB ObjectId of course |
-
-> Untyped `.jsx` — types reflect runtime usage, not declared/enforced props.
-
-```tsx
-<PuttingProgressView gameSlug="putting-course" courseId="abc123" />
-```
-
----
-
 ## Landing Components
+
+Public marketing page sections.
 
 ### Hero
 
@@ -246,36 +294,8 @@ Standard landing page sections. See `app/components/landing/` for details.
 
 ---
 
-## Auth Components
+## See also
 
-### RequireAuth
-
-Route guard that redirects unauthenticated users.
-
-```tsx
-<RequireAuth>
-  <ProtectedContent />
-</RequireAuth>
-```
-
----
-
-## Theme Components
-
-### ThemeProvider
-
-Wraps app with `next-themes` for dark/light mode.
-
-```tsx
-<ThemeProvider>{children}</ThemeProvider>
-```
-
----
-
-### ModeToggle
-
-Toggle button for switching themes.
-
-```tsx
-<ModeToggle />
-```
+- `STATE.md` — data hooks these components consume
+- `PAGES.md` — where components render
+- `frontend-patterns.md` — component conventions

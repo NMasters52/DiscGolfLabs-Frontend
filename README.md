@@ -49,76 +49,9 @@ A modern, data-driven disc golf training platform designed to help players impro
 - **Recharts** (2.15.4) - Composable charting library for analytics dashboards
 - **Embla Carousel** (8.6.0) - Accessible carousel component for UI elements
 
-## 📁 Project Structure
+## Project Structure
 
-```
-app/
-├── api/                    # API route handlers (server-side)
-│   ├── checkout.js
-│   ├── course.js
-│   ├── enrollment.js
-│   ├── games.js
-│   ├── user.js
-│   └── waitlist.js
-├── components/
-│   ├── dashboard/          # Dashboard-specific components
-│   │   ├── cards/          # Data visualization cards
-│   │   ├── AppSidebar.tsx
-│   │   ├── CourseCompleteLayout.tsx
-│   │   ├── InCourseLayout.tsx
-│   │   ├── LayoutShell.tsx
-│   │   ├── MobileDashboard.tsx
-│   │   ├── DesktopDashboard.tsx
-│   │   └── data.ts
-│   ├── games/              # Interactive training games
-│   │   ├── PuttingLadderGame.jsx
-│   │   └── PuttingProgressView.jsx
-│   ├── landing/            # Marketing/landing page components
-│   │   ├── hero.tsx
-│   │   ├── features.tsx
-│   │   ├── stats.tsx
-│   │   ├── session-logs.tsx
-│   │   ├── cta-section.tsx
-│   │   ├── waitlist-form.tsx
-│   │   ├── navbar.tsx
-│   │   ├── footer.tsx
-│   │   ├── geometric-art.tsx
-│   │   ├── index.ts
-│   │   └── methodology/
-│   ├── ui/                 # Reusable UI components (shadcn/ui)
-│   ├── mode-toggle.tsx     # Dark/light theme toggle
-│   ├── require-auth.jsx    # Auth guard wrapper
-│   └── theme-provider.tsx  # next-themes provider
-├── game/                   # Game logic and state management
-│   └── puttingLadder/
-│       ├── usePuttingLadderGame.js
-│       ├── state.js
-│       └── rules.js
-├── hooks/                  # Custom React hooks
-│   └── use-mobile.ts
-├── lib/                    # Utility functions
-│   ├── utils.ts
-│   └── motion/
-│       └── variants.ts
-├── queries/                # React Query hooks for data fetching
-│   ├── keys.js             # Centralized query-key factory
-│   ├── useMe.js
-│   ├── useCourses.js
-│   ├── useCourse.js
-│   ├── useEnrollment.js
-│   ├── useCompleteDay.js
-│   ├── useGameSession.js
-│   ├── useCreateGameSession.js
-│   ├── usePuttingGameStats.js
-│   └── useWaitlist.js
-├── routes/                 # File-based routing
-│   ├── _landing/           # Public landing pages
-│   ├── app/                # Authenticated app routes
-│   │   └── dashboard/      # Dashboard implementation
-│   ├── courses/            # Course learning pages
-│   └── checkout/           # Payment flows
-└── root.tsx                # Root layout with providers
-```
+The `app/` directory is organized by concern: route handlers in `api/`, domain-grouped components in `components/`, game logic in `game/`, data-fetching hooks in `queries/`, and file-based routing under `routes/`. See [docs/architecture.md](docs/architecture.md) for the full structure.
 
 ## 🚀 Key Features
 
