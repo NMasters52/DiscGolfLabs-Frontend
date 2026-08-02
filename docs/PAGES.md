@@ -1,16 +1,26 @@
 # Pages & Routes
 
-File-based routing via React Router v7. Route definitions in `app/routes.ts`.
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+
+## Why
+
+Every route — file, params, data, and guards. File-based via React Router v7; route config in `app/routes.ts`.
 
 ---
 
 ## Landing Routes (Public)
 
+**Layout:** `routes/_landing/_layout.jsx`
+
+Pathless layout that wraps every public marketing route. Renders the global `Navbar` above and `Footer` below an `<Outlet />` for the page content. Defined as the parent route in `routes.ts:4`; children: `/`, `/methodology`, `/about`, `/testimonials`, `/faq`, `/pricing`, `/courses/:slug`.
+
+---
+
 ### `/`
 
 **File:** `routes/_landing/index.jsx`
 
-Marketing homepage. Renders Hero, Features, Stats, CTA sections.
+Marketing homepage. Renders Hero, Features, Stats, SessionLogs, CTA sections.
 
 ---
 
@@ -125,6 +135,18 @@ Test/debug page for dashboard components.
 
 ## Course Learning Routes
 
+### `/courses/learn/_layout.jsx`
+
+**File:** `routes/courses/learn/_layout.jsx`
+
+Pathless parent of `/courses/:slug/learn` and `/courses/:slug/learn/day/:dayNumber` (`routes.ts:17`).
+Loads `course` via `useCourse(slug)` and `enrollment` via `useEnrollment(course._id)`, gates access
+(redirects to `/courses/:slug` if not signed in or `enrollment.enrolled` is false), and passes
+`{ course, enrollment }` to children through `<Outlet context={...} />` — the source of the
+outlet-context data the day route consumes.
+
+---
+
 ### `/courses/:slug/learn`
 
 **File:** `routes/courses/learn/index.jsx`
@@ -182,9 +204,28 @@ Post-payment success page. Shown after successful enrollment purchase.
 
 **File:** `app/components/require-auth.jsx`
 
-Wraps protected routes. Redirects to `/sign-in` if not authenticated.
+Reusable auth-only wrapper. Checks Clerk's `isSignedIn`; if not authenticated, redirects to `/sign-in?redirect_url=<current path>` so the user returns after signing in. Data-free — it gates on identity only and knows nothing about resources or enrollment.
 
 Used in:
 
-- `/app/*` routes
-- `/courses/:slug/learn/*` routes
+- `/app/*` (via `routes/app/_layout.jsx:6`) — the only consumer.
+
+---
+
+### Learn route guard (inline, not `RequireAuth`)
+
+**File:** `routes/courses/learn/_layout.jsx:15-33`
+
+The `/courses/:slug/learn/*` routes do **not** use `RequireAuth` — they guard inline (behavior documented under the `/courses/learn/_layout.jsx` entry in Course Learning Routes above). The divergence is load-bearing, not an oversight:
+
+1. **Different failure destination.** `RequireAuth` redirects to `/sign-in`; the learn guard redirects to `/courses/:slug` (the public course page). A signed-in-but-not-enrolled user should land on the course page to enroll, not on a sign-in form they don't need.
+2. **Authorization, not just authentication.** `RequireAuth` answers "are you logged in?" The learn guard answers "are you logged in **and enrolled in this course**?" Enrollment is per-resource data that must be fetched — a data-free gate can't express it.
+3. **The guard owns the data loading anyway.** The layout loads `course` + `enrollment` and passes them to children via `<Outlet context>`; the enrollment check runs against that same fetched data, so wrapping in `RequireAuth` would split one coherent gate into two.
+
+---
+
+## See also
+
+- `architecture.md` — layers & data flow
+- `auth.md` — auth wiring
+- `COMPONENTS.md` — components rendered by these routes

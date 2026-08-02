@@ -16,6 +16,11 @@ export function useCreateGameSession(gameSlug) {
       queryClient.invalidateQueries({
         queryKey: queryKeys.gameSession.bySlug(gameSlug, variables.courseId),
       });
+      // Dashboard make-rate is derived from these stats — refetch so it
+      // updates immediately after a session is saved (no manual refresh).
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.puttingGame.stats(),
+      });
     },
   });
 }
