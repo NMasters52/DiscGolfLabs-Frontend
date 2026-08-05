@@ -1,3 +1,5 @@
-export default function Testimonials() {
-  return <div>Testimonials page</div>;
+import { Testimonials } from "../../components/landing/testimonials";
+
+export default function TestimonialsPage() {
+  return <Testimonials />;
 }
