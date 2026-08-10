@@ -128,6 +128,9 @@ test("preserves a legitimate zero percent recent make rate", () => {
   });
 
   assert.equal(viewModel.makeRate, 0);
+  assert.equal(viewModel.latestSession?.made, 0);
+  assert.equal(viewModel.latestSession?.attempted, 20);
+  assert.equal(viewModel.latestSession?.makeRate, 0);
 });
 
 test("returns null for invalid recent make-rate values", () => {
@@ -147,6 +150,38 @@ test("returns null for invalid recent make-rate values", () => {
 
     assert.equal(viewModel.makeRate, null);
   }
+});
+
+test("keeps missing latest-session performance unavailable", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats,
+    sessions: [{ id: "session-1", dayNumber: 1, overall: {} }],
+  });
+
+  assert.equal(viewModel.latestSession?.made, null);
+  assert.equal(viewModel.latestSession?.attempted, null);
+  assert.equal(viewModel.latestSession?.makeRate, null);
+});
+
+test("keeps malformed latest-session performance unavailable", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats,
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: "invalid", attempted: -1, percentage: 101 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.latestSession?.made, null);
+  assert.equal(viewModel.latestSession?.attempted, null);
+  assert.equal(viewModel.latestSession?.makeRate, null);
 });
 
 test("clamps completed progress to 100 percent", () => {

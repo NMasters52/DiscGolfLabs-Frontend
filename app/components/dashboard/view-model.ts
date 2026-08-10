@@ -22,9 +22,9 @@ export interface DashboardProgress {
 export interface DashboardSession {
   id: string;
   dayNumber: number | null;
-  made: number;
-  attempted: number;
-  makeRate: number;
+  made: number | null;
+  attempted: number | null;
+  makeRate: number | null;
   maxDistanceFt: number | null;
   durationSeconds: number | null;
   createdAt: string | null;
@@ -65,6 +65,13 @@ const toPositiveInteger = (value: unknown, fallback: number) => {
 const toNonNegativeNumber = (value: unknown, fallback = 0) => {
   const number = Number(value);
   return Number.isFinite(number) && number >= 0 ? number : fallback;
+};
+
+const toOptionalNonNegativeNumber = (value: unknown): number | null => {
+  if (value == null) return null;
+
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
 };
 
 const toOptionalPercentage = (value: unknown): number | null => {
@@ -115,9 +122,9 @@ const normalizeSession = (
   id: String(session.id ?? session._id ?? ""),
   dayNumber:
     session.dayNumber == null ? null : toPositiveInteger(session.dayNumber, 1),
-  made: toNonNegativeNumber(session.overall?.made),
-  attempted: toNonNegativeNumber(session.overall?.attempted),
-  makeRate: toNonNegativeNumber(session.overall?.percentage),
+  made: toOptionalNonNegativeNumber(session.overall?.made),
+  attempted: toOptionalNonNegativeNumber(session.overall?.attempted),
+  makeRate: toOptionalPercentage(session.overall?.percentage),
   maxDistanceFt:
     session.maxDistanceFt == null
       ? null

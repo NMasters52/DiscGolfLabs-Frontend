@@ -156,12 +156,18 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-muted-foreground">Make rate</p>
-              <p className="font-semibold">{Math.round(session.makeRate)}%</p>
+              <p className="font-semibold">
+                {session.makeRate == null
+                  ? "—"
+                  : `${Math.round(session.makeRate)}%`}
+              </p>
             </div>
             <div>
               <p className="text-muted-foreground">Putts</p>
               <p className="font-semibold">
-                {session.made}/{session.attempted}
+                {session.made == null || session.attempted == null
+                  ? "—"
+                  : `${session.made}/${session.attempted}`}
               </p>
             </div>
             <div>
