@@ -1,6 +1,7 @@
 import { LayoutShell } from "~/components/dashboard/LayoutShell";
 import { DashboardView } from "~/components/dashboard/DashboardView";
 import { createDashboardViewModel } from "~/components/dashboard/view-model";
+import { dashboardQueryOptions } from "~/queries/dashboard-options";
 import useCourse from "~/queries/useCourse";
 import useEnrollment from "~/queries/useEnrollment";
 import { useGameSessions } from "~/queries/useGameSession";
@@ -10,14 +11,20 @@ const COURSE_SLUG = "putting-course";
 const GAME_SLUG = "putting-course";
 
 export default function Dashboard() {
-  const courseQuery = useCourse(COURSE_SLUG, { retry: 1 });
-  const enrollmentQuery = useEnrollment(courseQuery.data?._id, { retry: 1 });
+  const courseQuery = useCourse(COURSE_SLUG, dashboardQueryOptions);
+  const enrollmentQuery = useEnrollment(
+    courseQuery.data?._id,
+    dashboardQueryOptions,
+  );
   const isEnrolled = enrollmentQuery.data?.enrolled === true;
-  const statsQuery = usePuttingGameStats({ enabled: isEnrolled, retry: 1 });
+  const statsQuery = usePuttingGameStats({
+    ...dashboardQueryOptions,
+    enabled: isEnrolled,
+  });
   const sessionsQuery = useGameSessions(
     GAME_SLUG,
     courseQuery.data?._id,
-    { enabled: isEnrolled, retry: 1 },
+    { ...dashboardQueryOptions, enabled: isEnrolled },
   );
 
   const viewModel = createDashboardViewModel({

@@ -95,6 +95,60 @@ test("normalizes progress and the newest session from oldest-first data", () => 
   assert.equal(viewModel.latestSession?.makeRate, 60);
 });
 
+test("returns null when the recent make rate is missing", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats: { overall: {} },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 0, attempted: 20, percentage: 0 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.state, "inProgress");
+  assert.equal(viewModel.makeRate, null);
+});
+
+test("preserves a legitimate zero percent recent make rate", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats: { overall: { makeRate: 0 } },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 0, attempted: 20, percentage: 0 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.makeRate, 0);
+});
+
+test("returns null for invalid recent make-rate values", () => {
+  for (const makeRate of [null, "invalid", -1, 101]) {
+    const viewModel = createDashboardViewModel({
+      course,
+      enrollment: { ...enrolled, currentDay: 2 },
+      stats: { overall: { makeRate } },
+      sessions: [
+        {
+          id: "session-1",
+          dayNumber: 1,
+          overall: { made: 10, attempted: 20, percentage: 50 },
+        },
+      ],
+    });
+
+    assert.equal(viewModel.makeRate, null);
+  }
+});
+
 test("clamps completed progress to 100 percent", () => {
   const viewModel = createDashboardViewModel({
     course,

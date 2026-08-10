@@ -67,6 +67,15 @@ const toNonNegativeNumber = (value: unknown, fallback = 0) => {
   return Number.isFinite(number) && number >= 0 ? number : fallback;
 };
 
+const toOptionalPercentage = (value: unknown): number | null => {
+  if (value == null) return null;
+
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 && number <= 100
+    ? number
+    : null;
+};
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
@@ -218,7 +227,7 @@ export function createDashboardViewModel(
         ? `${progress.completedDays} of ${course.totalDays} days completed.`
         : "Your first session will give your progress a place to start.",
     makeRate: hasSessions
-      ? toNonNegativeNumber(snapshot.stats?.overall?.makeRate, 0)
+      ? toOptionalPercentage(snapshot.stats?.overall?.makeRate)
       : null,
     latestSession,
     error: null,

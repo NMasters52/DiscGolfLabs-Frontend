@@ -6,7 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts",
+    "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts app/queries/dashboard-options.test.ts",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

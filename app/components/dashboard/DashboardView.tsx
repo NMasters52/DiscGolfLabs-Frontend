@@ -30,7 +30,6 @@ function DashboardLoading() {
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-4 w-10" />
             </div>
-            <Skeleton className="h-10 w-full" />
           </CardContent>
         </Card>
 
@@ -127,7 +126,9 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
       <CardContent>
         {viewModel.makeRate == null ? (
           <p className="text-sm text-muted-foreground">
-            No sessions yet. Your make rate will appear here after you play.
+            {viewModel.latestSession == null
+              ? "No sessions yet. Your make rate will appear here after you play."
+              : "Recent make rate is unavailable."}
           </p>
         ) : (
           <p className="text-3xl font-bold">{Math.round(viewModel.makeRate)}%</p>
@@ -206,4 +207,3 @@ export function DashboardView({ viewModel, onRetry }: DashboardViewProps) {
     </DashboardFrame>
   );
 }
-
