@@ -6,14 +6,16 @@ import { queryKeys } from "./keys";
 export default function useEnrollment(courseId, options = {}) {
   const { session } = useSession();
   const { isSignedIn } = useAuth();
+  const { enabled = true, ...queryOptions } = options;
 
   return useQuery({
+    ...queryOptions,
     queryKey: queryKeys.enrollment.check(courseId),
     queryFn: async () => {
       const token = await session.getToken();
       return fetchEnrollment(token, courseId);
     },
-    enabled: !!isSignedIn && !!courseId && options.enabled !== false,
+    enabled: !!isSignedIn && !!courseId && enabled,
     staleTime: 1000 * 60 * 5,
   });
 }
