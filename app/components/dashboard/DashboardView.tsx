@@ -1,3 +1,4 @@
+import { CalendarDays, CircleDot, Target, Timer } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -21,15 +22,16 @@ function DashboardLoading() {
       <div className="space-y-6" data-state="loading" aria-busy="true">
         <Card className="border-l-4 border-l-primary">
           <CardHeader className="space-y-3">
-            <Skeleton className="h-7 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-4 w-1/3" />
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-2 w-full" />
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-10" />
+          <CardContent className="space-y-3">
+            <div className="flex items-end justify-between gap-4">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-7 w-12" />
             </div>
+            <Skeleton className="h-2.5 w-full" />
           </CardContent>
         </Card>
 
@@ -43,7 +45,26 @@ function DashboardLoading() {
               <Skeleton className="size-32 justify-self-center rounded-full @lg:justify-self-end" />
             </CardContent>
           </Card>
-          <Skeleton className="min-h-48 w-full rounded-xl" />
+
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-28" />
+              <Skeleton className="h-4 w-48 max-w-full" />
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="space-y-3 rounded-lg border bg-muted/20 p-4"
+                  >
+                    <Skeleton className="h-4 w-16 max-w-full" />
+                    <Skeleton className="h-5 w-20 max-w-full" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </DashboardFrame>
@@ -102,23 +123,36 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
 
   return (
     <Card className="border-l-4 border-l-primary" data-state={viewModel.state}>
-      <CardHeader>
-        <CardTitle className="text-2xl">{viewModel.headline}</CardTitle>
-        <CardDescription>
-          {course?.title ?? "Putting course"} · {viewModel.description}
+      <CardHeader className="space-y-3">
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
+          Course progress
+        </p>
+        <CardTitle className="text-2xl sm:text-3xl">
+          {viewModel.headline}
+        </CardTitle>
+        <CardDescription className="font-medium text-foreground">
+          {course?.title ?? "Putting course"}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Progress value={progress.percent} aria-label="Course progress" />
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Course progress</span>
-            <span>{progress.percent}%</span>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-end justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {progress.completedDays} of {progress.totalDays}
+              </span>{" "}
+              days completed
+            </p>
+            <p className="text-xl font-semibold tabular-nums text-foreground">
+              {progress.percent}%
+            </p>
           </div>
+          <Progress
+            className="h-2.5"
+            value={progress.percent}
+            aria-label="Course progress"
+          />
         </div>
-        <p className="text-sm text-muted-foreground">
-          {progress.completedDays} of {progress.totalDays} days completed
-        </p>
       </CardContent>
     </Card>
   );
@@ -140,7 +174,9 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
     <Card className="@container h-full">
       <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
         <div className="min-w-0 space-y-2">
-          <CardTitle className="whitespace-nowrap text-base">Make rate</CardTitle>
+          <CardTitle className="whitespace-nowrap text-base">
+            Make rate
+          </CardTitle>
           <CardDescription>{supportingCopy}</CardDescription>
         </div>
 
@@ -149,11 +185,7 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
           role="img"
           aria-label={`Current 30-day make rate: ${accessibleValue}`}
         >
-          <svg
-            aria-hidden="true"
-            className="size-full"
-            viewBox="0 0 120 120"
-          >
+          <svg aria-hidden="true" className="size-full" viewBox="0 0 120 120">
             <circle
               className="stroke-muted"
               cx="60"
@@ -198,44 +230,51 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
       <CardContent>
         {!session ? (
           <p className="text-sm text-muted-foreground">
-            No sessions yet. Your first session summary will appear here.
+            Complete your first putting session to see its practice summary
+            here.
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Make rate</p>
-              <p className="font-semibold">
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Target className="size-4 shrink-0" aria-hidden="true" />
+                <p className="font-medium">Make rate</p>
+              </div>
+              <p className="font-semibold tabular-nums">
                 {session.makeRate == null
                   ? "—"
                   : `${Math.round(session.makeRate)}%`}
               </p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Putts</p>
-              <p className="font-semibold">
+            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CircleDot className="size-4 shrink-0" aria-hidden="true" />
+                <p className="font-medium">Putts</p>
+              </div>
+              <p className="font-semibold tabular-nums">
                 {session.made == null || session.attempted == null
                   ? "—"
                   : `${session.made}/${session.attempted}`}
               </p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Max distance</p>
-              <p className="font-semibold">
-                {session.maxDistanceFt == null ? "—" : `${session.maxDistanceFt}ft`}
+            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
+                <p className="font-medium">Date</p>
+              </div>
+              <p className="font-semibold tabular-nums">
+                {formatDate(session.createdAt) ?? "—"}
               </p>
             </div>
-            <div>
-              <p className="text-muted-foreground">Date</p>
-              <p className="font-semibold">{formatDate(session.createdAt) ?? "—"}</p>
-            </div>
-            {formatDuration(session.durationSeconds) && (
-              <div className="col-span-2">
-                <p className="text-muted-foreground">Duration</p>
-                <p className="font-semibold">
-                  {formatDuration(session.durationSeconds)}
-                </p>
+            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Timer className="size-4 shrink-0" aria-hidden="true" />
+                <p className="font-medium">Duration</p>
               </div>
-            )}
+              <p className="font-semibold tabular-nums">
+                {formatDuration(session.durationSeconds) ?? "—"}
+              </p>
+            </div>
           </div>
         )}
       </CardContent>
