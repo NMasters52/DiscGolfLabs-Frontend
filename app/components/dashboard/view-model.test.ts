@@ -133,6 +133,25 @@ test("preserves a legitimate zero percent recent make rate", () => {
   assert.equal(viewModel.latestSession?.makeRate, 0);
 });
 
+test("rejects zero-like malformed recent make rates", () => {
+  for (const makeRate of ["", false, []]) {
+    const viewModel = createDashboardViewModel({
+      course,
+      enrollment: { ...enrolled, currentDay: 2 },
+      stats: { overall: { makeRate } },
+      sessions: [
+        {
+          id: "session-1",
+          dayNumber: 1,
+          overall: { made: 0, attempted: 20, percentage: 0 },
+        },
+      ],
+    });
+
+    assert.equal(viewModel.makeRate, null);
+  }
+});
+
 test("returns null for invalid recent make-rate values", () => {
   for (const makeRate of [null, "invalid", -1, 101]) {
     const viewModel = createDashboardViewModel({

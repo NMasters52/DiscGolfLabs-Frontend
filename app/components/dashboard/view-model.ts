@@ -75,11 +75,11 @@ const toOptionalNonNegativeNumber = (value: unknown): number | null => {
 };
 
 const toOptionalPercentage = (value: unknown): number | null => {
-  if (value == null) return null;
-
-  const number = Number(value);
-  return Number.isFinite(number) && number >= 0 && number <= 100
-    ? number
+  return typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= 0 &&
+    value <= 100
+    ? value
     : null;
 };
 
