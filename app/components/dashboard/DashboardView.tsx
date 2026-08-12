@@ -1,4 +1,10 @@
-import { CalendarDays, CircleDot, Target, Timer } from "lucide-react";
+import {
+  CalendarDays,
+  CircleDot,
+  Target,
+  Timer,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -137,13 +143,13 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
       <CardContent>
         <div className="space-y-3">
           <div className="flex items-end justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="font-mono text-sm text-muted-foreground">
               <span className="font-medium text-foreground">
                 {progress.completedDays} of {progress.totalDays}
               </span>{" "}
               days completed
             </p>
-            <p className="text-xl font-semibold tabular-nums text-foreground">
+            <p className="font-mono text-xl font-semibold tabular-nums text-foreground">
               {progress.percent}%
             </p>
           </div>
@@ -218,6 +224,24 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
   );
 }
 
+interface SessionMetricProps {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}
+
+function SessionMetric({ icon: Icon, label, value }: SessionMetricProps) {
+  return (
+    <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Icon className="size-4 shrink-0" aria-hidden="true" />
+        <p className="font-mono font-medium">{label}</p>
+      </div>
+      <p className="font-mono font-semibold tabular-nums">{value}</p>
+    </div>
+  );
+}
+
 function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
   const session = viewModel.latestSession;
 
@@ -229,52 +253,40 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
       </CardHeader>
       <CardContent>
         {!session ? (
-          <p className="text-sm text-muted-foreground">
-            Complete your first putting session to see its practice summary
-            here.
-          </p>
+          <div className="space-y-1 text-sm text-muted-foreground">
+            <p>No sessions yet</p>
+            <p>Your first session summary will appear here after you play.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Target className="size-4 shrink-0" aria-hidden="true" />
-                <p className="font-medium">Make rate</p>
-              </div>
-              <p className="font-semibold tabular-nums">
-                {session.makeRate == null
+            <SessionMetric
+              icon={Target}
+              label="Make rate"
+              value={
+                session.makeRate == null
                   ? "—"
-                  : `${Math.round(session.makeRate)}%`}
-              </p>
-            </div>
-            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <CircleDot className="size-4 shrink-0" aria-hidden="true" />
-                <p className="font-medium">Putts</p>
-              </div>
-              <p className="font-semibold tabular-nums">
-                {session.made == null || session.attempted == null
+                  : `${Math.round(session.makeRate)}%`
+              }
+            />
+            <SessionMetric
+              icon={CircleDot}
+              label="Putts"
+              value={
+                session.made == null || session.attempted == null
                   ? "—"
-                  : `${session.made}/${session.attempted}`}
-              </p>
-            </div>
-            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <CalendarDays className="size-4 shrink-0" aria-hidden="true" />
-                <p className="font-medium">Date</p>
-              </div>
-              <p className="font-semibold tabular-nums">
-                {formatDate(session.createdAt) ?? "—"}
-              </p>
-            </div>
-            <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Timer className="size-4 shrink-0" aria-hidden="true" />
-                <p className="font-medium">Duration</p>
-              </div>
-              <p className="font-semibold tabular-nums">
-                {formatDuration(session.durationSeconds) ?? "—"}
-              </p>
-            </div>
+                  : `${session.made}/${session.attempted}`
+              }
+            />
+            <SessionMetric
+              icon={CalendarDays}
+              label="Date"
+              value={formatDate(session.createdAt) ?? "—"}
+            />
+            <SessionMetric
+              icon={Timer}
+              label="Duration"
+              value={formatDuration(session.durationSeconds) ?? "—"}
+            />
           </div>
         )}
       </CardContent>
