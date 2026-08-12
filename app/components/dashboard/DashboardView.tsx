@@ -34,8 +34,16 @@ function DashboardLoading() {
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-40 w-full rounded-xl" />
-          <Skeleton className="h-40 w-full rounded-xl" />
+          <Card>
+            <CardContent className="grid flex-1 gap-6 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
+              <div className="space-y-3">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-4 w-full max-w-56" />
+              </div>
+              <Skeleton className="size-32 justify-self-center rounded-full md:justify-self-end" />
+            </CardContent>
+          </Card>
+          <Skeleton className="min-h-48 w-full rounded-xl" />
         </div>
       </div>
     </DashboardFrame>
@@ -117,22 +125,62 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
 }
 
 function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
+  const displayValue =
+    viewModel.makeRate == null ? null : Math.round(viewModel.makeRate);
+  const accessibleValue =
+    displayValue == null ? "unavailable" : `${displayValue} percent`;
+  const supportingCopy =
+    viewModel.state === "firstSession"
+      ? "Complete your first session to establish a make rate."
+      : displayValue == null
+        ? "Your 30-day make rate is unavailable."
+        : "Your completed sessions from the last 30 days.";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Make rate</CardTitle>
-        <CardDescription>Recent 30-day performance</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {viewModel.makeRate == null ? (
-          <p className="text-sm text-muted-foreground">
-            {viewModel.latestSession == null
-              ? "No sessions yet. Your make rate will appear here after you play."
-              : "Recent make rate is unavailable."}
-          </p>
-        ) : (
-          <p className="text-3xl font-bold">{Math.round(viewModel.makeRate)}%</p>
-        )}
+    <Card className="h-full">
+      <CardContent className="grid flex-1 gap-6 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
+        <div className="space-y-2">
+          <CardTitle className="text-base">Make rate</CardTitle>
+          <CardDescription>{supportingCopy}</CardDescription>
+        </div>
+
+        <div
+          className="relative size-32 justify-self-center text-foreground md:justify-self-end"
+          role="img"
+          aria-label={`Current 30-day make rate: ${accessibleValue}`}
+        >
+          <svg
+            aria-hidden="true"
+            className="size-full"
+            viewBox="0 0 120 120"
+          >
+            <circle
+              className="stroke-muted"
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              strokeWidth="10"
+            />
+            {viewModel.makeRate != null && viewModel.makeRate > 0 && (
+              <circle
+                className="stroke-accent"
+                cx="60"
+                cy="60"
+                r="52"
+                fill="none"
+                pathLength="100"
+                strokeDasharray={`${viewModel.makeRate} 100`}
+                strokeLinecap="round"
+                strokeWidth="10"
+                transform="rotate(-90 60 60)"
+              />
+            )}
+          </svg>
+          <span className="absolute inset-0 grid place-items-center font-mono text-3xl font-semibold tabular-nums tracking-tight">
+            {displayValue == null ? "—" : `${displayValue}%`}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
