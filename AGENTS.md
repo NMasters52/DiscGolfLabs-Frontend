@@ -2,6 +2,10 @@
 
 Entry point for AI-assisted work on this repo. Concise by design — it points into `docs/` instead of duplicating detail.
 
+## Git
+
+Do not create a PR, push code, or commit code without my explicit instructions. If you want to commit, push, or make a PR ask first before doing so.
+
 ## What this is
 
 A data-driven disc golf **putting improvement** platform: interactive training games, performance analytics, and an adaptive course system. This is the **frontend**; the durable backend lives in `DiscGolfLabs-api`.
