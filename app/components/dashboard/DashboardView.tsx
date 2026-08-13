@@ -53,19 +53,22 @@ function DashboardLoading() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-4">
               <Skeleton className="h-5 w-28" />
               <Skeleton className="h-4 w-48 max-w-full" />
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="divide-y divide-border/60">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div
                     key={index}
-                    className="space-y-3 rounded-lg border bg-muted/20 p-4"
+                    className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3 py-2.5 first:pt-0 last:pb-0"
                   >
-                    <Skeleton className="h-4 w-16 max-w-full" />
-                    <Skeleton className="h-5 w-20 max-w-full" />
+                    <Skeleton className="size-9 rounded-md" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3 w-16 max-w-full" />
+                      <Skeleton className="h-4 w-20 max-w-full" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -104,7 +107,7 @@ function DashboardFrame({ children }: { children: React.ReactNode }) {
 }
 
 function formatDuration(durationSeconds: number | null) {
-  if (durationSeconds == null) return null;
+  if (durationSeconds == null) return "—";
 
   const minutes = Math.floor(durationSeconds / 60);
   const seconds = durationSeconds % 60;
@@ -112,10 +115,10 @@ function formatDuration(durationSeconds: number | null) {
 }
 
 function formatDate(createdAt: string | null) {
-  if (!createdAt) return null;
+  if (!createdAt) return "—";
 
   const date = new Date(createdAt);
-  if (Number.isNaN(date.getTime())) return null;
+  if (Number.isNaN(date.getTime())) return "—";
 
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -224,20 +227,28 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
   );
 }
 
-interface SessionMetricProps {
+interface SessionMetricRowProps {
   icon: LucideIcon;
   label: string;
   value: string;
 }
 
-function SessionMetric({ icon: Icon, label, value }: SessionMetricProps) {
+function SessionMetricRow({
+  icon: Icon,
+  label,
+  value,
+}: SessionMetricRowProps) {
   return (
-    <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon className="size-4 shrink-0" aria-hidden="true" />
-        <p className="font-mono font-medium">{label}</p>
+    <div className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+      <div className="grid size-9 place-items-center rounded-md bg-primary/10 text-primary">
+        <Icon className="size-4" aria-hidden="true" />
       </div>
-      <p className="font-mono font-semibold tabular-nums">{value}</p>
+      <div className="min-w-0">
+        <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+        <dd className="mt-0.5 break-words font-mono text-sm font-semibold tabular-nums text-foreground">
+          {value}
+        </dd>
+      </div>
     </div>
   );
 }
@@ -247,7 +258,7 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="pb-4">
         <CardTitle className="text-base">Last session</CardTitle>
         <CardDescription>Your most recent putting session</CardDescription>
       </CardHeader>
@@ -258,8 +269,8 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
             <p>Your first session summary will appear here after you play.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <SessionMetric
+          <dl className="divide-y divide-border/60">
+            <SessionMetricRow
               icon={Target}
               label="Make rate"
               value={
@@ -268,26 +279,26 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
                   : `${Math.round(session.makeRate)}%`
               }
             />
-            <SessionMetric
+            <SessionMetricRow
               icon={CircleDot}
-              label="Putts"
+              label="Putts made"
               value={
                 session.made == null || session.attempted == null
                   ? "—"
                   : `${session.made}/${session.attempted}`
               }
             />
-            <SessionMetric
+            <SessionMetricRow
               icon={CalendarDays}
-              label="Date"
-              value={formatDate(session.createdAt) ?? "—"}
+              label="Played"
+              value={formatDate(session.createdAt)}
             />
-            <SessionMetric
+            <SessionMetricRow
               icon={Timer}
               label="Duration"
-              value={formatDuration(session.durationSeconds) ?? "—"}
+              value={formatDuration(session.durationSeconds)}
             />
-          </div>
+          </dl>
         )}
       </CardContent>
     </Card>
