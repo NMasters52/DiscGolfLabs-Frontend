@@ -1,10 +1,3 @@
-import {
-  CalendarDays,
-  CircleDot,
-  Target,
-  Timer,
-  type LucideIcon,
-} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -28,16 +21,15 @@ function DashboardLoading() {
       <div className="space-y-6" data-state="loading" aria-busy="true">
         <Card className="border-l-4 border-l-primary">
           <CardHeader className="space-y-3">
-            <Skeleton className="h-3 w-28" />
-            <Skeleton className="h-8 w-2/3" />
-            <Skeleton className="h-4 w-1/3" />
+            <Skeleton className="h-7 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-end justify-between gap-4">
-              <Skeleton className="h-4 w-36" />
-              <Skeleton className="h-7 w-12" />
+          <CardContent className="space-y-4">
+            <Skeleton className="h-2 w-full" />
+            <div className="flex justify-between">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-10" />
             </div>
-            <Skeleton className="h-2.5 w-full" />
           </CardContent>
         </Card>
 
@@ -51,26 +43,7 @@ function DashboardLoading() {
               <Skeleton className="size-32 justify-self-center rounded-full @lg:justify-self-end" />
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-5 w-28" />
-              <Skeleton className="h-4 w-48 max-w-full" />
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {Array.from({ length: 4 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="space-y-3 rounded-lg border bg-muted/20 p-4"
-                  >
-                    <Skeleton className="h-4 w-16 max-w-full" />
-                    <Skeleton className="h-5 w-20 max-w-full" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <Skeleton className="min-h-48 w-full rounded-xl" />
         </div>
       </div>
     </DashboardFrame>
@@ -129,36 +102,23 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
 
   return (
     <Card className="border-l-4 border-l-primary" data-state={viewModel.state}>
-      <CardHeader className="space-y-3">
-        <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
-          Course progress
-        </p>
-        <CardTitle className="text-2xl sm:text-3xl">
-          {viewModel.headline}
-        </CardTitle>
-        <CardDescription className="font-medium text-foreground">
-          {course?.title ?? "Putting course"}
+      <CardHeader>
+        <CardTitle className="text-2xl">{viewModel.headline}</CardTitle>
+        <CardDescription>
+          {course?.title ?? "Putting course"} · {viewModel.description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-end justify-between gap-4">
-            <p className="font-mono text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">
-                {progress.completedDays} of {progress.totalDays}
-              </span>{" "}
-              days completed
-            </p>
-            <p className="font-mono text-xl font-semibold tabular-nums text-foreground">
-              {progress.percent}%
-            </p>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Progress value={progress.percent} aria-label="Course progress" />
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>Course progress</span>
+            <span>{progress.percent}%</span>
           </div>
-          <Progress
-            className="h-2.5"
-            value={progress.percent}
-            aria-label="Course progress"
-          />
         </div>
+        <p className="text-sm text-muted-foreground">
+          {progress.completedDays} of {progress.totalDays} days completed
+        </p>
       </CardContent>
     </Card>
   );
@@ -180,9 +140,7 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
     <Card className="@container h-full">
       <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
         <div className="min-w-0 space-y-2">
-          <CardTitle className="whitespace-nowrap text-base">
-            Make rate
-          </CardTitle>
+          <CardTitle className="whitespace-nowrap text-base">Make rate</CardTitle>
           <CardDescription>{supportingCopy}</CardDescription>
         </div>
 
@@ -191,7 +149,11 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
           role="img"
           aria-label={`Current 30-day make rate: ${accessibleValue}`}
         >
-          <svg aria-hidden="true" className="size-full" viewBox="0 0 120 120">
+          <svg
+            aria-hidden="true"
+            className="size-full"
+            viewBox="0 0 120 120"
+          >
             <circle
               className="stroke-muted"
               cx="60"
@@ -224,24 +186,6 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
   );
 }
 
-interface SessionMetricProps {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-}
-
-function SessionMetric({ icon: Icon, label, value }: SessionMetricProps) {
-  return (
-    <div className="min-w-0 space-y-3 rounded-lg border bg-muted/20 p-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon className="size-4 shrink-0" aria-hidden="true" />
-        <p className="font-mono font-medium">{label}</p>
-      </div>
-      <p className="font-mono font-semibold tabular-nums">{value}</p>
-    </div>
-  );
-}
-
 function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
   const session = viewModel.latestSession;
 
@@ -253,40 +197,45 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
       </CardHeader>
       <CardContent>
         {!session ? (
-          <div className="space-y-1 text-sm text-muted-foreground">
-            <p>No sessions yet</p>
-            <p>Your first session summary will appear here after you play.</p>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            No sessions yet. Your first session summary will appear here.
+          </p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <SessionMetric
-              icon={Target}
-              label="Make rate"
-              value={
-                session.makeRate == null
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground">Make rate</p>
+              <p className="font-semibold">
+                {session.makeRate == null
                   ? "—"
-                  : `${Math.round(session.makeRate)}%`
-              }
-            />
-            <SessionMetric
-              icon={CircleDot}
-              label="Putts"
-              value={
-                session.made == null || session.attempted == null
+                  : `${Math.round(session.makeRate)}%`}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Putts</p>
+              <p className="font-semibold">
+                {session.made == null || session.attempted == null
                   ? "—"
-                  : `${session.made}/${session.attempted}`
-              }
-            />
-            <SessionMetric
-              icon={CalendarDays}
-              label="Date"
-              value={formatDate(session.createdAt) ?? "—"}
-            />
-            <SessionMetric
-              icon={Timer}
-              label="Duration"
-              value={formatDuration(session.durationSeconds) ?? "—"}
-            />
+                  : `${session.made}/${session.attempted}`}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Max distance</p>
+              <p className="font-semibold">
+                {session.maxDistanceFt == null ? "—" : `${session.maxDistanceFt}ft`}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Date</p>
+              <p className="font-semibold">{formatDate(session.createdAt) ?? "—"}</p>
+            </div>
+            {formatDuration(session.durationSeconds) && (
+              <div className="col-span-2">
+                <p className="text-muted-foreground">Duration</p>
+                <p className="font-semibold">
+                  {formatDuration(session.durationSeconds)}
+                </p>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
