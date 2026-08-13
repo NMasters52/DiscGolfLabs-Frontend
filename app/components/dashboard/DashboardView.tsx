@@ -34,13 +34,13 @@ function DashboardLoading() {
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardContent className="grid flex-1 gap-6 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
-              <div className="space-y-3">
+          <Card className="@container h-full">
+            <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
+              <div className="min-w-0 space-y-3">
                 <Skeleton className="h-5 w-24" />
                 <Skeleton className="h-4 w-full max-w-56" />
               </div>
-              <Skeleton className="size-32 justify-self-center rounded-full md:justify-self-end" />
+              <Skeleton className="size-32 justify-self-center rounded-full @lg:justify-self-end" />
             </CardContent>
           </Card>
           <Skeleton className="min-h-48 w-full rounded-xl" />
@@ -137,15 +137,15 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
         : "Your completed sessions from the last 30 days.";
 
   return (
-    <Card className="h-full">
-      <CardContent className="grid flex-1 gap-6 md:grid-cols-[minmax(0,1fr)_8rem] md:items-center">
-        <div className="space-y-2">
-          <CardTitle className="text-base">Make rate</CardTitle>
+    <Card className="@container h-full">
+      <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
+        <div className="min-w-0 space-y-2">
+          <CardTitle className="whitespace-nowrap text-base">Make rate</CardTitle>
           <CardDescription>{supportingCopy}</CardDescription>
         </div>
 
         <div
-          className="relative size-32 justify-self-center text-foreground md:justify-self-end"
+          className="relative size-32 justify-self-center text-foreground @lg:justify-self-end"
           role="img"
           aria-label={`Current 30-day make rate: ${accessibleValue}`}
         >
