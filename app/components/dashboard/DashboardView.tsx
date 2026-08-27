@@ -91,7 +91,16 @@ function DashboardLoadError({ onRetry }: Pick<DashboardViewProps, "onRetry">) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={onRetry}>Retry</Button>
+          <p id="dashboard-retry-context" className="mb-4 text-sm text-muted-foreground">
+            Your progress and recent session data are temporarily unavailable.
+          </p>
+          <Button
+            className="min-h-11"
+            onClick={onRetry}
+            aria-describedby="dashboard-retry-context"
+          >
+            Retry dashboard
+          </Button>
         </CardContent>
       </Card>
     </DashboardFrame>
@@ -317,7 +326,9 @@ export function DashboardView({ viewModel, onRetry }: DashboardViewProps) {
         <CourseSummary viewModel={viewModel} />
         <div className="grid gap-6 md:grid-cols-2">
           <MakeRateCard viewModel={viewModel} />
-          <LastSessionCard viewModel={viewModel} />
+          <div className="h-full">
+            <LastSessionCard viewModel={viewModel} />
+          </div>
         </div>
       </div>
     </DashboardFrame>
