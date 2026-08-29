@@ -41,6 +41,11 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
+  /* Make Rate ring visualization — kept separate from --accent so the brand
+     accent used by hovers/landing stays untouched. */
+  --color-make-rate-arc: var(--make-rate-arc);
+  --color-make-rate-track: var(--make-rate-track);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
@@ -89,6 +94,11 @@
     --accent: #10b84e;
     --accent-foreground: #ffffff;
 
+    /* Ring arc/track hold >= 3:1 non-text contrast on the #ffffff card
+       (WCAG 1.4.11) — the dashboard is used in direct sunlight. */
+    --make-rate-arc: #0da244;
+    --make-rate-track: #8a9099;
+
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
 
@@ -121,6 +131,10 @@
 
     --accent: #33cb6b;
     --accent-foreground: #0a192f;
+
+    /* Ring arc/track hold >= 3:1 non-text contrast on the #1e2a3d card. */
+    --make-rate-arc: #33cb6b;
+    --make-rate-track: #5c7899;
 
     --destructive: #ef4444;
     --destructive-foreground: #f0f4f8;

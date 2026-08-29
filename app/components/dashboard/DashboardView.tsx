@@ -185,13 +185,18 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
   const displayValue =
     viewModel.makeRate == null ? null : Math.round(viewModel.makeRate);
   const accessibleValue =
-    displayValue == null ? "unavailable" : `${displayValue} percent`;
-  const supportingCopy =
-    viewModel.state === "firstSession"
-      ? "Complete your first session to establish a make rate."
-      : displayValue == null
-        ? "Your 30-day make rate is unavailable."
-        : "Your completed sessions from the last 30 days.";
+    displayValue == null
+      ? viewModel.makeRateStatus === "noRecentSessions"
+        ? "no sessions in the last 30 days"
+        : "unavailable"
+      : `${displayValue} percent`;
+  const supportingCopy = {
+    firstSession: "Complete your first session to establish a make rate.",
+    populated: "Your completed sessions from the last 30 days.",
+    zero: "Your completed sessions from the last 30 days.",
+    noRecentSessions: "No sessions in the last 30 days.",
+    unavailable: "Your 30-day make rate is unavailable.",
+  }[viewModel.makeRateStatus];
 
   return (
     <Card className="h-full">
@@ -207,7 +212,7 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
         >
           <svg aria-hidden="true" className="size-full" viewBox="0 0 120 120">
             <circle
-              className="stroke-muted"
+              className="stroke-make-rate-track"
               cx="60"
               cy="60"
               r="52"
@@ -216,7 +221,7 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
             />
             {viewModel.makeRate != null && viewModel.makeRate > 0 && (
               <circle
-                className="stroke-accent"
+                className="stroke-make-rate-arc"
                 cx="60"
                 cy="60"
                 r="52"
