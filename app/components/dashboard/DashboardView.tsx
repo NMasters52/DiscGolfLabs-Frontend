@@ -20,6 +20,7 @@ import type { DashboardViewModel } from "./view-model";
 interface DashboardViewProps {
   viewModel: DashboardViewModel;
   onRetry: () => void;
+  isRetrying?: boolean;
 }
 
 function DashboardLoading() {
@@ -42,18 +43,18 @@ function DashboardLoading() {
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="@container h-full">
-            <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
-              <div className="min-w-0 space-y-3">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-4 w-full max-w-56" />
-              </div>
-              <Skeleton className="size-32 justify-self-center rounded-full @lg:justify-self-end" />
+          <Card className="h-full">
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-4 w-full max-w-56" />
+            </CardHeader>
+            <CardContent className="flex flex-1 items-center justify-center">
+              <Skeleton className="size-32 rounded-full" />
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-4">
+          <Card className="h-full">
+            <CardHeader>
               <Skeleton className="h-5 w-28" />
               <Skeleton className="h-4 w-48 max-w-full" />
             </CardHeader>
@@ -80,7 +81,10 @@ function DashboardLoading() {
   );
 }
 
-function DashboardLoadError({ onRetry }: Pick<DashboardViewProps, "onRetry">) {
+function DashboardLoadError({
+  onRetry,
+  isRetrying,
+}: Pick<DashboardViewProps, "onRetry" | "isRetrying">) {
   return (
     <DashboardFrame>
       <Card role="alert" data-state="loadError">
@@ -97,9 +101,10 @@ function DashboardLoadError({ onRetry }: Pick<DashboardViewProps, "onRetry">) {
           <Button
             className="min-h-11"
             onClick={onRetry}
+            disabled={isRetrying}
             aria-describedby="dashboard-retry-context"
           >
-            Retry dashboard
+            {isRetrying ? "Retrying…" : "Retry dashboard"}
           </Button>
         </CardContent>
       </Card>
@@ -189,17 +194,14 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
         : "Your completed sessions from the last 30 days.";
 
   return (
-    <Card className="@container h-full">
-      <CardContent className="grid flex-1 gap-4 @lg:grid-cols-[minmax(0,1fr)_8rem] @lg:items-center @lg:gap-6">
-        <div className="min-w-0 space-y-2">
-          <CardTitle className="whitespace-nowrap text-base">
-            Make rate
-          </CardTitle>
-          <CardDescription>{supportingCopy}</CardDescription>
-        </div>
-
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle className="text-base">Make rate</CardTitle>
+        <CardDescription>{supportingCopy}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-1 items-center justify-center">
         <div
-          className="relative size-32 justify-self-center text-foreground @lg:justify-self-end"
+          className="relative size-32"
           role="img"
           aria-label={`Current 30-day make rate: ${accessibleValue}`}
         >
@@ -227,7 +229,11 @@ function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
               />
             )}
           </svg>
-          <span className="absolute inset-0 grid place-items-center font-mono text-3xl font-semibold tabular-nums tracking-tight">
+          <span
+            className={`absolute inset-0 grid place-items-center font-mono text-3xl font-semibold tabular-nums tracking-tight ${
+              displayValue == null ? "text-muted-foreground" : "text-foreground"
+            }`}
+          >
             {displayValue == null ? "—" : `${displayValue}%`}
           </span>
         </div>
@@ -253,8 +259,10 @@ function SessionMetricRow({
         <Icon className="size-4" aria-hidden="true" />
       </div>
       <div className="min-w-0">
-        <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-        <dd className="mt-0.5 break-words font-mono text-sm font-semibold tabular-nums text-foreground">
+        <dt className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </dt>
+        <dd className="mt-1 wrap-break-word font-mono text-base font-semibold tabular-nums text-foreground">
           {value}
         </dd>
       </div>
@@ -266,14 +274,14 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
   const session = viewModel.latestSession;
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
+    <Card className="h-full">
+      <CardHeader>
         <CardTitle className="text-base">Last session</CardTitle>
         <CardDescription>Your most recent putting session</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {!session ? (
-          <div className="space-y-1 text-sm text-muted-foreground">
+          <div className="flex h-full flex-col justify-center gap-1 text-sm text-muted-foreground">
             <p>No sessions yet</p>
             <p>Your first session summary will appear here after you play.</p>
           </div>
@@ -314,10 +322,14 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
   );
 }
 
-export function DashboardView({ viewModel, onRetry }: DashboardViewProps) {
+export function DashboardView({
+  viewModel,
+  onRetry,
+  isRetrying,
+}: DashboardViewProps) {
   if (viewModel.state === "loading") return <DashboardLoading />;
   if (viewModel.state === "loadError") {
-    return <DashboardLoadError onRetry={onRetry} />;
+    return <DashboardLoadError onRetry={onRetry} isRetrying={isRetrying} />;
   }
 
   return (
@@ -326,9 +338,7 @@ export function DashboardView({ viewModel, onRetry }: DashboardViewProps) {
         <CourseSummary viewModel={viewModel} />
         <div className="grid gap-6 md:grid-cols-2">
           <MakeRateCard viewModel={viewModel} />
-          <div className="h-full">
-            <LastSessionCard viewModel={viewModel} />
-          </div>
+          <LastSessionCard viewModel={viewModel} />
         </div>
       </div>
     </DashboardFrame>
