@@ -1,4 +1,4 @@
-Status: ready-for-agent
+Status: **shipped** — dashboard v1 merged as PR #32 (`eddf10f`), refined by #35/#36/#39. This spec is archived; branch directives below are historical and the branches they name have been deleted.
 
 ## Problem Statement
 

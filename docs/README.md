@@ -1,6 +1,6 @@
 # Disc Golf Labs — Frontend Docs
 
-> Status: **reference** · Last verified: 2026-07-29
+> Status: **reference** · Last verified: 2026-08-29
 
 ## Why
 
@@ -23,7 +23,6 @@ here follows [`documentation-template.md`](documentation-template.md).
 
 - [`auth.md`](auth.md) — Clerk auth wiring & route guards.
 - [`frontend-patterns.md`](frontend-patterns.md) — styling/component/data/code-style conventions.
-- [`Issue-Tickets/issue_34_spec.md`](Issue-Tickets/issue_34_spec.md) — parent spec for dashboard card hierarchy, responsive behavior, and interactive make-rate periods.
 
 ## Meta
 
@@ -32,4 +31,4 @@ here follows [`documentation-template.md`](documentation-template.md).
 ## See also
 
 - [`../README.md`](../README.md) — repo setup & commands
-- [`../CLAUDE.md`](../CLAUDE.md) — AI entry point
+- [`../AGENTS.md`](../AGENTS.md) — AI entry point

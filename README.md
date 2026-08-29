@@ -29,6 +29,7 @@ A modern, data-driven disc golf training platform designed to help players impro
 - **Motion** (12.35.0) - Production-grade motion library for smooth animations
 - **next-themes** (0.4.6) - Dark/light mode theming with system preference detection
 - **lucide-react** (0.574.0) - Beautiful, consistent icon library
+- **Embla Carousel** (8.6.0) - Accessible carousel component for UI elements
 
 ### Data & State Management
 
@@ -43,11 +44,6 @@ A modern, data-driven disc golf training platform designed to help players impro
 
 - **Vite** (7.1.7) - Fast build tool with HMR
 - **TypeScript** - Full type coverage across the codebase
-
-### Data Visualization
-
-- **Recharts** (2.15.4) - Composable charting library for analytics dashboards
-- **Embla Carousel** (8.6.0) - Accessible carousel component for UI elements
 
 ## Project Structure
 
@@ -64,10 +60,10 @@ The `app/` directory is organized by concern: route handlers in `api/`, domain-g
 
 ### 2. Analytics Dashboard
 
-- **Multi-device responsive design**: Separate layouts for mobile and desktop
-- **Performance metrics**: Make rate, distance zones, focus insights
-- **Session history**: Track recent practice sessions with detailed stats
-- **Progress visualization**: Charts and progress bars using Recharts
+- **One responsive composition**: A single Command Center layout that adapts from mobile to desktop
+- **Performance metrics**: Make rate overall and by distance period
+- **Most recent session**: Detailed stats from the latest practice session
+- **Progress visualization**: SVG make-rate ring and progress bars
 - **Course tracking**: Day-by-day progress through training courses
 
 ### 3. Course Management System
@@ -75,13 +71,12 @@ The `app/` directory is organized by concern: route handlers in `api/`, domain-g
 - **Enrollment tracking**: Monitor progress through multi-day courses
 - **Day-by-day learning**: Structured content delivery
 - **Completion tracking**: Visual indicators of course progress
-- **Course completion flow**: Special layout when courses are finished
+- **Course completion flow**: Dedicated completion state once all days are done
 
 ### 4. Authentication & User Management
 
 - **Clerk integration**: Secure authentication with social providers
 - **Protected routes**: Route-level auth guards (`require-auth.jsx`)
-- **User profile management**: Query user data with React Query
 
 ### 5. Marketing & Onboarding
 

@@ -1,6 +1,6 @@
 # Architecture — Frontend
 
-> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-07-29
+> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-08-29
 
 ## Why
 
@@ -36,18 +36,14 @@ app/
 │   ├── course.js
 │   ├── enrollment.js
 │   ├── games.js
-│   ├── user.js
 │   └── waitlist.js
 ├── components/
 │   ├── dashboard/          # Dashboard-specific components
-│   │   ├── cards/          # Data visualization cards
-│   │   ├── AppSidebar.tsx
-│   │   ├── CourseCompleteLayout.tsx
-│   │   ├── InCourseLayout.tsx
-│   │   ├── LayoutShell.tsx
-│   │   ├── MobileDashboard.tsx
-│   │   ├── DesktopDashboard.tsx
-│   │   └── data.ts
+│   │   ├── AppSidebar.tsx  # Sidebar nav (rendered by LayoutShell)
+│   │   ├── DashboardView.tsx  # The single responsive dashboard composition
+│   │   ├── LayoutShell.tsx    # Shell: theme + sidebar + header
+│   │   ├── view-model.ts      # createDashboardViewModel: pure state/derivation seam
+│   │   └── view-model.test.ts
 │   ├── games/              # Interactive training games
 │   │   ├── PuttingLadderGame.jsx
 │   │   └── PuttingProgressView.jsx
@@ -80,8 +76,7 @@ app/
 │       └── variants.ts
 ├── queries/                # React Query hooks for data fetching
 │   ├── keys.js             # Centralized query-key factory
-│   ├── useMe.js
-│   ├── useCourses.js
+│   ├── dashboard-options.ts  # Shared query options preset for the dashboard
 │   ├── useCourse.js
 │   ├── useEnrollment.js
 │   ├── useCompleteDay.js

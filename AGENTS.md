@@ -17,7 +17,7 @@ A data-driven disc golf **putting improvement** platform: interactive training g
 - **Tailwind CSS v4** + **shadcn/ui** (Radix primitives) + `tw-animate-css`
 - **TanStack Query v5** for server state; React Router loaders/actions for route data
 - **Clerk** (`@clerk/react-router`) for auth
-- **Recharts** (charts), **Embla** (carousel), **lucide-react** (icons), **next-themes** (dark mode)
+- **Embla** (carousel), **lucide-react** (icons), **next-themes** (dark mode)
 
 ## Commands
 

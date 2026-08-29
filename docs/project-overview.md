@@ -1,6 +1,6 @@
 # Project Overview — Frontend
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-08-29
 > Frontend repo for **Disc Golf Labs**. Pair with the API (`DiscGolfLabs-api`).
 
 ## Why
@@ -16,9 +16,9 @@ Tagline: _Stop guessing. Start improving._
 ## Core capabilities
 
 - **Putting Ladder Game** — progressive putting practice that scales distance to performance, with session save/resume.
-- **Analytics dashboard** — make rate, distance zones, focus insights, session history, progress charts (mobile + desktop layouts).
+- **Analytics dashboard** — make rate overall and by distance period, last-session summary, and course progress in one responsive composition.
 - **Course system** — multi-day structured courses with enrollment and completion tracking.
-- **Auth & accounts** — Clerk sign-in, protected routes, user profile data.
+- **Auth & accounts** — Clerk sign-in, protected routes.
 - **Marketing / onboarding** — landing pages, theming (dark/light), waitlist capture.
 
 ## Where this repo fits
@@ -27,7 +27,7 @@ This is the client. It renders UI, manages game + UI state (TanStack Query, Reac
 
 ## Tech at a glance
 
-React Router v7 · React 19 · TypeScript · Vite · Tailwind v4 · shadcn/ui · TanStack Query v5 · Clerk · Recharts.
+React Router v7 · React 19 · TypeScript · Vite · Tailwind v4 · shadcn/ui · TanStack Query v5 · Clerk.
 
 ## See also
 
