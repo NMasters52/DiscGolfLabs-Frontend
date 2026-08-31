@@ -6,6 +6,13 @@ export type DashboardState =
   | "inProgress"
   | "completed";
 
+export type MakeRateStatus =
+  | "firstSession"
+  | "populated"
+  | "zero"
+  | "noRecentSessions"
+  | "unavailable";
+
 export interface DashboardCourse {
   id: string;
   slug: string;
@@ -38,6 +45,8 @@ export interface DashboardViewModel {
   headline: string;
   description: string;
   makeRate: number | null;
+  makeRateStatus: MakeRateStatus;
+  recentSessionCount: number | null;
   latestSession: DashboardSession | null;
   error: unknown | null;
 }
@@ -75,11 +84,11 @@ const toOptionalNonNegativeNumber = (value: unknown): number | null => {
 };
 
 const toOptionalPercentage = (value: unknown): number | null => {
-  if (value == null) return null;
-
-  const number = Number(value);
-  return Number.isFinite(number) && number >= 0 && number <= 100
-    ? number
+  return typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= 0 &&
+    value <= 100
+    ? value
     : null;
 };
 
@@ -144,6 +153,8 @@ const loadingViewModel = (): DashboardViewModel => ({
   headline: "Loading your dashboard",
   description: "Your course progress is on its way.",
   makeRate: null,
+  makeRateStatus: "unavailable",
+  recentSessionCount: null,
   latestSession: null,
   error: null,
 });
@@ -156,6 +167,8 @@ const errorViewModel = (error: unknown): DashboardViewModel => ({
   headline: "We couldn't load your dashboard",
   description: "Try again and we'll fetch your course progress again.",
   makeRate: null,
+  makeRateStatus: "unavailable",
+  recentSessionCount: null,
   latestSession: null,
   error,
 });
@@ -199,6 +212,8 @@ export function createDashboardViewModel(
       headline: "Enroll to start",
       description: "Join the putting course to see your first day here.",
       makeRate: null,
+      makeRateStatus: "unavailable",
+      recentSessionCount: null,
       latestSession: null,
       error: null,
     };
@@ -211,6 +226,26 @@ export function createDashboardViewModel(
     sessions.length > 0 ? normalizeSession(sessions[sessions.length - 1]) : null;
   const isCompleted = currentDay > course.totalDays;
   const hasSessions = sessions.length > 0;
+  const recentSessionCount = toOptionalNonNegativeNumber(
+    snapshot.stats?.overall?.sessionCount,
+  );
+  // A zero session count means the recent period is empty, so any API-reported
+  // rate is a derived zero and must not be presented as a genuine 0% result.
+  const makeRate =
+    recentSessionCount === 0
+      ? null
+      : hasSessions
+        ? toOptionalPercentage(snapshot.stats?.overall?.makeRate)
+        : null;
+  const makeRateStatus: MakeRateStatus = !hasSessions
+    ? "firstSession"
+    : recentSessionCount === 0
+      ? "noRecentSessions"
+      : makeRate == null
+        ? "unavailable"
+        : makeRate === 0
+          ? "zero"
+          : "populated";
 
   return {
     state: isCompleted
@@ -233,9 +268,9 @@ export function createDashboardViewModel(
       : hasSessions
         ? `${progress.completedDays} of ${course.totalDays} days completed.`
         : "Your first session will give your progress a place to start.",
-    makeRate: hasSessions
-      ? toOptionalPercentage(snapshot.stats?.overall?.makeRate)
-      : null,
+    makeRate,
+    makeRateStatus,
+    recentSessionCount,
     latestSession,
     error: null,
   };

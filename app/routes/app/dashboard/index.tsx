@@ -42,16 +42,30 @@ export default function Dashboard() {
     sessionsError: sessionsQuery.error,
   });
 
+  const dashboardQueries = [
+    courseQuery,
+    enrollmentQuery,
+    statsQuery,
+    sessionsQuery,
+  ];
+
   const handleRetry = () => {
-    if (courseQuery.isError) void courseQuery.refetch();
-    if (enrollmentQuery.isError) void enrollmentQuery.refetch();
-    if (statsQuery.isError) void statsQuery.refetch();
-    if (sessionsQuery.isError) void sessionsQuery.refetch();
+    const errored = dashboardQueries.filter((query) => query.isError);
+    const targets = errored.length > 0 ? errored : dashboardQueries;
+    void Promise.all(targets.map((query) => query.refetch()));
   };
+
+  const isRetrying =
+    viewModel.state === "loadError" &&
+    dashboardQueries.some((query) => query.isFetching);
 
   return (
     <LayoutShell>
-      <DashboardView viewModel={viewModel} onRetry={handleRetry} />
+      <DashboardView
+        viewModel={viewModel}
+        onRetry={handleRetry}
+        isRetrying={isRetrying}
+      />
     </LayoutShell>
   );
 }

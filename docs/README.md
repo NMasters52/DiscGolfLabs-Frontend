@@ -1,6 +1,6 @@
 # Disc Golf Labs — Frontend Docs
 
-> Status: **reference**  ·  Last verified: 2026-07-29
+> Status: **reference** · Last verified: 2026-08-29
 
 ## Why
 
@@ -28,9 +28,7 @@ here follows [`documentation-template.md`](documentation-template.md).
 
 - [`documentation-template.md`](documentation-template.md) — the standard every doc here follows.
 
-> `_audit-issue17.html` and `_followups-issue17.md` are temporary audit artifacts — deleted when issue #17 closes.
-
 ## See also
 
 - [`../README.md`](../README.md) — repo setup & commands
-- [`../CLAUDE.md`](../CLAUDE.md) — AI entry point
+- [`../AGENTS.md`](../AGENTS.md) — AI entry point

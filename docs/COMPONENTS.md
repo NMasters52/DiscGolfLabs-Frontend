@@ -1,6 +1,6 @@
 # Components
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-08-29
 
 ## Why
 
@@ -108,154 +108,27 @@ Sidebar navigation for authenticated app.
 
 ---
 
-### InCourseLayout
+### DashboardView
 
-Layout for active course progress. Renders course hero, stats, and progress chart.
+The single responsive dashboard composition (issue #27): one Command Center layout that
+adapts from mobile to desktop. Renders the course summary, the make-rate ring with
+per-distance periods, and the last-session card. Cards are internal functions in the
+same file driven by the view model — there are no separate card components.
 
-| Prop       | Type   | Required | Description           |
-| ---------- | ------ | -------- | --------------------- |
-| stats      | object | no       | Game stats for charts |
-| currentDay | number | no       | Current day in course |
-| totalDays  | number | no       | Total days in course  |
-
-```tsx
-<InCourseLayout stats={stats} currentDay={2} totalDays={5} />
-```
-
----
-
-### CourseCompleteLayout
-
-Layout shown when course is completed.
-
-| Prop       | Type   | Required | Description          |
-| ---------- | ------ | -------- | -------------------- |
-| currentDay | number | no       | Final day completed  |
-| totalDays  | number | no       | Total days in course |
+| Prop       | Type                 | Required | Description                                    |
+| ---------- | -------------------- | -------- | ---------------------------------------------- |
+| viewModel  | `DashboardViewModel` | yes      | Output of `createDashboardViewModel`           |
+| onRetry    | `() => void`         | yes      | Refetches errored dashboard queries (or all)   |
+| isRetrying | `boolean`            | no       | True while a retry refetch is in flight        |
 
 ```tsx
-<CourseCompleteLayout currentDay={5} totalDays={5} />
+<DashboardView viewModel={viewModel} onRetry={handleRetry} isRetrying={isRetrying} />
 ```
 
----
-
-### DesktopDashboard / MobileDashboard
-
-Responsive dashboard layouts. Render appropriate card layouts for viewport.
-
-```tsx
-<DesktopDashboard stats={stats} />
-<MobileDashboard stats={stats} />
-```
-
----
-
-## Dashboard Cards
-
-Leaf content rendered inside dashboard layouts.
-
-### CourseHeroCard
-
-Displays current course progress with continue CTA.
-
-| Prop       | Type   | Required | Default | Description           |
-| ---------- | ------ | -------- | ------- | --------------------- |
-| currentDay | number | no       | 1       | Current day in course |
-| totalDays  | number | no       | 5       | Total days in course  |
-
-```tsx
-<CourseHeroCard currentDay={3} totalDays={5} />
-```
-
----
-
-### CourseCompleteHeroCard
-
-Displays course completion summary with improvement stats. Pulls from `mockUser` data (TODO: connect to real API).
-
-```tsx
-<CourseCompleteHeroCard />
-```
-
----
-
-### LastSessionCard
-
-Shows last session summary: max distance, make rate, attempts, date. Uses `mockUser` data.
-
-```tsx
-<LastSessionCard />
-```
-
----
-
-### OverallStatsCard
-
-Displays overall make % and personal best distance. Uses `mockUser` data.
-
-```tsx
-<OverallStatsCard />
-```
-
----
-
-### FocusInsightCard
-
-Static insight card showing area for improvement. Currently hardcoded.
-
-```tsx
-<FocusInsightCard />
-```
-
----
-
-### NewGoalCard
-
-Displays next goal with CTA button. Currently hardcoded.
-
-```tsx
-<NewGoalCard />
-```
-
----
-
-### PracticeModeCard
-
-Extra practice mode entry point with "Start Putting Game" button.
-
-```tsx
-<PracticeModeCard />
-```
-
----
-
-### SessionProgressChart
-
-Bar chart showing make rate by distance using Recharts.
-
-| Prop  | Type   | Required | Description                        |
-| ----- | ------ | -------- | ---------------------------------- |
-| stats | object | no       | Contains `distanceBreakdown` array |
-
-```tsx
-<SessionProgressChart stats={stats} />
-```
-
-`stats.distanceBreakdown` format:
-
-```ts
-[{ distance: 15, percentage: 85 }, { distance: 20, percentage: 72 }, ...]
-```
-
----
-
-### EmailSignupSection
-
-Email capture section for course complete flow.
-
-```tsx
-<EmailSignupSection />
-```
+All dashboard UI states (`loading`, `loadError`, `notEnrolled`, `firstSession`,
+`inProgress`, `completed`) derive from `createDashboardViewModel` in
+`app/components/dashboard/view-model.ts` — the pure seam covered by
+`view-model.test.ts` (`npm run test:dashboard`).
 
 ---
 

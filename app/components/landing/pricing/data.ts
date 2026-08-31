@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 // Static marketing tiers (first draft). Wire the course tier to Stripe
-// (app/routes/checkout/ + useCourses()) later.
+// (app/routes/checkout/) later.
 
 export interface PricingTier {
   id: string;

@@ -1,6 +1,6 @@
 # State Management
 
-> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-07-29
+> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-08-29
 
 ## Why
 
@@ -14,9 +14,8 @@ Query keys are the **array tuples** TanStack Query uses as cache addresses. In t
 
 ```js
 queryKeys = {
-  user: { me: () => ["user", "me"] },
   enrollment: { check: (courseId) => ["enrollment", "check", courseId] },
-  course: { all: () => ["course", "all"], bySlug: (slug) => ["course", slug] },
+  course: { bySlug: (slug) => ["course", slug] },
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
@@ -33,8 +32,8 @@ A query key is referenced from **two places that don't know about each other**:
 
 If either side inlined the tuple, a typo or reordered argument would silently break invalidation — the mutation succeeds, the refetch never fires, the UI shows stale data with no error. `keys.js` is the contract that keeps producer and consumer in sync; centralizing it also means a rename catches every call site at once.
 
-- **Nested object** → mirrors the cache hierarchy. Keys are matched by prefix, so `["course", "all"]` and `["course", slug]` share an ancestor and can be invalidated together via `["course"]`. The nesting makes that grouping visible, and `queryKeys.course.` gives autocomplete instead of a magic string.
-- **Factory functions** → the array carries runtime args (`courseId`, `slug`), so it can't be a constant. The no-arg keys (`me`, `all`, `stats`) are functions too, for one consistent access shape: every key is a call, never a property read.
+- **Nested object** → mirrors the cache hierarchy. Keys are matched by prefix, so `["course", slug]` entries share an ancestor and can be invalidated together via `["course"]`. The nesting makes that grouping visible, and `queryKeys.course.` gives autocomplete instead of a magic string.
+- **Factory functions** → the array carries runtime args (`courseId`, `slug`), so it can't be a constant. The no-arg key (`stats`) is a function too, for one consistent access shape: every key is a call, never a property read.
 
 ### How to use them
 
@@ -59,20 +58,6 @@ queryClient.invalidateQueries({
 ---
 
 ## Query Hooks
-
-### useMe
-
-Fetches current authenticated user.
-
-```js
-const { data, isLoading, error } = useMe();
-```
-
-**Returns:** User object from `/api/me`
-
-**Auth:** Requires Clerk session token.
-
----
 
 ### useEnrollment(courseId, options?)
 
@@ -114,18 +99,6 @@ const { data, isLoading } = useCourse(slug);
 
 ---
 
-### useCourses()
-
-Fetches all courses.
-
-```js
-const { data, isLoading } = useCourses();
-```
-
-**Returns:** Array of course objects
-
----
-
 ### useGameSessions(gameSlug, courseId)
 
 Fetches game sessions for a specific game and course.
@@ -151,8 +124,13 @@ Fetches aggregate putting game statistics for current user.
 const { data, isLoading } = usePuttingGameStats();
 ```
 
-**Returns:** stats object with `distanceBreakdown`, `overallMakeRate`, etc.
+**Returns:** stats object. The dashboard's view model reads the **nested** envelope — `overall.makeRate`, `overall.sessionCount` (and last-session `overall.made` / `overall.attempted` / `overall.percentage`).
 **Auth:** Requires Clerk session token.
+
+> **Open item (gated on backend, API #12):** confirm `GET` stats returns the nested
+> `overall` envelope (plus any `streaks` / `highlights` / `comparison` siblings) and
+> finish documenting the full response shape here. Earlier revisions of this doc
+> described a flat `overallMakeRate` field that no live code reads.
 
 ---
 
@@ -167,7 +145,8 @@ const { mutate, isPending, isError } = useCreateGameSession(gameSlug);
 | Param    | Type   | Required | Description                             |
 | -------- | ------ | -------- | --------------------------------------- |
 | gameSlug | string | yes      | Game type slug (e.g., "putting-course") |
-| courseId | string | yes      | MongoDB ObjectId                        |
+
+`gameSlug` is the hook/path param; everything else belongs to the request payload.
 
 **Usage:**
 
@@ -182,6 +161,10 @@ mutate({
 ```
 
 **On success:** invalidates `gameSession.bySlug` and `puttingGame.stats` queries.
+
+> **Open item (gated on backend, API #13):** the request payload shape (`courseId`,
+> `dayNumber`, `putts`, `finalDistance`, and any required fields) is unconfirmed
+> against `DiscGolfLabs-api` — verify before relying on the usage example above.
 
 ---
 

@@ -117,7 +117,7 @@ test("preserves a legitimate zero percent recent make rate", () => {
   const viewModel = createDashboardViewModel({
     course,
     enrollment: { ...enrolled, currentDay: 2 },
-    stats: { overall: { makeRate: 0 } },
+    stats: { overall: { makeRate: 0, sessionCount: 12 } },
     sessions: [
       {
         id: "session-1",
@@ -128,9 +128,150 @@ test("preserves a legitimate zero percent recent make rate", () => {
   });
 
   assert.equal(viewModel.makeRate, 0);
+  assert.equal(viewModel.makeRateStatus, "zero");
+  assert.equal(viewModel.recentSessionCount, 12);
   assert.equal(viewModel.latestSession?.made, 0);
   assert.equal(viewModel.latestSession?.attempted, 20);
   assert.equal(viewModel.latestSession?.makeRate, 0);
+});
+
+test("marks an empty recent period as no sessions instead of a fake zero", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats: { overall: { makeRate: 0, sessionCount: 0 } },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 0, attempted: 20, percentage: 0 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.makeRateStatus, "noRecentSessions");
+  assert.equal(viewModel.makeRate, null);
+  assert.equal(viewModel.recentSessionCount, 0);
+});
+
+test("reports no sessions in the recent period from the session count alone", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats: { overall: { sessionCount: 0 } },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 10, attempted: 20, percentage: 50 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.makeRateStatus, "noRecentSessions");
+  assert.equal(viewModel.makeRate, null);
+  assert.equal(viewModel.recentSessionCount, 0);
+});
+
+test("treats a malformed recent session count as unknown, not empty", () => {
+  for (const sessionCount of ["invalid", -1]) {
+    const viewModel = createDashboardViewModel({
+      course,
+      enrollment: { ...enrolled, currentDay: 2 },
+      stats: { overall: { makeRate: 0, sessionCount } },
+      sessions: [
+        {
+          id: "session-1",
+          dayNumber: 1,
+          overall: { made: 0, attempted: 20, percentage: 0 },
+        },
+      ],
+    });
+
+    assert.equal(viewModel.makeRate, 0);
+    assert.equal(viewModel.makeRateStatus, "zero");
+    assert.equal(viewModel.recentSessionCount, null);
+  }
+});
+
+test("reports a populated recent make rate with its normalized session count", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 3 },
+    stats: { overall: { makeRate: 42.5, sessionCount: 3 } },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 8, attempted: 20, percentage: 40 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.makeRateStatus, "populated");
+  assert.equal(viewModel.makeRate, 42.5);
+  assert.equal(viewModel.recentSessionCount, 3);
+});
+
+test("keeps the make rate unavailable when the recent period count is unknown", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    stats: { overall: {} },
+    sessions: [
+      {
+        id: "session-1",
+        dayNumber: 1,
+        overall: { made: 0, attempted: 20, percentage: 0 },
+      },
+    ],
+  });
+
+  assert.equal(viewModel.makeRateStatus, "unavailable");
+  assert.equal(viewModel.makeRate, null);
+  assert.equal(viewModel.recentSessionCount, null);
+});
+
+test("reports the brand-new player make rate status without recent data", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: enrolled,
+    stats,
+    sessions: [],
+  });
+
+  assert.equal(viewModel.makeRateStatus, "firstSession");
+  assert.equal(viewModel.makeRate, null);
+  assert.equal(viewModel.recentSessionCount, null);
+});
+
+test("keeps not-enrolled make rate data unavailable", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { enrolled: false },
+  });
+
+  assert.equal(viewModel.makeRateStatus, "unavailable");
+  assert.equal(viewModel.recentSessionCount, null);
+});
+
+test("rejects zero-like malformed recent make rates", () => {
+  for (const makeRate of ["", false, []]) {
+    const viewModel = createDashboardViewModel({
+      course,
+      enrollment: { ...enrolled, currentDay: 2 },
+      stats: { overall: { makeRate } },
+      sessions: [
+        {
+          id: "session-1",
+          dayNumber: 1,
+          overall: { made: 0, attempted: 20, percentage: 0 },
+        },
+      ],
+    });
+
+    assert.equal(viewModel.makeRate, null);
+  }
 });
 
 test("returns null for invalid recent make-rate values", () => {

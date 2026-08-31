@@ -1,6 +1,6 @@
 # Pages & Routes
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-08-29
 
 ## Why
 
@@ -114,22 +114,21 @@ Main dashboard after login. Shows course progress, stats, and practice options.
 
 **Data:**
 
-- `usePuttingGameStats()` — fetches user's putting stats
 - `useCourse("putting-course")` — fetches course data
-- `useEnrollment(courseId)` — fetches enrollment status
+- `useEnrollment(courseId)` — fetches enrollment status (gates stats/sessions fetches)
+- `usePuttingGameStats()` — fetches user's putting stats
+- `useGameSessions("putting-course", courseId)` — fetches sessions for the last-session card
 
-**States:**
+All four run through the shared `dashboardQueryOptions` preset (`app/queries/dashboard-options.ts`), and their results are combined by `createDashboardViewModel` into the rendered state.
 
-- `inCourse` — Active course progress view
-- `courseComplete` — Completion celebration view
+**States** (from `createDashboardViewModel`):
 
----
-
-### `/app/test`
-
-**File:** `routes/app/dashboard/testPage.jsx`
-
-Test/debug page for dashboard components.
+- `loading` — any required query still pending (skeletons)
+- `loadError` — any required query errored (all-or-nothing retry screen)
+- `notEnrolled` — signed in but not enrolled
+- `firstSession` — enrolled, no sessions yet
+- `inProgress` — course underway
+- `completed` — all days done
 
 ---
 

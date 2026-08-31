@@ -1,3 +1,11 @@
+import {
+  CalendarDays,
+  CircleDot,
+  Ruler,
+  Target,
+  Timer,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -13,6 +21,7 @@ import type { DashboardViewModel } from "./view-model";
 interface DashboardViewProps {
   viewModel: DashboardViewModel;
   onRetry: () => void;
+  isRetrying?: boolean;
 }
 
 function DashboardLoading() {
@@ -21,28 +30,62 @@ function DashboardLoading() {
       <div className="space-y-6" data-state="loading" aria-busy="true">
         <Card className="border-l-4 border-l-primary">
           <CardHeader className="space-y-3">
-            <Skeleton className="h-7 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-3 w-28" />
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-4 w-1/3" />
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-2 w-full" />
-            <div className="flex justify-between">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-10" />
+          <CardContent className="space-y-3">
+            <div className="flex items-end justify-between gap-4">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="h-7 w-12" />
             </div>
+            <Skeleton className="h-2.5 w-full" />
           </CardContent>
         </Card>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <Skeleton className="h-40 w-full rounded-xl" />
-          <Skeleton className="h-40 w-full rounded-xl" />
+          <Card className="h-full">
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-4 w-full max-w-56" />
+            </CardHeader>
+            <CardContent className="flex flex-1 items-center justify-center">
+              <Skeleton className="size-32 rounded-full" />
+            </CardContent>
+          </Card>
+
+          <Card className="h-full">
+            <CardHeader>
+              <Skeleton className="h-5 w-28" />
+              <Skeleton className="h-4 w-48 max-w-full" />
+            </CardHeader>
+            <CardContent>
+              <div className="divide-y divide-border/60">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3 py-2.5 first:pt-0 last:pb-0"
+                  >
+                    <Skeleton className="size-9 rounded-md" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3 w-16 max-w-full" />
+                      <Skeleton className="h-4 w-20 max-w-full" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </DashboardFrame>
   );
 }
 
-function DashboardLoadError({ onRetry }: Pick<DashboardViewProps, "onRetry">) {
+function DashboardLoadError({
+  onRetry,
+  isRetrying,
+}: Pick<DashboardViewProps, "onRetry" | "isRetrying">) {
   return (
     <DashboardFrame>
       <Card role="alert" data-state="loadError">
@@ -53,7 +96,17 @@ function DashboardLoadError({ onRetry }: Pick<DashboardViewProps, "onRetry">) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button onClick={onRetry}>Retry</Button>
+          <p id="dashboard-retry-context" className="mb-4 text-sm text-muted-foreground">
+            Your progress and recent session data are temporarily unavailable.
+          </p>
+          <Button
+            className="min-h-11"
+            onClick={onRetry}
+            disabled={isRetrying}
+            aria-describedby="dashboard-retry-context"
+          >
+            {isRetrying ? "Retrying…" : "Retry dashboard"}
+          </Button>
         </CardContent>
       </Card>
     </DashboardFrame>
@@ -69,7 +122,7 @@ function DashboardFrame({ children }: { children: React.ReactNode }) {
 }
 
 function formatDuration(durationSeconds: number | null) {
-  if (durationSeconds == null) return null;
+  if (durationSeconds == null) return "—";
 
   const minutes = Math.floor(durationSeconds / 60);
   const seconds = durationSeconds % 60;
@@ -77,10 +130,10 @@ function formatDuration(durationSeconds: number | null) {
 }
 
 function formatDate(createdAt: string | null) {
-  if (!createdAt) return null;
+  if (!createdAt) return "—";
 
   const date = new Date(createdAt);
-  if (Number.isNaN(date.getTime())) return null;
+  if (Number.isNaN(date.getTime())) return "—";
 
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
@@ -94,47 +147,132 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
 
   return (
     <Card className="border-l-4 border-l-primary" data-state={viewModel.state}>
-      <CardHeader>
-        <CardTitle className="text-2xl">{viewModel.headline}</CardTitle>
-        <CardDescription>
-          {course?.title ?? "Putting course"} · {viewModel.description}
+      <CardHeader className="space-y-3">
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.18em] text-primary">
+          Course progress
+        </p>
+        <CardTitle className="text-2xl sm:text-3xl">
+          {viewModel.headline}
+        </CardTitle>
+        <CardDescription className="font-medium text-foreground">
+          {course?.title ?? "Putting course"}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Progress value={progress.percent} aria-label="Course progress" />
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Course progress</span>
-            <span>{progress.percent}%</span>
+      <CardContent>
+        <div className="space-y-3">
+          <div className="flex items-end justify-between gap-4">
+            <p className="font-mono text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {progress.completedDays} of {progress.totalDays}
+              </span>{" "}
+              days completed
+            </p>
+            <p className="font-mono text-xl font-semibold tabular-nums text-foreground">
+              {progress.percent}%
+            </p>
           </div>
+          <Progress
+            className="h-2.5"
+            value={progress.percent}
+            aria-label="Course progress"
+          />
         </div>
-        <p className="text-sm text-muted-foreground">
-          {progress.completedDays} of {progress.totalDays} days completed
-        </p>
       </CardContent>
     </Card>
   );
 }
 
 function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
+  const displayValue =
+    viewModel.makeRate == null ? null : Math.round(viewModel.makeRate);
+  const accessibleValue =
+    displayValue == null
+      ? viewModel.makeRateStatus === "noRecentSessions"
+        ? "no sessions in the last 30 days"
+        : "unavailable"
+      : `${displayValue} percent`;
+  const supportingCopy = {
+    firstSession: "Complete your first session to establish a make rate.",
+    populated: "Your completed sessions from the last 30 days.",
+    zero: "Your completed sessions from the last 30 days.",
+    noRecentSessions: "No sessions in the last 30 days.",
+    unavailable: "Your 30-day make rate is unavailable.",
+  }[viewModel.makeRateStatus];
+
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="text-base">Make rate</CardTitle>
-        <CardDescription>Recent 30-day performance</CardDescription>
+        <CardDescription>{supportingCopy}</CardDescription>
       </CardHeader>
-      <CardContent>
-        {viewModel.makeRate == null ? (
-          <p className="text-sm text-muted-foreground">
-            {viewModel.latestSession == null
-              ? "No sessions yet. Your make rate will appear here after you play."
-              : "Recent make rate is unavailable."}
-          </p>
-        ) : (
-          <p className="text-3xl font-bold">{Math.round(viewModel.makeRate)}%</p>
-        )}
+      <CardContent className="flex flex-1 items-center justify-center">
+        <div
+          className="relative size-32"
+          role="img"
+          aria-label={`Current 30-day make rate: ${accessibleValue}`}
+        >
+          <svg aria-hidden="true" className="size-full" viewBox="0 0 120 120">
+            <circle
+              className="stroke-make-rate-track"
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              strokeWidth="10"
+            />
+            {viewModel.makeRate != null && viewModel.makeRate > 0 && (
+              <circle
+                className="stroke-make-rate-arc"
+                cx="60"
+                cy="60"
+                r="52"
+                fill="none"
+                pathLength="100"
+                strokeDasharray={`${viewModel.makeRate} 100`}
+                strokeLinecap="round"
+                strokeWidth="10"
+                transform="rotate(-90 60 60)"
+              />
+            )}
+          </svg>
+          <span
+            className={`absolute inset-0 grid place-items-center font-mono text-3xl font-semibold tabular-nums tracking-tight ${
+              displayValue == null ? "text-muted-foreground" : "text-foreground"
+            }`}
+          >
+            {displayValue == null ? "—" : `${displayValue}%`}
+          </span>
+        </div>
       </CardContent>
     </Card>
+  );
+}
+
+interface SessionMetricRowProps {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}
+
+function SessionMetricRow({
+  icon: Icon,
+  label,
+  value,
+}: SessionMetricRowProps) {
+  return (
+    <div className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+      <div className="grid size-9 place-items-center rounded-md bg-primary/10 text-primary">
+        <Icon className="size-4" aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <dt className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </dt>
+        <dd className="mt-1 wrap-break-word font-mono text-base font-semibold tabular-nums text-foreground">
+          {value}
+        </dd>
+      </div>
+    </div>
   );
 }
 
@@ -142,63 +280,71 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
   const session = viewModel.latestSession;
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="text-base">Last session</CardTitle>
         <CardDescription>Your most recent putting session</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         {!session ? (
-          <p className="text-sm text-muted-foreground">
-            No sessions yet. Your first session summary will appear here.
-          </p>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-muted-foreground">Make rate</p>
-              <p className="font-semibold">
-                {session.makeRate == null
-                  ? "—"
-                  : `${Math.round(session.makeRate)}%`}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Putts</p>
-              <p className="font-semibold">
-                {session.made == null || session.attempted == null
-                  ? "—"
-                  : `${session.made}/${session.attempted}`}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Max distance</p>
-              <p className="font-semibold">
-                {session.maxDistanceFt == null ? "—" : `${session.maxDistanceFt}ft`}
-              </p>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Date</p>
-              <p className="font-semibold">{formatDate(session.createdAt) ?? "—"}</p>
-            </div>
-            {formatDuration(session.durationSeconds) && (
-              <div className="col-span-2">
-                <p className="text-muted-foreground">Duration</p>
-                <p className="font-semibold">
-                  {formatDuration(session.durationSeconds)}
-                </p>
-              </div>
-            )}
+          <div className="flex h-full flex-col justify-center gap-1 text-sm text-muted-foreground">
+            <p>No sessions yet</p>
+            <p>Your first session summary will appear here after you play.</p>
           </div>
+        ) : (
+          <dl className="divide-y divide-border/60">
+            <SessionMetricRow
+              icon={Target}
+              label="Make rate"
+              value={
+                session.makeRate == null
+                  ? "—"
+                  : `${Math.round(session.makeRate)}%`
+              }
+            />
+            <SessionMetricRow
+              icon={CircleDot}
+              label="Putts made"
+              value={
+                session.made == null || session.attempted == null
+                  ? "—"
+                  : `${session.made}/${session.attempted}`
+              }
+            />
+            <SessionMetricRow
+              icon={Ruler}
+              label="Max distance"
+              value={
+                session.maxDistanceFt == null
+                  ? "—"
+                  : `${session.maxDistanceFt}ft`
+              }
+            />
+            <SessionMetricRow
+              icon={CalendarDays}
+              label="Played"
+              value={formatDate(session.createdAt)}
+            />
+            <SessionMetricRow
+              icon={Timer}
+              label="Duration"
+              value={formatDuration(session.durationSeconds)}
+            />
+          </dl>
         )}
       </CardContent>
     </Card>
   );
 }
 
-export function DashboardView({ viewModel, onRetry }: DashboardViewProps) {
+export function DashboardView({
+  viewModel,
+  onRetry,
+  isRetrying,
+}: DashboardViewProps) {
   if (viewModel.state === "loading") return <DashboardLoading />;
   if (viewModel.state === "loadError") {
-    return <DashboardLoadError onRetry={onRetry} />;
+    return <DashboardLoadError onRetry={onRetry} isRetrying={isRetrying} />;
   }
 
   return (
