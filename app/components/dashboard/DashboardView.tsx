@@ -1,6 +1,7 @@
 import {
   CalendarDays,
   CircleDot,
+  Ruler,
   Target,
   Timer,
   type LucideIcon,
@@ -308,6 +309,15 @@ function LastSessionCard({ viewModel }: { viewModel: DashboardViewModel }) {
                 session.made == null || session.attempted == null
                   ? "—"
                   : `${session.made}/${session.attempted}`
+              }
+            />
+            <SessionMetricRow
+              icon={Ruler}
+              label="Max distance"
+              value={
+                session.maxDistanceFt == null
+                  ? "—"
+                  : `${session.maxDistanceFt}ft`
               }
             />
             <SessionMetricRow
