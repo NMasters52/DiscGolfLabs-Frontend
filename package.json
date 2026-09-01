@@ -6,6 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
+    "test:routes": "node --experimental-strip-types --test app/routes/app/auth-routing.test.ts app/routes/app/courses/learn/redirect.test.ts app/routes/app/courses/learn/learn-routing.test.ts",
     "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts app/queries/dashboard-options.test.ts",
     "test:app": "node --experimental-strip-types --test app/components/app/navigation.test.ts app/components/app/theme-options.test.ts",
     "test": "npm run test:dashboard && npm run test:app",

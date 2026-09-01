@@ -1,6 +1,7 @@
 import { Outlet, Navigate, useParams } from "react-router";
 import useCourse from "../../../../queries/useCourse";
 import useEnrollment from "../../../../queries/useEnrollment";
+import { getEnrollmentDestination } from "./enrollment-redirect";
 
 // Nested inside `/app`, so authentication is already handled by
 // routes/app/_layout.jsx. This layout owns course + enrollment data:
@@ -21,8 +22,13 @@ export default function LearnLayout() {
     return <p>Loading course…</p>;
   }
 
-  if (!enrollment.enrolled) {
-    return <Navigate to={`/courses/${slug}`} replace />;
+  const enrollmentDestination = getEnrollmentDestination({
+    courseSlug: slug,
+    enrolled: enrollment.enrolled,
+  });
+
+  if (enrollmentDestination) {
+    return <Navigate to={enrollmentDestination} replace />;
   }
 
   return <Outlet context={{ course, enrollment }} />;
