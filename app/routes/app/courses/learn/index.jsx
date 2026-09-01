@@ -5,5 +5,7 @@ export default function LearnIndex() {
 
   const day = Math.max(1, enrollment.currentDay);
 
-  return <Navigate to={`/courses/${course.slug}/learn/day/${day}`} replace />;
+  return (
+    <Navigate to={`/app/courses/${course.slug}/learn/day/${day}`} replace />
+  );
 }

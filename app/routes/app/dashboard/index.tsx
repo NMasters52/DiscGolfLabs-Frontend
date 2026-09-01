@@ -1,4 +1,3 @@
-import { LayoutShell } from "~/components/dashboard/LayoutShell";
 import { DashboardView } from "~/components/dashboard/DashboardView";
 import { createDashboardViewModel } from "~/components/dashboard/view-model";
 import { dashboardQueryOptions } from "~/queries/dashboard-options";
@@ -59,13 +58,12 @@ export default function Dashboard() {
     viewModel.state === "loadError" &&
     dashboardQueries.some((query) => query.isFetching);
 
+  // The shared shell comes from routes/app/_layout.jsx — no wrapper here.
   return (
-    <LayoutShell>
-      <DashboardView
-        viewModel={viewModel}
-        onRetry={handleRetry}
-        isRetrying={isRetrying}
-      />
-    </LayoutShell>
+    <DashboardView
+      viewModel={viewModel}
+      onRetry={handleRetry}
+      isRetrying={isRetrying}
+    />
   );
 }

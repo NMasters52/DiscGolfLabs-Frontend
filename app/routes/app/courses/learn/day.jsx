@@ -4,9 +4,9 @@ import {
   useParams,
   useNavigate,
 } from "react-router";
-import useCompleteDay from "../../../queries/useCompleteDay";
-import { PuttingLadderGame } from "../../../components/games/PuttingLadderGame";
-import { PuttingProgressView } from "../../../components/games/PuttingProgressView";
+import useCompleteDay from "../../../../queries/useCompleteDay";
+import { PuttingLadderGame } from "../../../../components/games/PuttingLadderGame";
+import { PuttingProgressView } from "../../../../components/games/PuttingProgressView";
 
 export default function LearnDay() {
   const { dayNumber } = useParams();

@@ -1,6 +1,6 @@
 # Pages & Routes
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-08-29
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-01
 
 ## Why
 
@@ -98,11 +98,13 @@ Clerk sign-up page.
 
 ## App Routes (Protected)
 
+Everything under `/app` is the authenticated product boundary: `routes/app/_layout.jsx` authenticates the user and renders the shared `AppShell` (`app/components/app/AppShell.tsx`) around its `<Outlet />`, so every nested page inherits the shell. Nested layouts authorize data access and share it through outlet context.
+
 ### `/app`
 
 **File:** `routes/app/_index.jsx`
 
-Protected app entry point. Redirects to dashboard.
+Authenticated app entry point. Redirects to `/app/dashboard`.
 
 ---
 
@@ -132,33 +134,39 @@ All four run through the shared `dashboardQueryOptions` preset (`app/queries/das
 
 ---
 
+### `/app/settings`
+
+**File:** `routes/app/settings/index.tsx`
+
+Full-screen settings inside the shared shell. Currently minimal — Appearance only (System/Light/Dark via `ThemeChoice`, backed by the single root `next-themes` provider). Account & Security (Clerk `UserProfile` with path routing) lands with the dedicated Settings ticket.
+
+---
+
 ## Course Learning Routes
 
-### `/courses/learn/_layout.jsx`
+Course learning lives inside the `/app` boundary at `/app/courses/:slug/learn*`. The public course page stays at `/courses/:slug`. The former `/courses/:slug/learn/*` URLs were removed without compatibility redirects — this is a new project, and one canonical route structure is worth more than compatibility routes before the URLs become an established contract.
 
-**File:** `routes/courses/learn/_layout.jsx`
+### `/app/courses/:slug/learn` layout
 
-Pathless parent of `/courses/:slug/learn` and `/courses/:slug/learn/day/:dayNumber` (`routes.ts:17`).
-Loads `course` via `useCourse(slug)` and `enrollment` via `useEnrollment(course._id)`, gates access
-(redirects to `/courses/:slug` if not signed in or `enrollment.enrolled` is false), and passes
-`{ course, enrollment }` to children through `<Outlet context={...} />` — the source of the
-outlet-context data the day route consumes.
+**File:** `routes/app/courses/learn/_layout.jsx`
+
+Layout route for `/app/courses/:slug/learn` (`routes.ts`). Authentication is already handled by the outer `/app` layout; this layout authorizes enrollment: it loads `course` via `useCourse(slug)` and `enrollment` via `useEnrollment(course._id)`, redirects to `/courses/:slug` when `enrollment.enrolled` is false, and passes `{ course, enrollment }` to children through `<Outlet context={...} />` — the source of the outlet-context data the day route consumes.
 
 ---
 
-### `/courses/:slug/learn`
+### `/app/courses/:slug/learn`
 
-**File:** `routes/courses/learn/index.jsx`
+**File:** `routes/app/courses/learn/index.jsx`
 
-Course overview/root. Redirects to current day.
+Course overview/root. Redirects to the current day at `/app/courses/:slug/learn/day/:dayNumber`.
 
 ---
 
-### `/courses/:slug/learn/day/:dayNumber`
+### `/app/courses/:slug/learn/day/:dayNumber`
 
-**File:** `routes/courses/learn/day.jsx`
+**File:** `routes/app/courses/learn/day.jsx`
 
-Individual day content and game. Protected — user must be enrolled and day must be ≤ currentDay.
+Individual day content and game. Enrollment required — day must be ≤ currentDay.
 
 | Param     | Description            |
 | --------- | ---------------------- |
@@ -182,8 +190,8 @@ Individual day content and game. Protected — user must be enrolled and day mus
 
 **Redirects:**
 
-- Invalid day number → `/courses/:slug/learn`
-- Day > currentDay → `/courses/:slug/learn`
+- Invalid day number → `/app/courses/:slug/learn`
+- Day > currentDay → `/app/courses/:slug/learn`
 
 ---
 
@@ -199,7 +207,7 @@ Post-payment success page. Shown after successful enrollment purchase.
 
 ## Route Guards
 
-### `RequireAuth`
+### `RequireAuth` (authentication)
 
 **File:** `app/components/require-auth.jsx`
 
@@ -207,19 +215,19 @@ Reusable auth-only wrapper. Checks Clerk's `isSignedIn`; if not authenticated, r
 
 Used in:
 
-- `/app/*` (via `routes/app/_layout.jsx:6`) — the only consumer.
+- `/app/*` (via `routes/app/_layout.jsx`) — the only consumer.
 
 ---
 
-### Learn route guard (inline, not `RequireAuth`)
+### Learn route guard (enrollment authorization)
 
-**File:** `routes/courses/learn/_layout.jsx:15-33`
+**File:** `routes/app/courses/learn/_layout.jsx`
 
-The `/courses/:slug/learn/*` routes do **not** use `RequireAuth` — they guard inline (behavior documented under the `/courses/learn/_layout.jsx` entry in Course Learning Routes above). The divergence is load-bearing, not an oversight:
+Authentication and enrollment authorization are two layers with different failure destinations, split deliberately across the route hierarchy:
 
-1. **Different failure destination.** `RequireAuth` redirects to `/sign-in`; the learn guard redirects to `/courses/:slug` (the public course page). A signed-in-but-not-enrolled user should land on the course page to enroll, not on a sign-in form they don't need.
-2. **Authorization, not just authentication.** `RequireAuth` answers "are you logged in?" The learn guard answers "are you logged in **and enrolled in this course**?" Enrollment is per-resource data that must be fetched — a data-free gate can't express it.
-3. **The guard owns the data loading anyway.** The layout loads `course` + `enrollment` and passes them to children via `<Outlet context>`; the enrollment check runs against that same fetched data, so wrapping in `RequireAuth` would split one coherent gate into two.
+1. **The outer `/app` layout authenticates.** `RequireAuth` sends signed-out visitors from any `/app/*` URL (including `/app/courses/:slug/learn/*`) to `/sign-in?redirect_url=…`.
+2. **The nested learn layout authorizes.** It answers "are you logged in **and enrolled in this course**?" and redirects signed-in-but-unenrolled users to `/courses/:slug` (the public course page) so they can enroll, rather than to a sign-in form they don't need. Enrollment is per-resource data that must be fetched — a data-free gate can't express it.
+3. **The guard owns the data loading anyway.** The layout loads `course` + `enrollment` and passes them to children via `<Outlet context>`; the enrollment check runs against that same fetched data, so splitting authentication (outer) from authorization (nested) keeps each gate coherent.
 
 ---
 

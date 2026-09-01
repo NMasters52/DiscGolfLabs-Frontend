@@ -40,7 +40,7 @@ export default function CheckoutSuccess() {
         const res = await fetchEnrollment(token, course._id);
 
         if (res.enrolled) {
-          navigate(`/courses/${slug}/learn`, { replace: true });
+          navigate(`/app/courses/${slug}/learn`, { replace: true });
           return;
         }
 

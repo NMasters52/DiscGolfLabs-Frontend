@@ -28,21 +28,8 @@ npm run start      # serve the production build
 npm run typecheck  # react-router typegen && tsc
 ```
 
-## Layout (see docs/architecture.md for detail)
+## Layout
 
-```
-app/
-  routes.ts            # route config; tree under routes/
-  root.tsx             # root layout + providers
-  routes/_landing/     # public marketing pages
-  routes/app/          # authenticated app (incl. dashboard)
-  routes/courses/      # course learning pages
-  routes/checkout/     # Stripe checkout flow
-  components/{landing,dashboard,games,ui}
-  game/puttingLadder/  # game logic + state
-  queries/             # TanStack Query hooks
-  api/                 # server-side resource routes
-  hooks/  lib/
-```
+see docs/architecture.md for detail
 
 Note: TypeScript-first, but some modules (game logic, queries, api handlers) are still `.js/.jsx`.

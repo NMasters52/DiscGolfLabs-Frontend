@@ -15,7 +15,7 @@ Conventions for styling, components, data, and code style on the frontend. Stub 
 
 ## Components
 
-- Group by domain under `app/components/` (`landing`, `dashboard`, `games`, `ui`).
+- Group by domain under `app/components/` (`landing`, `app`, `dashboard`, `games`, `ui`).
 - Reusable primitives go in `ui/` (shadcn); compose them into domain components.
 
 ## Data
