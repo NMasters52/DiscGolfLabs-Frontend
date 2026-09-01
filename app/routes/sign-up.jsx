@@ -6,8 +6,8 @@ export default function SignUpPage() {
   const redirectUrl = searchParams.get("redirect_url") ?? "/app/dashboard";
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <main className="flex justify-center items-center min-h-screen">
       <SignUp forceRedirectUrl={redirectUrl} />
-    </div>
+    </main>
   );
 }

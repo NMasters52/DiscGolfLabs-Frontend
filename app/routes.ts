@@ -14,15 +14,18 @@ export default [
   route("sign-in", "routes/sign-in.jsx"),
   route("sign-up", "routes/sign-up.jsx"),
 
-  route("courses/:slug/learn", "routes/courses/learn/_layout.jsx", [
-    index("routes/courses/learn/index.jsx"),
-    route("day/:dayNumber", "routes/courses/learn/day.jsx"),
-  ]),
-
   route("checkout/success", "routes/checkout/success.jsx"),
 
+  // `/app` is the authenticated product boundary: the layout authenticates
+  // and owns AppShell; nested layouts authorize data access (e.g. course
+  // enrollment) and provide it through outlet context.
   route("app", "routes/app/_layout.jsx", [
     index("routes/app/_index.jsx"),
     route("dashboard", "routes/app/dashboard/index.tsx"),
+    route("courses/:slug/learn", "routes/app/courses/learn/_layout.jsx", [
+      index("routes/app/courses/learn/index.jsx"),
+      route("day/:dayNumber", "routes/app/courses/learn/day.jsx"),
+    ]),
+    route("settings", "routes/app/settings/index.tsx"),
   ]),
 ] satisfies RouteConfig;

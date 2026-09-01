@@ -1,6 +1,6 @@
 # Components
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-08-29
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-01
 
 ## Why
 
@@ -10,24 +10,24 @@ Reusable, domain-specific components with props + usage, ordered foundation-firs
 
 ## App Foundation
 
-Cross-cutting providers and route guards. Wrapped once around the app or individual routes.
+Cross-cutting shell, route guards, and theme controls. Wrapped once around the app or individual routes. Theming has a **single source of truth**: the `next-themes` provider mounted in `app/root.tsx` (`defaultTheme="system"`) — there is no nested theme provider anywhere in the route tree.
 
-### ThemeProvider
+### ModeToggle
 
-Wraps app with `next-themes` for dark/light mode.
+Toggle button for switching themes in the AppShell header.
 
 ```tsx
-<ThemeProvider>{children}</ThemeProvider>
+<ModeToggle />
 ```
 
 ---
 
-### ModeToggle
+### ThemeChoice
 
-Toggle button for switching themes.
+Reusable System/Light/Dark selection backed by next-themes' `setTheme`, used by the Settings screen and reusable by future navigation surfaces.
 
 ```tsx
-<ModeToggle />
+<ThemeChoice />
 ```
 
 ---
@@ -88,19 +88,22 @@ Shows progress visualization for putting game sessions.
 
 Structural shells and nav — pages compose content inside these.
 
-### LayoutShell
+### AppShell
 
-Wrapper component providing consistent dashboard layout structure.
+The one authenticated application shell for `/app/*` (`app/components/app/AppShell.tsx`). Rendered once by `routes/app/_layout.jsx` around its `<Outlet />` — pages never wrap themselves in a shell. Owns the sidebar layout, the sticky header with a dynamic page title resolved from `app/components/app/navigation.ts`, `ModeToggle`, and `SidebarTrigger`.
 
 ```tsx
-<LayoutShell>{children}</LayoutShell>
+// routes/app/_layout.jsx
+<RequireAuth>
+  <AppShell />
+</RequireAuth>
 ```
 
 ---
 
 ### AppSidebar
 
-Sidebar navigation for authenticated app.
+Sidebar navigation for authenticated app (`app/components/app/AppSidebar.tsx`), rendered by `AppShell`.
 
 ```tsx
 <AppSidebar />

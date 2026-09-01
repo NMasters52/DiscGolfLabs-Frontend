@@ -116,7 +116,10 @@ function DashboardLoadError({
 function DashboardFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-1 flex-col bg-muted/30 p-4 md:p-6">
-      <div className="mx-auto w-full max-w-5xl">{children}</div>
+      <div className="mx-auto w-full max-w-5xl">
+        <h1 className="sr-only">Dashboard</h1>
+        {children}
+      </div>
     </div>
   );
 }
