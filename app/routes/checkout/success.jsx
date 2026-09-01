@@ -61,34 +61,46 @@ export default function CheckoutSuccess() {
   }, [slug, isSignedIn, course?._id, getToken, navigate]);
 
   if (!slug) {
-    return <p>Invalid checkout session.</p>;
+    return (
+      <main>
+        <p>Invalid checkout session.</p>
+      </main>
+    );
   }
 
   if (!isSignedIn) {
-    return <p>Please sign in to complete your purchase.</p>;
+    return (
+      <main>
+        <p>Please sign in to complete your purchase.</p>
+      </main>
+    );
   }
 
   if (courseLoading) {
-    return <p>Loading course…</p>;
+    return (
+      <main>
+        <p>Loading course…</p>
+      </main>
+    );
   }
 
   if (status === "timeout") {
     return (
-      <div>
+      <main>
         <h2>We’re still confirming your purchase</h2>
         <p>
           This can happen if the payment is still processing. You can safely
           refresh this page.
         </p>
         <button onClick={() => window.location.reload()}>Try again</button>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div>
+    <main>
       <h2>Confirming your enrollment…</h2>
       <p>This usually takes a few seconds.</p>
-    </div>
+    </main>
   );
 }

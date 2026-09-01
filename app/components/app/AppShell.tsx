@@ -22,9 +22,9 @@ export function AppShell() {
         <SidebarInset>
           <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
             <div className="flex flex-1 items-center justify-between">
-              <h1 className="text-lg font-semibold">
+              <span className="text-lg font-semibold">
                 {destination?.title ?? "Disc Golf Labs"}
-              </h1>
+              </span>
               <div className="flex items-center gap-3">
                 <ModeToggle />
                 <SidebarTrigger className="ml-2" />

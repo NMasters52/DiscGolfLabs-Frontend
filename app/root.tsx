@@ -77,9 +77,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ClerkThemeWrapper>
         <MotionConfig reducedMotion="user">
-          <main>
-            <Outlet />
-          </main>
+          <Outlet />
         </MotionConfig>
       </ClerkThemeWrapper>
     </QueryClientProvider>
