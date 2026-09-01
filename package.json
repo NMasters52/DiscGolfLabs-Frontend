@@ -7,6 +7,8 @@
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts app/queries/dashboard-options.test.ts",
+    "test:app": "node --experimental-strip-types --test app/components/app/navigation.test.ts app/components/app/theme-options.test.ts",
+    "test": "npm run test:dashboard && npm run test:app",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

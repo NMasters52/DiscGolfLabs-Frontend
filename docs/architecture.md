@@ -91,7 +91,7 @@ app/
 │   ├── app/                # Authenticated app routes (`/app` = auth boundary + AppShell)
 │   │   ├── courses/learn/  # Course learning pages (enrollment-gated)
 │   │   ├── dashboard/      # Dashboard implementation
-│   │   └── settings/       # Settings (Appearance; full screen lands later)
+│   │   └── settings/       # Settings (Appearance + Clerk Account/Security, `settings/*` splat)
 │   └── checkout/           # Payment flows
 └── root.tsx                # Root layout with providers
 ```

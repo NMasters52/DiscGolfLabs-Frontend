@@ -18,13 +18,18 @@ import {
   BookOpen,
   Gamepad2,
   BarChart3,
-  User,
+  Settings,
   LogOut,
   Flame,
 } from "lucide-react";
+import { Link, useLocation } from "react-router";
 import { SignOutButton } from "@clerk/react-router";
+import { resolveDestination } from "~/components/app/navigation";
 
 export function AppSidebar() {
+  const { pathname } = useLocation();
+  const destination = resolveDestination(pathname);
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -87,9 +92,15 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <User />
-                  <span>Profile</span>
+                <SidebarMenuButton
+                  asChild
+                  isActive={destination?.path === "/app/settings"}
+                  tooltip="Settings"
+                >
+                  <Link to="/app/settings">
+                    <Settings />
+                    <span>Settings</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
