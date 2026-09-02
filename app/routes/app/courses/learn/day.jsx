@@ -2,15 +2,14 @@ import {
   useOutletContext,
   Navigate,
   useParams,
-  useNavigate,
 } from "react-router";
 import useCompleteDay from "../../../../queries/useCompleteDay";
 import { PuttingLadderGame } from "../../../../components/games/PuttingLadderGame";
 import { PuttingProgressView } from "../../../../components/games/PuttingProgressView";
+import { getLearnDayRedirect } from "./redirect";
 
 export default function LearnDay() {
   const { dayNumber } = useParams();
-  const navigate = useNavigate();
   const { course, enrollment } = useOutletContext();
 
   if (!course || !enrollment) {
@@ -26,12 +25,14 @@ export default function LearnDay() {
     isError,
   } = useCompleteDay(course._id);
 
-  if (Number.isNaN(day) || day < 1 || day > course.days.length) {
-    return <Navigate to=".." replace />;
-  }
+  const redirectDestination = getLearnDayRedirect({
+    dayNumber,
+    currentDay: enrollment.currentDay,
+    totalDays: course.days.length,
+  });
 
-  if (day > enrollment.currentDay) {
-    return <Navigate to=".." replace />;
+  if (redirectDestination) {
+    return <Navigate to={redirectDestination} replace />;
   }
 
   const lesson = course.days.find((d) => d.dayNumber === day);

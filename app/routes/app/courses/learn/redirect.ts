@@ -17,3 +17,28 @@ export function getLearnIndexDestination({
 
   return `/app/courses/${courseSlug}/learn/day/${day}`;
 }
+
+interface LearnDayRedirectInput {
+  dayNumber: string | undefined;
+  currentDay: number;
+  totalDays: number;
+}
+
+export function getLearnDayRedirect({
+  dayNumber,
+  currentDay,
+  totalDays,
+}: LearnDayRedirectInput) {
+  const day = Number(dayNumber);
+
+  if (
+    !Number.isInteger(day) ||
+    day < 1 ||
+    day > totalDays ||
+    day > currentDay
+  ) {
+    return "..";
+  }
+
+  return null;
+}

@@ -1,17 +1,21 @@
 import { useAuth } from "@clerk/react-router";
 import { Navigate, useLocation } from "react-router";
+import { getAuthRedirectDestination } from "./require-auth-redirect";
 
 export function RequireAuth({ children }) {
   const { isLoaded, isSignedIn } = useAuth();
   const location = useLocation();
+  const redirectDestination = getAuthRedirectDestination({
+    isLoaded,
+    isSignedIn,
+    pathname: location.pathname,
+    search: location.search,
+  });
 
   if (!isLoaded) return <div>...loading</div>;
 
-  if (!isSignedIn) {
-    const returnTo = `${location.pathname}${location.search}`;
-    const params = new URLSearchParams({ redirect_url: returnTo });
-
-    return <Navigate to={`/sign-in?${params.toString()}`} replace />;
+  if (redirectDestination) {
+    return <Navigate to={redirectDestination} replace />;
   }
 
   return children;
