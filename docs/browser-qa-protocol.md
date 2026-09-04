@@ -115,6 +115,8 @@ Rules:
 
 No browser MCP does pixel diffs or visual regression. For durable, diffable proof: use the MCP assertion tools (`browser_verify_*` — each emits the equivalent Playwright spec line) and export `browser_storage_state` per account, then codify as Playwright specs with `expect(page).toHaveScreenshot()` baselines run per profile. MCP session = investigation + one-off proof; specs = repeatable proof that fails CI on drift.
 
+The Playwright harness lives in the repo (`playwright.config.ts` + `e2e/`; run `npm run test:e2e`). Its two projects read their logged-in sessions from `e2e/.auth/nick.json` and `e2e/.auth/nicholas.json` — Clerk session cookies, so they are gitignored and never travel with the clone. After a fresh clone or an expired session: log in to each account through the MCP browsers (or a manual Chrome), call `browser_storage_state` per account, and save the exports to those paths. The config fails fast with this instruction if a file is missing.
+
 ## See also
 
 - [`../AGENTS.md`](../AGENTS.md) — repo entry point for agents.
