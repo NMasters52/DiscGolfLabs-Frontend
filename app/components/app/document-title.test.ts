@@ -35,9 +35,17 @@ test("keeps the other destinations addressable so titles cannot drift", () => {
 });
 
 test("falls back to the product name where no destination claims the path", () => {
-  // This is the value Settings resets the tab to on unmount, so the Settings
-  // title cannot leak onto pages that set no title of their own.
+  // This is the value AppShell resets the tab to on unmount, so no
+  // destination title can leak onto pages that set no title of their own.
   assert.equal(documentTitle("/app"), APP_NAME);
   // The splat route never mounts here, so it must not claim the title either.
   assert.equal(documentTitle("/app/settingsx"), APP_NAME);
+});
+
+test("matches the value AppShell resets the tab to on unmount", () => {
+  // AppShell assigns `documentTitle(pathname)` on every pathname change and
+  // resets to `APP_NAME` on unmount, so the two must never disagree for an
+  // unclaimed path — otherwise a shell page could hand the tab a stale title.
+  assert.equal(APP_NAME, documentTitle("/app"));
+  assert.notEqual(APP_NAME, documentTitle("/app/dashboard"));
 });

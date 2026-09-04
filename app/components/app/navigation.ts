@@ -38,7 +38,7 @@ export const APP_NAME = "Disc Golf Labs";
  *
  * Deliberately a pure string builder rather than a `document.title` writer so
  * it stays unit-testable outside a browser. Callers own the assignment — see
- * the Settings route, the only route that currently sets a title.
+ * `AppShell`, which assigns it for every authenticated `/app` pathname.
  */
 export function documentTitle(pathname: string): string {
   const destination = resolveDestination(pathname);
