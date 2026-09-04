@@ -138,7 +138,7 @@ All four run through the shared `dashboardQueryOptions` preset (`app/queries/das
 
 **File:** `routes/app/settings/index.tsx`
 
-Full-screen settings inside the shared shell. Currently minimal — Appearance only (System/Light/Dark via `ThemeChoice`, backed by the single root `next-themes` provider). Account & Security (Clerk `UserProfile` with path routing) lands with the dedicated Settings ticket.
+Full-screen settings inside the shared shell: Appearance first (System/Light/Dark via `ThemeChoice`, backed by the single root `next-themes` provider), then Account & Security via Clerk's `UserProfile` (`routing="path" path="/app/settings"`). Declared in `routes.ts` as `route("settings/*", …)` — the splat also matches the bare `/app/settings`, and Clerk picks its internal page from the URL remainder, so refresh, direct navigation, and browser Back all work through React Router.
 
 ---
 

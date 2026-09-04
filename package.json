@@ -8,6 +8,9 @@
     "start": "react-router-serve ./build/server/index.js",
     "test:routes": "node --experimental-strip-types --test app/routes/app/auth-routing.test.ts app/routes/app/courses/learn/redirect.test.ts app/routes/app/courses/learn/learn-routing.test.ts",
     "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts app/queries/dashboard-options.test.ts",
+    "test:app": "node --experimental-strip-types --test app/components/app/navigation.test.ts app/components/app/theme-options.test.ts app/components/app/document-title.test.ts",
+    "test": "npm run test:dashboard && npm run test:app",
+    "test:e2e": "playwright test",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
@@ -31,6 +34,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@react-router/dev": "7.12.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^22",

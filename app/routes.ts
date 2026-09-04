@@ -26,6 +26,9 @@ export default [
       index("routes/app/courses/learn/index.jsx"),
       route("day/:dayNumber", "routes/app/courses/learn/day.jsx"),
     ]),
-    route("settings", "routes/app/settings/index.tsx"),
+    // One splat route serves /app/settings and every remainder: the splat
+    // also matches the bare path (params["*"] === ""), and Clerk's UserProfile
+    // (routing="path") picks its internal Account/Security page from the URL.
+    route("settings/*", "routes/app/settings/index.tsx"),
   ]),
 ] satisfies RouteConfig;

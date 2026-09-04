@@ -18,6 +18,7 @@ here follows [`documentation-template.md`](documentation-template.md).
 - [`COMPONENTS.md`](COMPONENTS.md) — reusable component catalog (props + usage).
 - [`STATE.md`](STATE.md) — the TanStack Query layer (keys + hooks).
 - [`ENV.md`](ENV.md) — environment variables (`VITE_API_URL`).
+- [`browser-qa-protocol.md`](browser-qa-protocol.md) — how to run browser QA with reviewable proof (accounts, evidence standards, issue sync).
 
 ## Stubs (in progress)
 

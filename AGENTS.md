@@ -32,4 +32,8 @@ npm run typecheck  # react-router typegen && tsc
 
 see docs/architecture.md for detail
 
+## Browser QA
+
+Before running browser-based QA on an issue, read docs/browser-qa-protocol.md and follow it — evidence standards, accounts, and issue-sync rules live there.
+
 Note: TypeScript-first, but some modules (game logic, queries, api handlers) are still `.js/.jsx`.
