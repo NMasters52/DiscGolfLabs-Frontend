@@ -27,3 +27,20 @@ export function resolveDestination(
         pathname.startsWith(`${destination.path}/`),
     );
 }
+
+/** Product name shown in the sidebar header and used for browser tab titles. */
+export const APP_NAME = "Disc Golf Labs";
+
+/**
+ * Browser tab title for an authenticated `/app` pathname: the destination
+ * title followed by the product name, or the bare product name when no
+ * destination claims the path.
+ *
+ * Deliberately a pure string builder rather than a `document.title` writer so
+ * it stays unit-testable outside a browser. Callers own the assignment — see
+ * the Settings route, the only route that currently sets a title.
+ */
+export function documentTitle(pathname: string): string {
+  const destination = resolveDestination(pathname);
+  return destination ? `${destination.title} · ${APP_NAME}` : APP_NAME;
+}
