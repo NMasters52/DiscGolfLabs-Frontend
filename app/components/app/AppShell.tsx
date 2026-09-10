@@ -1,12 +1,18 @@
 import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
+import { Home } from "lucide-react";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { AppSidebar } from "~/components/app/AppSidebar";
-import { APP_NAME, documentTitle, resolveDestination } from "~/components/app/navigation";
+import {
+  APP_NAME,
+  documentTitle,
+  resolveDestination,
+} from "~/components/app/navigation";
+import { MobileNav } from "~/components/app/MobileNav";
 import { ModeToggle } from "~/components/mode-toggle";
 
 // The one authenticated application shell, rendered by routes/app/_layout.jsx
@@ -50,10 +56,14 @@ export function AppShell() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      {/* Below the shell's 768px breakpoint the desktop sidebar is pulled
+          out of the layout entirely (child selector, because the vendored
+          Sidebar root hardcodes its own md breakpoint) and MobileNav's
+          bottom bar becomes the navigation surface. */}
+      <div className="flex min-h-screen w-full [&>[data-slot=sidebar]]:hidden md:[&>[data-slot=sidebar]]:block">
         <AppSidebar />
         <SidebarInset>
-          <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+          <header className="sticky top-0 z-10 hidden h-16 shrink-0 items-center gap-2 border-b bg-background px-4 md:flex">
             <div className="flex flex-1 items-center justify-between">
               <span className="text-lg font-semibold">
                 {destination?.title ?? "Disc Golf Labs"}
@@ -64,11 +74,25 @@ export function AppShell() {
               </div>
             </div>
           </header>
-          <main className="flex flex-1 flex-col">
+          {/* Mobile header: mark and page title only — no hamburger, no
+              theme control (theming lives in the More sheet on mobile). */}
+          <header
+            data-slot="mobile-header"
+            className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-background px-4 md:hidden"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Home className="h-5 w-5" />
+            </div>
+            <span className="text-lg font-semibold">
+              {destination?.title ?? "Disc Golf Labs"}
+            </span>
+          </header>
+          <main className="flex flex-1 flex-col pb-[calc(3.5rem+env(safe-area-inset-bottom))] md:pb-0">
             <Outlet />
           </main>
         </SidebarInset>
       </div>
+      <MobileNav />
     </SidebarProvider>
   );
 }

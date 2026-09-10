@@ -47,6 +47,18 @@ export const SIDEBAR_ITEMS = [
 export const sidebar = (page: Page): Locator =>
   page.locator('[data-slot="sidebar-container"]');
 
+/** The fixed mobile bottom bar (Dashboard / Course / More), below 768px. */
+export const bottomBar = (page: Page): Locator =>
+  page.locator('[data-slot="mobile-nav"]');
+
+/** The compact sticky mobile header (mark + page title), below 768px. */
+export const mobileHeader = (page: Page): Locator =>
+  page.locator('[data-slot="mobile-header"]');
+
+/** The More sheet's content surface (the element swipe-to-close targets). */
+export const moreSheet = (page: Page): Locator =>
+  page.locator('[data-slot="sheet-content"]');
+
 /** The Sign Out control in the sidebar's Account group. */
 export const signOutButton = (page: Page): Locator =>
   page.getByRole("button", { name: "Sign Out" });
@@ -73,6 +85,40 @@ export async function openWithTheme(
   // The shell is the thing under test: wait for it before reading styles.
   await expect(signOutButton(page)).toBeVisible();
   // And wait for the resolved class, so Tailwind's dark: variants are live.
+  await expect(page.locator("html")).toHaveClass(
+    new RegExp(`(^|\\s)${theme}(\\s|$)`),
+  );
+}
+
+/** Phone viewports the mobile specs run at (smallest supported + common). */
+export interface MobileViewport {
+  width: number;
+  height: number;
+}
+
+/**
+ * The mobile counterpart to `openWithTheme`: sets a phone viewport first,
+ * presets `localStorage.theme`, and waits for the mobile shell — the bottom
+ * bar — because the desktop Sign Out control the desktop helper waits for is
+ * hidden below the shell's 768px breakpoint.
+ */
+export async function openMobileWithTheme(
+  page: Page,
+  path: string,
+  theme: Theme,
+  viewport: MobileViewport,
+): Promise<void> {
+  await page.setViewportSize({
+    width: viewport.width,
+    height: viewport.height,
+  });
+
+  await page.addInitScript((value) => {
+    window.localStorage.setItem("theme", value);
+  }, theme);
+
+  await page.goto(path);
+  await expect(bottomBar(page)).toBeVisible();
   await expect(page.locator("html")).toHaveClass(
     new RegExp(`(^|\\s)${theme}(\\s|$)`),
   );
