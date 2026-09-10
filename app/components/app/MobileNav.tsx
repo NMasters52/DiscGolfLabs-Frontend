@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useLocation, useSearchParams } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { BookOpen, LayoutDashboard, Menu, type LucideIcon } from "lucide-react";
 
 import {
@@ -17,6 +17,7 @@ import useEnrollment from "~/queries/useEnrollment";
 
 /** Search parameter that marks the More sheet as open in the URL. */
 const MORE_PARAM = "more";
+const MORE_HISTORY_STATE = "mobileMoreReturnTo";
 
 function MobileTab({
   to,
@@ -33,7 +34,7 @@ function MobileTab({
   active: boolean;
   linkRef?: React.Ref<HTMLAnchorElement>;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-  accessState?: "loading" | "enrolled" | "enrollment-required";
+  accessState?: "loading" | "error" | "enrolled" | "enrollment-required";
 }) {
   return (
     <Link
@@ -64,14 +65,15 @@ function MobileTab({
  *
  * The sheet's open state lives in a `?more` search parameter instead of
  * component state: opening pushes a history entry, so the browser/device
- * Back gesture closes the sheet (closing via UI replaces the entry instead,
- * so Back after a manual close returns to the pre-sheet page). Navigating
- * to a destination from the sheet naturally drops the parameter, which is
- * what closes it.
+ * Back gesture closes the sheet. Manual dismissal consumes that same entry;
+ * a directly loaded sheet URL is closed in place. Destination links replace
+ * the sheet entry so Back returns to the page with the sheet closed.
  */
 export function MobileNav() {
-  const { pathname } = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const { pathname } = location;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const moreButtonRef = React.useRef<HTMLButtonElement>(null);
   const courseLinkRef = React.useRef<HTMLAnchorElement>(null);
@@ -82,27 +84,61 @@ export function MobileNav() {
   const enrollmentQuery = useEnrollment(courseQuery.data?._id, {
     enabled: isMobile,
   });
+  const accessFailed =
+    (courseQuery.isError && !courseQuery.data && !courseQuery.isFetching) ||
+    (enrollmentQuery.isError && !enrollmentQuery.isFetching);
   const courseAccessState =
     enrollmentQuery.data?.enrolled === true
       ? "enrolled"
       : enrollmentQuery.data?.enrolled === false
         ? "enrollment-required"
-        : "loading";
+        : accessFailed
+          ? "error"
+          : "loading";
+
+  const retryCourseAccess = () => {
+    if (!courseQuery.data) {
+      void courseQuery.refetch();
+    } else {
+      void enrollmentQuery.refetch();
+    }
+  };
+
+  React.useEffect(() => {
+    if (courseAccessState === "enrolled") setCourseAccessOpen(false);
+  }, [courseAccessState]);
 
   const activeTab = resolveMobileTab(pathname);
   const moreActive = activeTab === "more" || sheetOpen;
 
   const openSheet = () => {
+    if (sheetOpen) return;
     const params = new URLSearchParams(searchParams);
     params.set(MORE_PARAM, "1");
-    setSearchParams(params);
+    navigate({ pathname, search: `?${params}`, hash: location.hash }, {
+      state: {
+        ...location.state,
+        [MORE_HISTORY_STATE]: `${pathname}${searchParams.size ? `?${searchParams}` : ""}${location.hash}`,
+      },
+      preventScrollReset: true,
+    });
   };
 
   const closeSheet = React.useCallback(() => {
     const params = new URLSearchParams(searchParams);
     params.delete(MORE_PARAM);
-    setSearchParams(params, { replace: true });
-  }, [searchParams, setSearchParams]);
+    const search = params.size ? `?${params}` : "";
+    const destination = `${pathname}${search}${location.hash}`;
+    if (location.state?.[MORE_HISTORY_STATE] === destination) {
+      navigate(-1);
+      return;
+    }
+    navigate({ pathname, search, hash: location.hash }, {
+      replace: true,
+      state: location.state,
+      preventScrollReset: true,
+    });
+  }, [location, pathname, searchParams, navigate]);
 
   const handleCourseClick: React.MouseEventHandler<HTMLAnchorElement> = (
     event,
@@ -110,7 +146,7 @@ export function MobileNav() {
     if (courseAccessState === "enrolled") return;
 
     event.preventDefault();
-    if (courseAccessState === "enrollment-required") {
+    if (courseAccessState === "enrollment-required" || courseAccessState === "error") {
       setCourseAccessOpen(true);
     }
   };
@@ -170,6 +206,8 @@ export function MobileNav() {
       />
       <CourseAccessSheet
         open={courseAccessOpen && isMobile}
+        accessState={courseAccessState}
+        onRetry={retryCourseAccess}
         onOpenChange={setCourseAccessOpen}
         onCloseAutoFocus={(event) => {
           event.preventDefault();

@@ -35,6 +35,28 @@ const VIEWPORTS: MobileViewport[] = [
 ];
 const INTERACTION_VIEWPORT: MobileViewport = { width: 390, height: 844 };
 
+async function expectBarAtViewportBottom(page: Parameters<typeof bottomBar>[0]) {
+  await expect(bottomBar(page)).toBeInViewport({ ratio: 1 });
+  await expect.poll(async () => {
+    const box = await bottomBar(page).boundingBox();
+    return box ? Math.round(box.y + box.height) : null;
+  }).toBe(page.viewportSize()!.height);
+}
+
+async function expectAboveBar(page: Parameters<typeof bottomBar>[0], content: Locator) {
+  await expect(content).toBeVisible();
+  await expect.poll(async () => {
+    const contentBox = await content.boundingBox();
+    const barBox = await bottomBar(page).boundingBox();
+    return contentBox && barBox ? contentBox.y + contentBox.height <= barBox.y : false;
+  }, { message: "page content ends above the bottom bar" }).toBe(true);
+}
+
+async function scrollToBottom(page: Parameters<typeof bottomBar>[0]) {
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expectBarAtViewportBottom(page);
+}
+
 /** The three and only three bottom-bar targets, per the issue. */
 const TABS = [
   { role: "link", name: "Dashboard" },
@@ -57,6 +79,25 @@ const moreTab = (page: Parameters<typeof bottomBar>[0]): Locator =>
 
 test.describe("mobile layout", () => {
   for (const viewport of VIEWPORTS) {
+    test(`More targets are at least 48px tall at ${viewport.width}px`, async ({ page }) => {
+      await openMobileWithTheme(page, "/app/dashboard", "light", viewport);
+      await tab(page, "More").click();
+      const sheet = moreSheet(page);
+      await expect(sheet).toBeVisible();
+      const targets = [
+        sheet.getByRole("link", { name: /Account & Settings/ }),
+        ...["System", "Light", "Dark", "Sign Out", "Close"].map((name) =>
+          sheet.getByRole("button", { name, exact: true }),
+        ),
+      ];
+      for (const target of targets) {
+        await expect(target).toBeVisible();
+        const box = await target.boundingBox();
+        expect(box).not.toBeNull();
+        expect(box!.height).toBeGreaterThanOrEqual(48);
+      }
+    });
+
     test(`bottom bar replaces the desktop sidebar at ${viewport.width}px`, async ({
       page,
     }) => {
@@ -113,9 +154,12 @@ test.describe("mobile layout", () => {
   test("bar stays visible while the page scrolls", async ({ page }) => {
     await openMobileWithTheme(page, "/app/dashboard", "light", INTERACTION_VIEWPORT);
 
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect(bottomBar(page)).toBeVisible();
-    await expect(mobileHeader(page)).toBeVisible();
+    await expectBarAtViewportBottom(page);
+    await scrollToBottom(page);
+    await expect(mobileHeader(page)).toBeInViewport({ ratio: 1 });
+    // The populated dashboard has no action buttons. Its last card is the
+    // meaningful content at the end of the page.
+    await expectAboveBar(page, page.locator('main [data-slot="card"]').last());
   });
 
   test("switches from mobile navigation to the sidebar at 768px", async ({
@@ -218,8 +262,10 @@ test.describe("mobile bar persistence on course screens", () => {
     await settle(page);
 
     await expect(page).toHaveURL(new RegExp(COURSE_DAY_PATH));
-    await expect(bottomBar(page)).toBeVisible();
+    await expectBarAtViewportBottom(page);
     await expect(mobileHeader(page)).toContainText("Putting Course");
+    await scrollToBottom(page);
+    await expectAboveBar(page, page.getByRole("button", { name: "Complete Day", exact: true }));
   });
 
   test("bar stays visible over the putting game (enrolled)", async (
@@ -238,10 +284,11 @@ test.describe("mobile bar persistence on course screens", () => {
     // route: its distance header proves the game is on screen while the
     // fixed bar holds its place above it, at rest and at the scroll bottom.
     await expect(page.getByText("Current Distance:")).toBeVisible();
-    await expect(bottomBar(page)).toBeVisible();
+    await expectBarAtViewportBottom(page);
 
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await expect(bottomBar(page)).toBeVisible();
+    await scrollToBottom(page);
+    // Miss is the last game control. Do not activate it during navigation QA.
+    await expectAboveBar(page, page.getByRole("button", { name: "❌ Miss", exact: true }));
   });
 
   test("unenrolled account leaves the shell for course screens", async ({

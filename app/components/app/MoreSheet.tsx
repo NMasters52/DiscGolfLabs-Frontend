@@ -71,7 +71,7 @@ function SegmentedThemeChoice() {
             aria-pressed={active}
             onClick={() => setTheme(value)}
             className={cn(
-              "flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
               active
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
@@ -197,7 +197,7 @@ export function MoreSheet({
           className="mx-auto mt-2 h-1 w-9 rounded-full bg-muted-foreground/30"
         />
         {/* pb-8 keeps the card clear of the corner close button: X owns a
-            44px absolute target, and the card is itself a tap target, so the
+            48px absolute target, and the card is itself a tap target, so the
             gap stops a thumb aimed at one from landing on the other. */}
         <SheetHeader className="px-4 pb-8 pt-3">
           <SheetTitle>More</SheetTitle>
@@ -215,6 +215,7 @@ export function MoreSheet({
               Settings page; the footer strip names the destination. */}
           <Link
             to="/app/settings"
+            replace
             data-slot="more-account"
             className="group block cursor-pointer overflow-hidden rounded-xl border bg-card transition-colors outline-none hover:border-primary/50 hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >

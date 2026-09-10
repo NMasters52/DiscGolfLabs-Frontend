@@ -13,17 +13,20 @@ import {
 
 interface CourseAccessSheetProps {
   open: boolean;
+  accessState: "loading" | "error" | "enrolled" | "enrollment-required";
+  onRetry: () => void;
   onOpenChange: (open: boolean) => void;
   onCloseAutoFocus?: (event: Event) => void;
 }
 
 /**
- * Gives an unenrolled player context before the app sends them to the public
- * course page. The explicit link avoids turning a primary-nav tap into an
- * unexplained exit from the authenticated shell.
+ * Lets players retry a failed access check or choose whether to view the
+ * public course page when enrollment is required.
  */
 export function CourseAccessSheet({
   open,
+  accessState,
+  onRetry,
   onOpenChange,
   onCloseAutoFocus,
 }: CourseAccessSheetProps) {
@@ -37,8 +40,11 @@ export function CourseAccessSheet({
         <SheetHeader>
           <SheetTitle>Putting Course</SheetTitle>
           <SheetDescription>
-            Enroll before starting the course. You can review the course first
-            without losing your place in the app.
+            {accessState === "error"
+              ? "We couldn't check your course access. Try again without leaving this page."
+              : accessState === "loading"
+                ? "Checking your course access..."
+                : "Enroll before starting the course. You can review the course first without losing your place in the app."}
           </SheetDescription>
         </SheetHeader>
         <SheetFooter className="grid grid-cols-2">
@@ -50,9 +56,20 @@ export function CourseAccessSheet({
           >
             Stay Here
           </Button>
-          <Button asChild className="min-h-12">
-            <Link to={COURSE_MARKETING_ROUTE}>View Course</Link>
-          </Button>
+          {accessState === "error" || accessState === "loading" ? (
+            <Button
+              type="button"
+              className="min-h-12"
+              onClick={onRetry}
+              disabled={accessState === "loading"}
+            >
+              {accessState === "loading" ? "Checking..." : "Retry"}
+            </Button>
+          ) : (
+            <Button asChild className="min-h-12">
+              <Link to={COURSE_MARKETING_ROUTE}>View Course</Link>
+            </Button>
+          )}
         </SheetFooter>
       </SheetContent>
     </Sheet>
