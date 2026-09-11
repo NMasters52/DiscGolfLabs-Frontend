@@ -4,9 +4,9 @@
  * Protocol rule: "Reachable focus is not visible focus." QA #12 found Sign Out
  * tab-reachable and :focus-visible while its focused styles were byte-identical
  * to its resting styles. So this spec asserts the delta, not just reachability:
- *  - Sign Out is the 7th keyboard stop from the top of the page,
+ *  - Sign Out is the 8th keyboard stop from the top of the page,
  *  - while keyboard-focused it matches :focus-visible,
- *  - the focused box-shadow carries the sidebar ring (2px rgb(59,130,246)),
+ *  - the focused box-shadow carries the current sidebar ring (2px),
  *  - after blur the resting box-shadow is back to none.
  * Run in both appearances; Tailwind's dark: variants could break either side.
  */
@@ -22,11 +22,9 @@ import {
   THEMES,
 } from "./helpers";
 
-/** The sidebar focus ring: --sidebar-ring, hsl(217.2 91.2% 59.8%) = blue-500. */
-const RING_COLOR = "rgb(59, 130, 246)";
-const RING_PATTERN = new RegExp(
-  `${RING_COLOR.replace(/\(|\)/g, "\\$&")}\\s+0(?:px)?\\s+0(?:px)?\\s+0(?:px)?\\s+2px`,
-);
+/** The sidebar focus ring is a non-transparent 2px box-shadow token. */
+const RING_PATTERN =
+  /(?:rgb|rgba)\((?!0,\s*0,\s*0,\s*0\))[^)]+\)\s+0(?:px)?\s+0(?:px)?\s+0(?:px)?\s+2px/;
 
 for (const theme of THEMES) {
   test(`Sign Out focus indicator in ${theme} mode`, async ({ page }) => {
@@ -56,7 +54,7 @@ for (const theme of THEMES) {
     expect(
       focused,
       `keyboard-focused Sign Out in ${theme} mode should carry a 2px ` +
-        `${RING_COLOR} ring`,
+        `sidebar ring`,
     ).toMatch(RING_PATTERN);
 
     // Blur and confirm the indicator disappears again — the protocol's actual

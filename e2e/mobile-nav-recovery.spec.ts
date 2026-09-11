@@ -1,6 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-import { bottomBar, openMobileWithTheme } from "./helpers";
+import {
+  bottomBar,
+  expectLearnEntryDestination,
+  openMobileWithTheme,
+} from "./helpers";
 
 const VIEWPORT = { width: 390, height: 844 };
 
@@ -55,7 +59,7 @@ for (const request of [
     if (enrolled) {
       await expect(sheet).toBeHidden();
       await course.click();
-      await expect(page).toHaveURL(/\/app\/courses\/putting-course\/learn\/day\/\d+$/);
+      await expectLearnEntryDestination(page);
     } else {
       await expect(sheet.getByRole("link", { name: "View Course" })).toBeVisible();
       await expect(sheet.getByRole("button", { name: "Retry", exact: true })).toHaveCount(0);

@@ -18,3 +18,16 @@ export type ThemePreference = (typeof THEME_OPTIONS)[number]["value"];
 export function nextToggleTheme(resolvedTheme: string | undefined): "light" | "dark" {
   return resolvedTheme === "dark" ? "light" : "dark";
 }
+
+/** Accessible status and action text for the compact theme control. */
+export function themeControlLabel(
+  theme: string | undefined,
+  resolvedTheme: string | undefined,
+): string {
+  const currentAppearance = resolvedTheme === "dark" ? "Dark" : "Light";
+  const preference =
+    THEME_OPTIONS.find((option) => option.value === theme)?.label ?? "System";
+  const nextAppearance = currentAppearance === "Dark" ? "Light" : "Dark";
+
+  return `Toggle theme. Current: ${currentAppearance}. Preference: ${preference}. Switch to ${nextAppearance}.`;
+}

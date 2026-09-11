@@ -3,12 +3,7 @@ import { Link } from "react-router";
 import {
   ChevronRight,
   LogOut,
-  Monitor,
-  Moon,
-  Sun,
-  type LucideIcon,
 } from "lucide-react";
-import { useTheme } from "next-themes";
 import { SignOutButton, useUser } from "@clerk/react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
@@ -19,23 +14,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import {
-  THEME_OPTIONS,
-  type ThemePreference,
-} from "~/components/app/theme-options";
-import { cn } from "~/lib/utils";
+import { ThemeChoice } from "~/components/app/theme-choice";
 
 /**
  * Distance (px) a downward drag must cover before the sheet dismisses.
  * Below it the sheet springs back, so an accidental graze never closes it.
  */
 const SWIPE_CLOSE_THRESHOLD = 80;
-
-const THEME_ICONS: Record<ThemePreference, LucideIcon> = {
-  system: Monitor,
-  light: Sun,
-  dark: Moon,
-};
 
 interface MoreSheetProps {
   open: boolean;
@@ -46,44 +31,6 @@ interface MoreSheetProps {
    * the restore target itself.
    */
   onCloseAutoFocus?: (event: Event) => void;
-}
-
-// One rounded-full track, three equal segments — a segmented control rather
-// than a row of separate buttons. Drives the same root next-themes provider
-// as the Settings screen's ThemeChoice.
-function SegmentedThemeChoice() {
-  const { theme, setTheme } = useTheme();
-
-  return (
-    <div
-      role="group"
-      aria-label="Theme"
-      className="grid grid-cols-3 gap-1 rounded-full border bg-muted p-1 dark:border-border dark:bg-card"
-    >
-      {THEME_OPTIONS.map(({ value, label }) => {
-        const Icon = THEME_ICONS[value];
-        const active = theme === value;
-
-        return (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={active}
-            onClick={() => setTheme(value)}
-            className={cn(
-              "flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-full text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              active
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
-            )}
-          >
-            <Icon className="size-4" aria-hidden="true" />
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
 }
 
 // The More destination's mobile surface: a content-sized bottom sheet with
@@ -253,7 +200,7 @@ export function MoreSheet({
               Appearance
             </p>
             <div className="mt-3">
-              <SegmentedThemeChoice />
+              <ThemeChoice />
             </div>
           </section>
 

@@ -13,7 +13,6 @@ import {
   resolveDestination,
 } from "~/components/app/navigation";
 import { MobileNav } from "~/components/app/MobileNav";
-import { ModeToggle } from "~/components/mode-toggle";
 
 // The one authenticated application shell, rendered by routes/app/_layout.jsx
 // around its <Outlet /> so every /app page inherits it. Theming comes solely
@@ -64,14 +63,11 @@ export function AppShell() {
         <AppSidebar />
         <SidebarInset>
           <header className="sticky top-0 z-10 hidden h-16 shrink-0 items-center gap-2 border-b bg-background px-4 md:flex">
-            <div className="flex flex-1 items-center justify-between">
+            <div className="flex flex-1 items-center gap-3">
+              <SidebarTrigger title="Toggle Sidebar" />
               <span className="text-lg font-semibold">
                 {destination?.title ?? "Disc Golf Labs"}
               </span>
-              <div className="flex items-center gap-3">
-                <ModeToggle />
-                <SidebarTrigger className="ml-2" />
-              </div>
             </div>
           </header>
           {/* Mobile header: mark and page title only — no hamburger, no
