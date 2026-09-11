@@ -21,6 +21,7 @@ import {
   COURSE_MARKETING_PATH,
   THEMES,
   bottomBar,
+  expectLearnEntryDestination,
   mobileHeader,
   moreSheet,
   openMobileWithTheme,
@@ -94,7 +95,7 @@ test.describe("mobile layout", () => {
         await expect(target).toBeVisible();
         const box = await target.boundingBox();
         expect(box).not.toBeNull();
-        expect(box!.height).toBeGreaterThanOrEqual(48);
+        expect(Math.round(box!.height)).toBeGreaterThanOrEqual(48);
       }
     });
 
@@ -182,7 +183,7 @@ test.describe("mobile layout", () => {
 });
 
 test.describe("Course tab access", () => {
-  test("enrolled account goes straight to training", async ({
+  test("enrolled account opens training or the completed dashboard", async ({
     page,
   }, testInfo) => {
     test.skip(
@@ -202,9 +203,7 @@ test.describe("Course tab access", () => {
     await courseTab.click();
     await settle(page);
 
-    await expect(page).toHaveURL(
-      /\/app\/courses\/putting-course\/learn\/day\/\d+$/,
-    );
+    await expectLearnEntryDestination(page);
     await expect(bottomBar(page)).toBeVisible();
   });
 

@@ -32,17 +32,6 @@ export const TITLE_PATHS = [
 export const COURSE_DAY_PATH = "/app/courses/putting-course/learn/day/2";
 export const COURSE_MARKETING_PATH = "/courses/putting-course";
 
-/** The persistent sidebar shell, as rendered by AppSidebar. */
-export const SIDEBAR_ITEMS = [
-  "Courses",
-  "Putting Course",
-  "Games",
-  "Putting Game",
-  "Stats",
-  "Settings",
-  "Sign Out",
-] as const;
-
 /** Visible desktop sidebar panel (the fixed, painted container). */
 export const sidebar = (page: Page): Locator =>
   page.locator('[data-slot="sidebar-container"]');
@@ -143,8 +132,22 @@ export async function settle(page: Page, timeout = 15_000): Promise<void> {
     .catch(() => undefined);
 }
 
+/**
+ * Enrolled users enter the current lesson, unless their enrollment is
+ * complete, in which case the learn index sends them back to the dashboard.
+ */
+export async function expectLearnEntryDestination(page: Page): Promise<void> {
+  await expect(page).toHaveURL(
+    /\/app\/dashboard$|\/app\/courses\/putting-course\/learn\/day\/\d+$/,
+  );
+
+  if (page.url().endsWith("/app/dashboard")) {
+    await expect(page.locator('[data-state="completed"]')).toBeVisible();
+  }
+}
+
 /** Keyboard stop Sign Out occupies when tabbing from the top of the page. */
-export const SIGN_OUT_TAB_INDEX = 7;
+export const SIGN_OUT_TAB_INDEX = 8;
 
 /**
  * Tabs from a blank focus state until Sign Out is focused.
