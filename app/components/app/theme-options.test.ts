@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error Node's native type stripping requires the explicit extension.
-import { THEME_OPTIONS, nextToggleTheme } from "./theme-options.ts";
+import { THEME_OPTIONS, nextToggleTheme, themeControlLabel } from "./theme-options.ts";
 
 test("exposes System, Light, and Dark in that order", () => {
   assert.deepEqual(
@@ -24,4 +24,11 @@ test("flips the header toggle from the resolved theme", () => {
 
 test("resolves an unknown or pending theme to dark", () => {
   assert.equal(nextToggleTheme(undefined), "dark");
+});
+
+test("describes the resolved appearance and stored preference", () => {
+  assert.equal(
+    themeControlLabel("system", "dark"),
+    "Toggle theme. Current: Dark. Preference: System. Switch to Light.",
+  );
 });

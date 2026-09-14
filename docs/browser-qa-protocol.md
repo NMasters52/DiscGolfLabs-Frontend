@@ -111,6 +111,12 @@ Rules:
 - OAuth round-trips (Clerk → Google → back) can orphan the MCP's page handle: subsequent calls fail with "No open pages available" and `browser_tabs` shows only `about:blank`. Re-navigate to recover; don't restart the server. Verify login state from cookies — `__session` (JWT with `sts: "active"`) plus `__client_uat`, and the JWT `sub` claim distinguishes the two accounts — not from page content. (Hit during the 2026-09-04 one-time logins.)
 - `browser_run_code_unsafe` is the escape hatch for anything the tool surface lacks: `emulateMedia`, keyboard loops, viewport sweeps, fresh contexts, absolute-path screenshots. (Proven across QA #9–#12.)
 
+### Account-specific Course navigation
+
+`e2e/desktop-course-access.spec.ts` runs for the `nick` project. From `/app/dashboard`, it waits for the Course link to report `data-access="enrollment-required"`, clicks it, and asserts that the URL stays `/app/dashboard` and the `Putting Course` dialog exposes `Stay Here` and `View Course`. The `nicholas` project skips this test because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`.
+
+Run the focused desktop check with `npx playwright test e2e/desktop-course-access.spec.ts --project=nick` after refreshing the local auth state if Clerk has expired it.
+
 ### Hard proof beyond the MCP
 
 No browser MCP does pixel diffs or visual regression. For durable, diffable proof: use the MCP assertion tools (`browser_verify_*` — each emits the equivalent Playwright spec line) and export `browser_storage_state` per account, then codify as Playwright specs with `expect(page).toHaveScreenshot()` baselines run per profile. MCP session = investigation + one-off proof; specs = repeatable proof that fails CI on drift.

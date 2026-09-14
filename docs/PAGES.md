@@ -1,6 +1,6 @@
 # Pages & Routes
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-01
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-11
 
 ## Why
 
@@ -105,6 +105,19 @@ Everything under `/app` is the authenticated product boundary: `routes/app/_layo
 **File:** `routes/app/_index.jsx`
 
 Authenticated app entry point. Redirects to `/app/dashboard`.
+
+---
+
+### Course navigation access
+
+The Course entries in `AppSidebar` and `MobileNav` target `/app/courses/putting-course/learn`, but the shell checks access before navigating.
+
+- `enrolled`: follow the course route.
+- `loading`: prevent the click until the access check resolves.
+- `enrollment-required`: stay on the current `/app` page and open `CourseAccessSheet`; `View Course` links to `/courses/putting-course`.
+- `error`: stay on the current `/app` page and open the sheet with Retry.
+
+A direct visit to `/app/courses/:slug/learn*` still uses the nested enrollment guard below. The navigation check improves the click path; it does not replace route authorization.
 
 ---
 

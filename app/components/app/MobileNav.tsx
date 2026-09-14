@@ -10,10 +10,7 @@ import { CourseAccessSheet } from "~/components/app/CourseAccessSheet";
 import { MoreSheet } from "~/components/app/MoreSheet";
 import { useIsMobile } from "~/hooks/use-mobile";
 import { cn } from "~/lib/utils";
-// @ts-expect-error Legacy JavaScript hook has no declaration file yet.
-import useCourse from "~/queries/useCourse";
-// @ts-expect-error Legacy JavaScript hook has no declaration file yet.
-import useEnrollment from "~/queries/useEnrollment";
+import type { CourseAccessState } from "~/components/app/useCourseAccess";
 
 /** Search parameter that marks the More sheet as open in the URL. */
 const MORE_PARAM = "more";
@@ -69,7 +66,13 @@ function MobileTab({
  * a directly loaded sheet URL is closed in place. Destination links replace
  * the sheet entry so Back returns to the page with the sheet closed.
  */
-export function MobileNav() {
+export function MobileNav({
+  courseAccessState,
+  retryCourseAccess,
+}: {
+  courseAccessState: CourseAccessState;
+  retryCourseAccess: () => void;
+}) {
   const location = useLocation();
   const { pathname } = location;
   const navigate = useNavigate();
@@ -79,30 +82,6 @@ export function MobileNav() {
   const courseLinkRef = React.useRef<HTMLAnchorElement>(null);
   const [courseAccessOpen, setCourseAccessOpen] = React.useState(false);
   const sheetOpen = searchParams.has(MORE_PARAM);
-
-  const courseQuery = useCourse("putting-course", { enabled: isMobile });
-  const enrollmentQuery = useEnrollment(courseQuery.data?._id, {
-    enabled: isMobile,
-  });
-  const accessFailed =
-    (courseQuery.isError && !courseQuery.data && !courseQuery.isFetching) ||
-    (enrollmentQuery.isError && !enrollmentQuery.isFetching);
-  const courseAccessState =
-    enrollmentQuery.data?.enrolled === true
-      ? "enrolled"
-      : enrollmentQuery.data?.enrolled === false
-        ? "enrollment-required"
-        : accessFailed
-          ? "error"
-          : "loading";
-
-  const retryCourseAccess = () => {
-    if (!courseQuery.data) {
-      void courseQuery.refetch();
-    } else {
-      void enrollmentQuery.refetch();
-    }
-  };
 
   React.useEffect(() => {
     if (courseAccessState === "enrolled") setCourseAccessOpen(false);
@@ -193,9 +172,8 @@ export function MobileNav() {
         </button>
       </nav>
       {/* isMobile closes both sheets when the viewport crosses md while one
-          is open: the md:hidden lives on the sheet contents only, so without
-          this a resize would leave an invisible overlay and focus trap on
-          the desktop layout. */}
+          is open, so a resize does not leave an invisible mobile overlay and
+          focus trap on the desktop layout. */}
       <MoreSheet
         open={sheetOpen && isMobile}
         onOpenChange={(next) => (next ? openSheet() : closeSheet())}
