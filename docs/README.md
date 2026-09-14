@@ -1,6 +1,6 @@
 # Disc Golf Labs — Frontend Docs
 
-> Status: **reference** · Last verified: 2026-08-29
+> Status: **reference** · Last verified: 2026-09-11
 
 ## Why
 

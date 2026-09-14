@@ -1,6 +1,6 @@
 # Components
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-01
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-11
 
 ## Why
 
@@ -14,7 +14,7 @@ Cross-cutting shell, route guards, and theme controls. Wrapped once around the a
 
 ### ModeToggle
 
-Toggle button for switching themes in the AppShell header.
+Toggle button for switching themes. The landing navigation renders it directly, the expanded app sidebar uses `ThemeChoice`, and the collapsed sidebar uses `ModeToggle`.
 
 ```tsx
 <ModeToggle />
@@ -90,7 +90,7 @@ Structural shells and nav — pages compose content inside these.
 
 ### AppShell
 
-The one authenticated application shell for `/app/*` (`app/components/app/AppShell.tsx`). Rendered once by `routes/app/_layout.jsx` around its `<Outlet />` — pages never wrap themselves in a shell. Owns the sidebar layout, the sticky header with a dynamic page title resolved from `app/components/app/navigation.ts`, `ModeToggle`, and `SidebarTrigger`.
+The one authenticated application shell for `/app/*` (`app/components/app/AppShell.tsx`). Rendered once by `routes/app/_layout.jsx` around its `<Outlet />`, so pages never wrap themselves in a shell. Owns the sidebar layout, responsive navigation, the sticky header with a dynamic page title resolved from `app/components/app/navigation.ts`, the shared Course access state, `ModeToggle`, and `SidebarTrigger`.
 
 ```tsx
 // routes/app/_layout.jsx
@@ -103,11 +103,29 @@ The one authenticated application shell for `/app/*` (`app/components/app/AppShe
 
 ### AppSidebar
 
-Sidebar navigation for authenticated app (`app/components/app/AppSidebar.tsx`), rendered by `AppShell`.
+Sidebar navigation for the authenticated app (`app/components/app/AppSidebar.tsx`), rendered by `AppShell` at widths of 768px and above. Its Course link receives access state and click handling from `AppShell`.
 
 ```tsx
 <AppSidebar />
 ```
+
+---
+
+### MobileNav
+
+Below 768px, `MobileNav` replaces the sidebar with Dashboard, Course, and More. The More button opens `MoreSheet`. Its Course link consumes the shared `useCourseAccess` state and opens `CourseAccessSheet` when enrollment is required or access checking fails.
+
+---
+
+### MoreSheet
+
+Mobile-only bottom sheet for Account & Settings, Appearance, and Sign Out. It owns the `?more=1` URL state so browser or device Back closes the sheet.
+
+---
+
+### CourseAccessSheet
+
+Shared bottom sheet for Course navigation when the player needs a decision or access retry. It offers `Stay Here` and `View Course` for an unenrolled player. If an already-open access check is loading, it shows disabled `Checking...`; after an error, it shows Retry. `AppShell` renders the desktop instance; `MobileNav` renders the mobile instance.
 
 ---
 

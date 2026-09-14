@@ -12,6 +12,16 @@ import { signOutButton } from "./helpers";
 for (const path of ["/app/settings", "/app/settings/security"] as const) {
   test.describe(`sidebar state on ${path}`, () => {
     test("exactly the Settings item is active", async ({ page }) => {
+      await page
+        .context()
+        .addCookies([
+          {
+            name: "sidebar_state",
+            value: "true",
+            domain: "localhost",
+            path: "/",
+          },
+        ]);
       await page.goto(path);
 
       const menuButtons = page.locator('[data-slot="sidebar-menu-button"]');
@@ -31,6 +41,22 @@ for (const path of ["/app/settings", "/app/settings/security"] as const) {
         settingsItem,
         "the Settings destination should claim both Settings URLs",
       ).toHaveAttribute("aria-current", "page");
+      await expect(
+        settingsItem,
+        "the expanded Settings card should have a structural active outline",
+      ).toHaveClass(/outline-2/);
+      await expect(
+        settingsItem,
+        "the expanded Settings card should use active text",
+      ).toHaveClass(/text-sidebar-accent-foreground/);
+      await expect(
+        settingsItem,
+        "the Settings card should retain its keyboard focus ring",
+      ).toHaveClass(/focus-visible:ring-2/);
+      await expect(
+        settingsItem,
+        "the Settings card should keep its own layout without a nav marker",
+      ).not.toHaveClass(/before:/);
 
       const activeItems = page.locator(
         '[data-slot="sidebar-menu-button"][data-active="true"]',
@@ -39,6 +65,16 @@ for (const path of ["/app/settings", "/app/settings/security"] as const) {
         activeItems,
         "primary destinations must not claim a Settings URL",
       ).toHaveCount(0);
+
+      const toggleSidebar = page.locator('[data-slot="sidebar-trigger"]');
+      await toggleSidebar.click();
+      const collapsedSettings = page.getByRole("link", {
+        name: /Account & Settings/,
+      });
+      await expect(
+        collapsedSettings.locator('[data-slot="avatar"]'),
+        "the collapsed Settings avatar should have a matching active ring",
+      ).toHaveClass(/ring-2/);
     });
 
     test("Sign Out is a visible, enabled button", async ({ page }) => {

@@ -34,7 +34,7 @@ export function CourseAccessSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="w-full pb-[env(safe-area-inset-bottom)] md:hidden"
+        className="w-full pb-[env(safe-area-inset-bottom)]"
         onCloseAutoFocus={onCloseAutoFocus}
       >
         <SheetHeader>

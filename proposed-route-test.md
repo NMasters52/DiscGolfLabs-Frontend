@@ -1,5 +1,7 @@
 # Proposed route tests for issue #46
 
+> Status: historical proposal. The repository now has route-decision tests and a `test:routes` command. Those tests cover pure redirect decisions, not the route tree, auth boundary, nested layout, or outlet context. Keep this file as issue #46 decision history; use `app/routes/app/auth-routing.test.ts`, `app/routes/app/courses/learn/learn-routing.test.ts`, and `app/routes/app/courses/learn/redirect.test.ts` for current coverage.
+
 ## Goal
 
 Exercise the real React Router boundaries introduced by issue #46. The tests should prove where each visitor lands and that enrolled course data reaches child routes. They should also prevent the completed-enrollment redirect loop from returning.

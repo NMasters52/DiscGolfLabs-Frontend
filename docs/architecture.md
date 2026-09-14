@@ -1,6 +1,6 @@
 # Architecture — Frontend
 
-> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-08-29
+> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-09-11
 
 ## Why
 
@@ -8,7 +8,7 @@ High-level frontend layers and the request/data flow. Stub — captured from the
 
 ## High level
 
-React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`.
+React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`. The authenticated shell mounts once in `routes/app/_layout.jsx`. `AppShell` owns persistent chrome, page titles, responsive navigation, and the shared Course access check; nested routes render through its outlet.
 
 ## Request / data flow
 
@@ -41,6 +41,10 @@ app/
 │   ├── app/                # Authenticated app shell + navigation
 │   │   ├── AppShell.tsx    # The shared shell (rendered by routes/app/_layout.jsx)
 │   │   ├── AppSidebar.tsx  # Sidebar nav (rendered by AppShell)
+│   │   ├── CourseAccessSheet.tsx # Course access choice/retry sheet
+│   │   ├── MobileNav.tsx   # Dashboard/Course/More navigation below 768px
+│   │   ├── MoreSheet.tsx   # Mobile Account/Appearance/Sign Out sheet
+│   │   ├── useCourseAccess.ts # Shared Course access query state
 │   │   ├── navigation.ts   # Typed /app destination + page-title config
 │   │   └── theme-choice.tsx  # Reusable System/Light/Dark control
 │   ├── dashboard/          # Dashboard-specific components

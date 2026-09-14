@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type MouseEventHandler } from "react";
 import { Outlet, useLocation } from "react-router";
 import { Home } from "lucide-react";
 import {
@@ -7,22 +7,45 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { AppSidebar } from "~/components/app/AppSidebar";
+import { CourseAccessSheet } from "~/components/app/CourseAccessSheet";
 import {
   APP_NAME,
   documentTitle,
   resolveDestination,
 } from "~/components/app/navigation";
 import { MobileNav } from "~/components/app/MobileNav";
+import { useCourseAccess } from "~/components/app/useCourseAccess";
+import { useIsMobile } from "~/hooks/use-mobile";
 
 // The one authenticated application shell, rendered by routes/app/_layout.jsx
 // around its <Outlet /> so every /app page inherits it. Theming comes solely
 // from the root next-themes provider in root.tsx — no nested provider here.
 export function AppShell() {
   const { pathname } = useLocation();
+  const isMobile = useIsMobile();
+  const { accessState: courseAccessState, retry: retryCourseAccess } =
+    useCourseAccess();
+  const [courseAccessOpen, setCourseAccessOpen] = useState(false);
   const destination = resolveDestination(pathname);
   // The last title this shell assigned, so the unmount reset can tell its own
   // writes apart from a title some other page set after the shell left.
   const lastAssigned = useRef<string | null>(null);
+
+  const handleCourseClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
+    if (courseAccessState === "enrolled") return;
+
+    event.preventDefault();
+    if (
+      courseAccessState === "enrollment-required" ||
+      courseAccessState === "error"
+    ) {
+      setCourseAccessOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (isMobile) setCourseAccessOpen(false);
+  }, [isMobile]);
 
   // Clerk's UserProfile swaps Account/Security entirely on the client, so
   // moving between them never re-matches a React Router route and never
@@ -60,7 +83,10 @@ export function AppShell() {
           Sidebar root hardcodes its own md breakpoint) and MobileNav's
           bottom bar becomes the navigation surface. */}
       <div className="flex min-h-screen w-full [&>[data-slot=sidebar]]:hidden md:[&>[data-slot=sidebar]]:block">
-        <AppSidebar />
+        <AppSidebar
+          onCourseClick={handleCourseClick}
+          courseAccessState={courseAccessState}
+        />
         <SidebarInset>
           <header className="sticky top-0 z-10 hidden h-16 shrink-0 items-center gap-2 border-b bg-background px-4 md:flex">
             <div className="flex flex-1 items-center gap-3">
@@ -88,7 +114,16 @@ export function AppShell() {
           </main>
         </SidebarInset>
       </div>
-      <MobileNav />
+      <MobileNav
+        courseAccessState={courseAccessState}
+        retryCourseAccess={retryCourseAccess}
+      />
+      <CourseAccessSheet
+        open={courseAccessOpen && !isMobile}
+        accessState={courseAccessState}
+        onRetry={retryCourseAccess}
+        onOpenChange={setCourseAccessOpen}
+      />
     </SidebarProvider>
   );
 }

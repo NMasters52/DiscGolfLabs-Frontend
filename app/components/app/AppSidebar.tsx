@@ -5,6 +5,7 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
+import type { MouseEventHandler } from "react";
 import { SignOutButton, useUser } from "@clerk/react-router";
 import { Link, useLocation } from "react-router";
 
@@ -26,6 +27,7 @@ import {
 import { ModeToggle } from "~/components/mode-toggle";
 import { ThemeChoice } from "~/components/app/theme-choice";
 import { COURSE_ROUTE, resolveDestination } from "~/components/app/navigation";
+import type { CourseAccessState } from "~/components/app/useCourseAccess";
 import { cn } from "~/lib/utils";
 
 const PRIMARY_NAVIGATION: readonly {
@@ -57,7 +59,13 @@ function NavigationItem({
   destinationPath,
   icon: Icon,
   activePath,
-}: (typeof PRIMARY_NAVIGATION)[number] & { activePath: string | undefined }) {
+  onClick,
+  accessState,
+}: (typeof PRIMARY_NAVIGATION)[number] & {
+  activePath: string | undefined;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
+  accessState?: CourseAccessState;
+}) {
   const isActive = activePath === destinationPath;
 
   return (
@@ -70,8 +78,11 @@ function NavigationItem({
       >
         <Link
           to={to}
+          onClick={onClick}
           aria-label={label}
           aria-current={isActive ? "page" : undefined}
+          aria-disabled={accessState === "loading" ? true : undefined}
+          data-access={accessState}
         >
           <Icon aria-hidden="true" />
           <span className="group-data-[collapsible=icon]:hidden">{label}</span>
@@ -112,7 +123,7 @@ function AccountSummary({ active }: { active: boolean }) {
             aria-current={active ? "page" : undefined}
             title="Account & Settings"
           >
-            <Avatar className="size-7">
+            <Avatar className={cn("size-7", active && "ring-2 ring-sidebar-ring")}>
               {user?.imageUrl ? <AvatarImage src={user.imageUrl} alt="" /> : null}
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -131,7 +142,8 @@ function AccountSummary({ active }: { active: boolean }) {
         title="Account & Settings"
         className={cn(
           "group block overflow-hidden rounded-xl border border-sidebar-border bg-sidebar-accent/35 p-3 outline-none transition-colors hover:border-sidebar-ring hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-          active && "border-sidebar-ring bg-sidebar-accent",
+          active &&
+            "border-sidebar-ring bg-sidebar-accent text-sidebar-accent-foreground outline outline-2 outline-solid outline-sidebar-ring outline-offset-2",
         )}
       >
         <div className="flex items-center gap-3">
@@ -149,7 +161,12 @@ function AccountSummary({ active }: { active: boolean }) {
         <div className="mt-3 flex min-h-10 items-center justify-between border-t border-sidebar-border/80 pt-3 text-sm font-semibold">
           <span>Account &amp; Settings</span>
           <ChevronRight
-            className="size-4 text-sidebar-foreground/60 transition-transform group-hover:translate-x-0.5"
+            className={cn(
+              "size-4 transition-transform group-hover:translate-x-0.5",
+              active
+                ? "text-sidebar-accent-foreground"
+                : "text-sidebar-foreground/60",
+            )}
             aria-hidden="true"
           />
         </div>
@@ -173,7 +190,13 @@ function SidebarThemeControl() {
   );
 }
 
-export function AppSidebar() {
+export function AppSidebar({
+  onCourseClick,
+  courseAccessState,
+}: {
+  onCourseClick?: MouseEventHandler<HTMLAnchorElement>;
+  courseAccessState?: CourseAccessState;
+}) {
   const { pathname } = useLocation();
   const activePath = resolveDestination(pathname)?.path;
   const settingsActive = activePath === "/app/settings";
@@ -210,6 +233,16 @@ export function AppSidebar() {
                   key={item.label}
                   {...item}
                   activePath={activePath}
+                  onClick={
+                    item.destinationPath === "/app/courses"
+                      ? onCourseClick
+                      : undefined
+                  }
+                  accessState={
+                    item.destinationPath === "/app/courses"
+                      ? courseAccessState
+                      : undefined
+                  }
                 />
               ))}
             </SidebarMenu>
