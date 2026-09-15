@@ -10,5 +10,9 @@ export default function SignInPage() {
   if (!isLoaded) return null;
   if (isSignedIn) return <Navigate to={redirectUrl} replace />;
 
-  return <SignIn forceRedirectUrl={redirectUrl} />;
+  return (
+    <main>
+      <SignIn forceRedirectUrl={redirectUrl} />
+    </main>
+  );
 }

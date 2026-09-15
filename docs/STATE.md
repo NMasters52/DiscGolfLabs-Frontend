@@ -1,6 +1,6 @@
 # State Management
 
-> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-08-29
+> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-09-11
 
 ## Why
 
@@ -78,6 +78,23 @@ const { data, isLoading } = useEnrollment(courseId);
 **Auth:** Requires Clerk session token.
 
 **Stale time:** 5 minutes
+
+---
+
+### useCourseAccess()
+
+Combines `useCourse("putting-course")` with `useEnrollment(courseId)` for Course navigation in the authenticated shell. The hook lives at [`app/components/app/useCourseAccess.ts`](../app/components/app/useCourseAccess.ts).
+
+**Returns:** `{ accessState, retry }`
+
+| `accessState`         | Meaning                                                    |
+| --------------------- | ---------------------------------------------------------- |
+| `loading`             | Course or enrollment data has not resolved.                |
+| `error`               | A required course or enrollment request ended in an error. |
+| `enrolled`            | Enrollment data says `enrolled: true`.                     |
+| `enrollment-required`  | Enrollment data says `enrolled: false`.                    |
+
+`retry()` refetches the course when course data is missing. Otherwise it refetches enrollment. This hook uses the query hooks' defaults. It does not use `dashboardQueryOptions`, whose `retry: 1` setting is specific to dashboard queries.
 
 ---
 

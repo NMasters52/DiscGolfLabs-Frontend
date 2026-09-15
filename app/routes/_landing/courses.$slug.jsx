@@ -37,7 +37,7 @@ export default function CourseSalesPage() {
   };
 
   const handleContinue = () => {
-    navigate(`/courses/${slug}/learn`);
+    navigate(`/app/courses/${slug}/learn`);
   };
 
   return (

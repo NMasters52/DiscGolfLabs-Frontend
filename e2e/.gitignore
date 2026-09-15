@@ -1,0 +1,18 @@
+# Scoped to e2e/ — the root .gitignore is intentionally untouched.
+
+# Clerk session storage states (cookies + localStorage) exported from real
+# logged-in accounts. These ARE credentials: never commit, never share.
+.auth/
+
+# Ephemeral run artifacts: traces, videos, failure screenshots, attachments.
+test-results/
+playwright-report/
+blob-report/
+.cache/
+
+# Committed on purpose (NOT ignored): e2e/visual/ holds the checked-in
+# toHaveScreenshot baselines. A baseline only detects drift if it is versioned,
+# and the diff a drift produces is the reviewable proof the protocol asks for.
+# Baseline names carry the platform suffix (…-darwin.png) because they are
+# pixel captures of this machine's font rendering; re-baseline deliberately
+# (`npx playwright test --update-snapshots`) and review the image diff.

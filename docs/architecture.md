@@ -1,6 +1,6 @@
 # Architecture — Frontend
 
-> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-08-29
+> Status: **stub** · Part of: `docs/README.md` · Last verified: 2026-09-11
 
 ## Why
 
@@ -8,7 +8,7 @@ High-level frontend layers and the request/data flow. Stub — captured from the
 
 ## High level
 
-React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`.
+React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`. The authenticated shell mounts once in `routes/app/_layout.jsx`. `AppShell` owns persistent chrome, page titles, responsive navigation, and the shared Course access check; nested routes render through its outlet.
 
 ## Request / data flow
 
@@ -20,8 +20,8 @@ React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack 
 
 | Folder                   | Responsibility                                                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| `app/routes/`            | route components + loaders/actions, split by domain (`_landing`, `app`, `courses`, `checkout`)                                 |
-| `app/components/`        | UI: `landing/`, `dashboard/`, `games/`, `ui/` (shadcn) + top-level `mode-toggle.tsx`, `require-auth.jsx`, `theme-provider.tsx` |
+| `app/routes/`            | route components + loaders/actions, split by domain (`_landing`, `app`, `checkout`)                                            |
+| `app/components/`        | UI: `landing/`, `app/` (shell + nav), `dashboard/`, `games/`, `ui/` (shadcn) + top-level `mode-toggle.tsx`, `require-auth.jsx` |
 | `app/game/`              | game logic + state (e.g. Putting Ladder)                                                                                       |
 | `app/queries/`           | TanStack Query hooks                                                                                                           |
 | `app/api/`               | server-side resource routes                                                                                                    |
@@ -38,10 +38,17 @@ app/
 │   ├── games.js
 │   └── waitlist.js
 ├── components/
+│   ├── app/                # Authenticated app shell + navigation
+│   │   ├── AppShell.tsx    # The shared shell (rendered by routes/app/_layout.jsx)
+│   │   ├── AppSidebar.tsx  # Sidebar nav (rendered by AppShell)
+│   │   ├── CourseAccessSheet.tsx # Course access choice/retry sheet
+│   │   ├── MobileNav.tsx   # Dashboard/Course/More navigation below 768px
+│   │   ├── MoreSheet.tsx   # Mobile Account/Appearance/Sign Out sheet
+│   │   ├── useCourseAccess.ts # Shared Course access query state
+│   │   ├── navigation.ts   # Typed /app destination + page-title config
+│   │   └── theme-choice.tsx  # Reusable System/Light/Dark control
 │   ├── dashboard/          # Dashboard-specific components
-│   │   ├── AppSidebar.tsx  # Sidebar nav (rendered by LayoutShell)
 │   │   ├── DashboardView.tsx  # The single responsive dashboard composition
-│   │   ├── LayoutShell.tsx    # Shell: theme + sidebar + header
 │   │   ├── view-model.ts      # createDashboardViewModel: pure state/derivation seam
 │   │   └── view-model.test.ts
 │   ├── games/              # Interactive training games
@@ -61,8 +68,7 @@ app/
 │   │   └── methodology/
 │   ├── ui/                 # Reusable UI components (shadcn/ui)
 │   ├── mode-toggle.tsx     # Dark/light theme toggle
-│   ├── require-auth.jsx    # Auth guard wrapper
-│   └── theme-provider.tsx  # next-themes provider
+│   └── require-auth.jsx    # Auth guard wrapper (theme lives in root.tsx's next-themes provider)
 ├── game/                   # Game logic and state management
 │   └── puttingLadder/
 │       ├── usePuttingLadderGame.js
@@ -86,9 +92,10 @@ app/
 │   └── useWaitlist.js
 ├── routes/                 # File-based routing
 │   ├── _landing/           # Public landing pages
-│   ├── app/                # Authenticated app routes
-│   │   └── dashboard/      # Dashboard implementation
-│   ├── courses/            # Course learning pages
+│   ├── app/                # Authenticated app routes (`/app` = auth boundary + AppShell)
+│   │   ├── courses/learn/  # Course learning pages (enrollment-gated)
+│   │   ├── dashboard/      # Dashboard implementation
+│   │   └── settings/       # Settings (Appearance + Clerk Account/Security, `settings/*` splat)
 │   └── checkout/           # Payment flows
 └── root.tsx                # Root layout with providers
 ```

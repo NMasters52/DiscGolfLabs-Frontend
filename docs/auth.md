@@ -1,6 +1,6 @@
 # Auth — Frontend
 
-> Status: **stub**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-07-29
+> Status: **stub**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-01
 
 ## Why
 
@@ -10,7 +10,7 @@ How Clerk auth is wired on the frontend and which routes are protected. Stub —
 
 - **Provider:** Clerk via `@clerk/react-router` (themed with `@clerk/themes`).
 - Mount `<ClerkProvider>` in `root.tsx`; sign-in / sign-up components live in routes.
-- Protected routes are guarded, but by **two different mechanisms** (see `PAGES.md` → Route Guards): `/app/*` wraps in `RequireAuth` (`app/components/require-auth.jsx`, redirects to `/sign-in`); `/courses/:slug/learn/*` uses an inline `useAuth()` + `<Navigate>` guard that also checks enrollment and redirects to the public course page (`/courses/:slug`). The backend verifies the Clerk JWT via `requireAuth` middleware in the API repo.
+- `/app/*` is the authenticated product boundary: `routes/app/_layout.jsx` wraps every authenticated route in `RequireAuth` (`app/components/require-auth.jsx`, redirects to `/sign-in?redirect_url=…`). The nested course learning layout (`routes/app/courses/learn/_layout.jsx`) authorizes on top of that boundary — it loads course + enrollment and redirects signed-in-but-unenrolled users to the public course page (`/courses/:slug`). The two layers are split by design (see `PAGES.md` → Route Guards). The backend verifies the Clerk JWT via `requireAuth` middleware in the API repo.
 - The frontend obtains the Clerk JWT and sends it as `Authorization: Bearer <jwt>` to the API.
 
 ## To document
