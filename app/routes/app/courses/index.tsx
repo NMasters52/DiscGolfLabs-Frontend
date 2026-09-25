@@ -1,9 +1,6 @@
 import { useMemo, useState } from "react";
 import { CoursesView } from "~/components/courses/CoursesView";
-import {
-  createCoursesViewModel,
-  type CourseCardViewModel,
-} from "~/components/courses/courses-view-model";
+import { createCoursesViewModel } from "~/components/courses/courses-view-model";
 import { defaultQueryOptions } from "~/queries/query-options";
 import useCourses from "~/queries/useCourses";
 import { useEnrollments } from "~/queries/useEnrollments";
@@ -28,8 +25,13 @@ export default function Courses() {
     enrollmentResults: enrollmentQueries,
   });
 
-  // The card whose access sheet is open; null when no sheet is open.
-  const [sheetCard, setSheetCard] = useState<CourseCardViewModel | null>(null);
+  // The course whose access sheet is open; null when no sheet is open. The
+  // sheet renders the live card view model, so a retry that recovers flips
+  // the sheet (or closes it, once the card is enrolled) instead of sitting
+  // on a stale error.
+  const [sheetCourseId, setSheetCourseId] = useState<string | null>(null);
+  const sheetCard =
+    viewModel.cards.find((card) => card.courseId === sheetCourseId) ?? null;
 
   const handleRetry = () => {
     void coursesQuery.refetch();
@@ -45,7 +47,7 @@ export default function Courses() {
       onRetry={handleRetry}
       isRetrying={coursesQuery.isFetching}
       sheetCard={sheetCard}
-      onOpenSheet={setSheetCard}
+      onOpenSheet={setSheetCourseId}
       onSheetRetry={handleSheetRetry}
       isSheetRetrying={
         sheetCard != null &&

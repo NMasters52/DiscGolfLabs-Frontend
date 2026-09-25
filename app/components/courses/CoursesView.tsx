@@ -24,7 +24,8 @@ interface CoursesViewProps {
   onRetry: () => void;
   isRetrying?: boolean;
   sheetCard: CourseCardViewModel | null;
-  onOpenSheet: (card: CourseCardViewModel | null) => void;
+  /** Opens the sheet for a card's course; closes it when passed null. */
+  onOpenSheet: (courseId: string | null) => void;
   onSheetRetry: () => void;
   isSheetRetrying?: boolean;
 }
@@ -284,18 +285,28 @@ export function CoursesView({
             key={card.courseId}
             card={card}
             onOpenCard={(opened) => {
-              lastCardRef.current = document.activeElement as HTMLButtonElement;
-              onOpenSheet(opened);
+              lastCardRef.current =
+                document.activeElement as HTMLButtonElement;
+              onOpenSheet(opened.courseId);
             }}
           />
         ))}
       </div>
 
+      {/* The sheet only exists while its card still needs a decision: a
+          retry that enrolls the account closes it through the open flag,
+          and focus returns to the card that opened it. */}
       <CourseAccessSheet
-        open={sheetCard != null}
+        open={
+          sheetCard != null &&
+          (sheetCard.status === "error" ||
+            sheetCard.status === "notEnrolled")
+        }
         courseTitle={sheetCard?.title ?? "Course"}
         courseSlug={sheetCard?.slug ?? ""}
-        accessState={sheetCard?.status === "error" ? "error" : "enrollment-required"}
+        accessState={
+          sheetCard?.status === "error" ? "error" : "enrollment-required"
+        }
         onRetry={onSheetRetry}
         isRetrying={isSheetRetrying}
         onOpenChange={(open) => {

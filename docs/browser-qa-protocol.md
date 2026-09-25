@@ -113,7 +113,7 @@ Rules:
 
 ### Account-specific Course navigation
 
-`e2e/desktop-course-access.spec.ts` runs for the `nick` project. From `/app/dashboard`, it waits for the Course link to report `data-access="enrollment-required"`, clicks it, and asserts that the URL stays `/app/dashboard` and the `Putting Course` dialog exposes `Stay Here` and `View Course`. The `nicholas` project skips this test because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`.
+`e2e/desktop-course-access.spec.ts` runs for the `nick` project. From `/app/dashboard`, it clicks the sidebar's Courses link, lands on `/app/courses`, and clicks the course card; the sheet is named by the card's own title (data, not copy) and exposes `Stay Here` and `View Course`. The spec also proves the page-level sheet survives crossing the 768px breakpoint. The `nicholas` project skips these tests because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`, and `e2e/courses-flow.spec.ts` pins the full index → course home → day path for both accounts, including the completed-course entry that used to be sealed off.
 
 Run the focused desktop check with `npx playwright test e2e/desktop-course-access.spec.ts --project=nick` after refreshing the local auth state if Clerk has expired it.
 
