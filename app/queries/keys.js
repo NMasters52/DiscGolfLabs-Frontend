@@ -4,6 +4,7 @@ export const queryKeys = {
   },
   course: {
     bySlug: (slug) => ["course", slug],
+    list: () => ["course", "list"],
   },
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
