@@ -205,6 +205,7 @@ function CourseCard({
       <Link
         to={action.to}
         data-course-card
+        data-course-id={card.courseId}
         data-state={card.status}
         aria-label={`${card.title} course`}
         className={`group/card ${cardShellClassName}`}
@@ -219,6 +220,7 @@ function CourseCard({
       <button
         type="button"
         data-course-card
+        data-course-id={card.courseId}
         data-state={card.status}
         onClick={() => onOpenCard(card)}
         className={`cursor-pointer ${cardShellClassName}`}
@@ -231,6 +233,7 @@ function CourseCard({
   return (
     <div
       data-course-card
+      data-course-id={card.courseId}
       data-state="loading"
       aria-disabled="true"
       className={cardShellClassName}
@@ -249,9 +252,10 @@ export function CoursesView({
   onSheetRetry,
   isSheetRetrying,
 }: CoursesViewProps) {
-  // The last card button that opened the sheet, so closing it hands focus
-  // back instead of dropping it on the document.
-  const lastCardRef = useRef<HTMLButtonElement | null>(null);
+  // The course id whose sheet was opened, kept through the close
+  // transition: sheetCard is already null when onCloseAutoFocus fires, so
+  // the focus target has to come from a ref rather than the current render.
+  const sheetCourseIdRef = useRef<string | null>(null);
 
   if (viewModel.state === "loading") {
     return (
@@ -277,6 +281,19 @@ export function CoursesView({
     );
   }
 
+  // The sheet stays put while a retried check is in flight — otherwise it
+  // would close and reopen as the card's status flickers underneath it.
+  // Held on the error path so the disabled Checking button stays put too.
+  const sheetOpen =
+    sheetCard != null &&
+    (isSheetRetrying ||
+      sheetCard.status === "error" ||
+      sheetCard.status === "notEnrolled");
+  const sheetAccessState =
+    isSheetRetrying || sheetCard?.status === "error"
+      ? "error"
+      : "enrollment-required";
+
   return (
     <CoursesFrame>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -285,28 +302,22 @@ export function CoursesView({
             key={card.courseId}
             card={card}
             onOpenCard={(opened) => {
-              lastCardRef.current =
-                document.activeElement as HTMLButtonElement;
+              sheetCourseIdRef.current = opened.courseId;
               onOpenSheet(opened.courseId);
             }}
           />
         ))}
       </div>
 
-      {/* The sheet only exists while its card still needs a decision: a
-          retry that enrolls the account closes it through the open flag,
-          and focus returns to the card that opened it. */}
+      {/* A retry that enrolls the account closes the sheet through the open
+          flag, and focus returns to that card — re-resolved by its course
+          id, because the card's element is replaced while its status
+          changes, so a saved node reference can go stale. */}
       <CourseAccessSheet
-        open={
-          sheetCard != null &&
-          (sheetCard.status === "error" ||
-            sheetCard.status === "notEnrolled")
-        }
+        open={sheetOpen}
         courseTitle={sheetCard?.title ?? "Course"}
         courseSlug={sheetCard?.slug ?? ""}
-        accessState={
-          sheetCard?.status === "error" ? "error" : "enrollment-required"
-        }
+        accessState={sheetAccessState}
         onRetry={onSheetRetry}
         isRetrying={isSheetRetrying}
         onOpenChange={(open) => {
@@ -314,7 +325,10 @@ export function CoursesView({
         }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
-          lastCardRef.current?.focus();
+          const card = document.querySelector(
+            `[data-course-card][data-course-id="${sheetCourseIdRef.current ?? ""}"]`,
+          ) as HTMLElement | null;
+          card?.focus();
         }}
       />
     </CoursesFrame>

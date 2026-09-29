@@ -47,8 +47,10 @@ test("a failed enrollment check recovers from the card sheet", async ({
 }, testInfo) => {
   test.setTimeout(60_000);
   let failing = true;
+  let checkCalls = 0;
   await page.route("**/api/enrollments/check/*", async (route) => {
     if (failing) {
+      checkCalls += 1;
       await route.fulfill({ status: 503, body: "Temporarily unavailable" });
     } else {
       await route.continue();
@@ -82,11 +84,31 @@ test("a failed enrollment check recovers from the card sheet", async ({
   await expect(card).toBeFocused();
 
   await card.click();
-  // A second outage still offers recovery after the retry finishes.
+  // A second outage still offers recovery after the retry finishes: the
+  // retried check runs, fails against the outage again, and the sheet is back
+  // on its error path with Retry available.
   const retry = sheet.getByRole("button", { name: "Retry", exact: true });
+  const callsBeforeRetry = checkCalls;
   await retry.click();
-  await expect(retry).toBeDisabled();
-  await expect(retry).toBeEnabled({ timeout: 20_000 });
+  await expect
+    .poll(() => checkCalls, { timeout: 20_000 })
+    .toBeGreaterThan(callsBeforeRetry);
+  await expect(
+    sheet.getByText("We couldn't check your course access.", {
+      exact: false,
+    }),
+  ).toBeVisible({ timeout: 20_000 });
+
+  // Re-open the sheet from a settled card before the recovering retry, so the
+  // click lands on a freshly mounted control instead of one still cycling
+  // from the outage (the sheet unmounts while its check is in flight).
+  await sheet.getByRole("button", { name: "Stay Here" }).click();
+  await expect(sheet).toBeHidden({ timeout: 20_000 });
+  await expect(card).toHaveAttribute("data-state", "error", {
+    timeout: 20_000,
+  });
+  await card.click();
+  await expect(retry).toBeVisible();
 
   failing = false;
   await retry.click();
