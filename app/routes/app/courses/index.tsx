@@ -32,13 +32,19 @@ export default function Courses() {
   const [sheetCourseId, setSheetCourseId] = useState<string | null>(null);
   const sheetCard =
     viewModel.cards.find((card) => card.courseId === sheetCourseId) ?? null;
+  const enrollmentQueriesByCourseId = new Map(
+    courseIds.map((courseId, index) => [courseId, enrollmentQueries[index]]),
+  );
+  const sheetEnrollmentQuery = sheetCourseId
+    ? enrollmentQueriesByCourseId.get(sheetCourseId)
+    : undefined;
 
   const handleRetry = () => {
     void coursesQuery.refetch();
   };
 
   const handleSheetRetry = () => {
-    enrollmentQueries.forEach((query) => void query.refetch());
+    void sheetEnrollmentQuery?.refetch();
   };
 
   return (
@@ -49,10 +55,7 @@ export default function Courses() {
       sheetCard={sheetCard}
       onOpenSheet={setSheetCourseId}
       onSheetRetry={handleSheetRetry}
-      isSheetRetrying={
-        sheetCard != null &&
-        enrollmentQueries.some((query) => query.isFetching)
-      }
+      isSheetRetrying={Boolean(sheetEnrollmentQuery?.isFetching)}
     />
   );
 }

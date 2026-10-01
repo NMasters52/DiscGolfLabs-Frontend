@@ -283,14 +283,15 @@ export function CoursesView({
 
   // The sheet stays put while a retried check is in flight — otherwise it
   // would close and reopen as the card's status flickers underneath it.
-  // Held on the error path so the disabled Checking button stays put too.
+  // Held on the checking and error paths so the sheet's action stays put too.
   const sheetOpen =
     sheetCard != null &&
     (isSheetRetrying ||
       sheetCard.status === "error" ||
       sheetCard.status === "notEnrolled");
-  const sheetAccessState =
-    isSheetRetrying || sheetCard?.status === "error"
+  const sheetAccessState = isSheetRetrying
+    ? "checking"
+    : sheetCard?.status === "error"
       ? "error"
       : "enrollment-required";
 

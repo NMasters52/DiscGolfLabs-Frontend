@@ -14,8 +14,8 @@ interface CourseAccessSheetProps {
   open: boolean;
   courseTitle: string;
   courseSlug: string;
-  /** The card state that opened the sheet: enrollment required or a failed check. */
-  accessState: "enrollment-required" | "error";
+  /** The live access state for the card whose sheet is open. */
+  accessState: "enrollment-required" | "checking" | "error";
   onRetry: () => void;
   isRetrying?: boolean;
   onOpenChange: (open: boolean) => void;
@@ -47,9 +47,11 @@ export function CourseAccessSheet({
         <SheetHeader>
           <SheetTitle>{courseTitle}</SheetTitle>
           <SheetDescription>
-            {accessState === "error"
-              ? "We couldn't check your course access. Try again without leaving this page."
-              : "Enroll before starting the course. You can review the course first without losing your place in the app."}
+            {accessState === "checking"
+              ? "Checking your course access…"
+              : accessState === "error"
+                ? "We couldn't check your course access. Try again without leaving this page."
+                : "Enroll before starting the course. You can review the course first without losing your place in the app."}
           </SheetDescription>
         </SheetHeader>
         <SheetFooter className="grid grid-cols-2">
@@ -61,14 +63,16 @@ export function CourseAccessSheet({
           >
             Stay Here
           </Button>
-          {accessState === "error" ? (
+          {accessState === "error" || accessState === "checking" ? (
             <Button
               type="button"
               className="min-h-12"
               onClick={onRetry}
-              disabled={isRetrying}
+              disabled={accessState === "checking" || isRetrying}
             >
-              {isRetrying ? "Checking..." : "Retry"}
+              {accessState === "checking" || isRetrying
+                ? "Checking..."
+                : "Retry"}
             </Button>
           ) : (
             <Button asChild className="min-h-12">
