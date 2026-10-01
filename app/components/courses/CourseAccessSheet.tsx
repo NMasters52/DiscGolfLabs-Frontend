@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 
-import { COURSE_MARKETING_ROUTE } from "~/components/app/navigation";
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
@@ -13,20 +12,28 @@ import {
 
 interface CourseAccessSheetProps {
   open: boolean;
-  accessState: "loading" | "error" | "enrolled" | "enrollment-required";
+  courseTitle: string;
+  courseSlug: string;
+  /** The live access state for the card whose sheet is open. */
+  accessState: "enrollment-required" | "checking" | "error";
   onRetry: () => void;
+  isRetrying?: boolean;
   onOpenChange: (open: boolean) => void;
   onCloseAutoFocus?: (event: Event) => void;
 }
 
 /**
- * Lets players retry a failed access check or choose whether to view the
- * public course page when enrollment is required.
+ * Lets players retry a failed enrollment check or choose whether to view the
+ * public course page when enrollment is required. Rendered by the courses
+ * index for whatever card opened it, at both breakpoints.
  */
 export function CourseAccessSheet({
   open,
+  courseTitle,
+  courseSlug,
   accessState,
   onRetry,
+  isRetrying,
   onOpenChange,
   onCloseAutoFocus,
 }: CourseAccessSheetProps) {
@@ -38,12 +45,12 @@ export function CourseAccessSheet({
         onCloseAutoFocus={onCloseAutoFocus}
       >
         <SheetHeader>
-          <SheetTitle>Putting Course</SheetTitle>
+          <SheetTitle>{courseTitle}</SheetTitle>
           <SheetDescription>
-            {accessState === "error"
-              ? "We couldn't check your course access. Try again without leaving this page."
-              : accessState === "loading"
-                ? "Checking your course access..."
+            {accessState === "checking"
+              ? "Checking your course access…"
+              : accessState === "error"
+                ? "We couldn't check your course access. Try again without leaving this page."
                 : "Enroll before starting the course. You can review the course first without losing your place in the app."}
           </SheetDescription>
         </SheetHeader>
@@ -56,18 +63,20 @@ export function CourseAccessSheet({
           >
             Stay Here
           </Button>
-          {accessState === "error" || accessState === "loading" ? (
+          {accessState === "error" || accessState === "checking" ? (
             <Button
               type="button"
               className="min-h-12"
               onClick={onRetry}
-              disabled={accessState === "loading"}
+              disabled={accessState === "checking" || isRetrying}
             >
-              {accessState === "loading" ? "Checking..." : "Retry"}
+              {accessState === "checking" || isRetrying
+                ? "Checking..."
+                : "Retry"}
             </Button>
           ) : (
             <Button asChild className="min-h-12">
-              <Link to={COURSE_MARKETING_ROUTE}>View Course</Link>
+              <Link to={`/courses/${courseSlug}`}>View Course</Link>
             </Button>
           )}
         </SheetFooter>

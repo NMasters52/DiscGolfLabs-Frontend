@@ -1,10 +1,10 @@
 # Pages & Routes
 
-> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-11
+> Status: **reference**  ·  Part of: `docs/README.md`  ·  Last verified: 2026-09-25
 
 ## Why
 
-Every route — file, params, data, and guards. File-based via React Router v7; route config in `app/routes.ts`.
+Every route — file, params, data, and guards. Declared in the config file `app/routes.ts` (React Router v7 framework mode, not file-convention routing).
 
 ---
 
@@ -108,16 +108,34 @@ Authenticated app entry point. Redirects to `/app/dashboard`.
 
 ---
 
-### Course navigation access
+### `/app/courses`
 
-The Course entries in `AppSidebar` and `MobileNav` target `/app/courses/putting-course/learn`, but the shell checks access before navigating.
+**File:** `routes/app/courses/index.tsx`
 
-- `enrolled`: follow the course route.
-- `loading`: prevent the click until the access check resolves.
-- `enrollment-required`: stay on the current `/app` page and open `CourseAccessSheet`; `View Course` links to `/courses/putting-course`.
-- `error`: stay on the current `/app` page and open the sheet with Retry.
+Courses index: one card per course, driven by `GET /api/courses` through `useCourses` plus a per-course enrollment check via `useEnrollments` (which shares the `["enrollment", "check", courseId]` cache entries with `useEnrollment`). Built for a catalog of one course today, many tomorrow — every card is data-driven.
 
-A direct visit to `/app/courses/:slug/learn*` still uses the nested enrollment guard below. The navigation check improves the click path; it does not replace route authorization.
+**States** (from `createCoursesViewModel` in `app/components/courses/courses-view-model.ts`):
+
+- `loading` — course list pending (skeletons)
+- `loadError` — course list errored (retry card)
+- `empty` — no courses published
+- `ready` — cards; each card independently reports `loading` / `error` / `notEnrolled` / `inProgress` / `completed` from its own enrollment check
+
+**Card click** (via `resolveCardAction`): an enrolled card navigates to `/app/courses/:slug`; a not-enrolled or errored card opens `CourseAccessSheet` (`components/courses/`), which offers Retry or `View Course` → `/courses/:slug`. The sheet renders from the live card state, so a retry that recovers flips or closes it. The page-level sheet replaces the old shell-level gating — nav is plain navigation everywhere.
+
+---
+
+### `/app/courses/:slug`
+
+**File:** `routes/app/courses/$slug.tsx`
+
+Course home: title, description, progress, the full day list with per-day status (`completed` / `current` / `locked`, from `getDayStatus` in `course-progress.ts`), and a state-aware CTA — `Start Day 1`, `Continue Day N`, or `Review Day 1` for a completed enrollment. This is where completed users get back into their course.
+
+Deliberately **outside** the learn layout's enrollment gate: the page loads `useCourse` + `useEnrollment` itself and renders an unenrolled variant (all days locked, `View course & enroll` → `/courses/:slug`) instead of redirecting, so direct URLs and Back/Forward never bounce.
+
+| Param | Description                              |
+| ----- | ---------------------------------------- |
+| slug  | Course URL slug (e.g., "putting-course") |
 
 ---
 
@@ -134,7 +152,7 @@ Main dashboard after login. Shows course progress, stats, and practice options.
 - `usePuttingGameStats()` — fetches user's putting stats
 - `useGameSessions("putting-course", courseId)` — fetches sessions for the last-session card
 
-All four run through the shared `dashboardQueryOptions` preset (`app/queries/dashboard-options.ts`), and their results are combined by `createDashboardViewModel` into the rendered state.
+All four run through the shared `defaultQueryOptions` preset (`app/queries/query-options.ts`), and their results are combined by `createDashboardViewModel` into the rendered state.
 
 **States** (from `createDashboardViewModel`):
 
@@ -171,7 +189,7 @@ Layout route for `/app/courses/:slug/learn` (`routes.ts`). Authentication is alr
 
 **File:** `routes/app/courses/learn/index.jsx`
 
-Course overview/root. Redirects to the current day at `/app/courses/:slug/learn/day/:dayNumber`.
+Pure redirector (`getLearnIndexDestination` in `learn/redirect.ts`): an in-progress enrollment continues at `/app/courses/:slug/learn/day/:currentDay`; a completed enrollment (`currentDay > totalDays`) lands on the course home `/app/courses/:slug`, where every day is open for review. This completed case used to bounce to `/app/dashboard`, sealing completed users out of the course.
 
 ---
 

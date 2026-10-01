@@ -15,7 +15,10 @@ Query keys are the **array tuples** TanStack Query uses as cache addresses. In t
 ```js
 queryKeys = {
   enrollment: { check: (courseId) => ["enrollment", "check", courseId] },
-  course: { bySlug: (slug) => ["course", slug] },
+  course: {
+    bySlug: (slug) => ["course", slug],
+    list: () => ["course", "list"],
+  },
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
@@ -81,20 +84,23 @@ const { data, isLoading } = useEnrollment(courseId);
 
 ---
 
-### useCourseAccess()
+### useCourses(options?)
 
-Combines `useCourse("putting-course")` with `useEnrollment(courseId)` for Course navigation in the authenticated shell. The hook lives at [`app/components/app/useCourseAccess.ts`](../app/components/app/useCourseAccess.ts).
+Fetches the course list (`GET /api/courses`) for the courses index.
 
-**Returns:** `{ accessState, retry }`
+```ts
+const { data, isLoading } = useCourses(defaultQueryOptions);
+```
 
-| `accessState`         | Meaning                                                    |
-| --------------------- | ---------------------------------------------------------- |
-| `loading`             | Course or enrollment data has not resolved.                |
-| `error`               | A required course or enrollment request ended in an error. |
-| `enrolled`            | Enrollment data says `enrolled: true`.                     |
-| `enrollment-required`  | Enrollment data says `enrolled: false`.                    |
+**Returns:** array of `{ _id, slug, title, description, priceInCents, totalDays }` (typed as `CourseListItem`). Lives at [`app/queries/useCourses.ts`](../app/queries/useCourses.ts).
 
-`retry()` refetches the course when course data is missing. Otherwise it refetches enrollment. This hook uses the query hooks' defaults. It does not use `dashboardQueryOptions`, whose `retry: 1` setting is specific to dashboard queries.
+---
+
+### useEnrollments(courseIds, options?)
+
+Runs one enrollment check per course via `useQueries`, used by the courses index. Deliberately shares `queryKeys.enrollment.check(courseId)` with `useEnrollment`, so both hooks, the learn layout, and `useCompleteDay`'s invalidation all read and invalidate the same cache entry. `useQueries` (not a `.map()` of `useEnrollment`) keeps the hook count stable while the course list resolves. Lives at [`app/queries/useEnrollments.ts`](../app/queries/useEnrollments.ts).
+
+**Returns:** array of TanStack query results (`data`, `isPending`, `error`, …), one per course id, in the same order.
 
 ---
 

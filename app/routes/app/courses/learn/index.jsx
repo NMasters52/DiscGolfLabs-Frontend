@@ -7,7 +7,8 @@ export default function LearnIndex() {
   const destination = getLearnIndexDestination({
     courseSlug: course.slug,
     currentDay: enrollment.currentDay,
-    totalDays: course.totalDays ?? enrollment.totalDays,
+    // Same derivation the day route uses, so the two can't disagree.
+    totalDays: course.days?.length ?? course.totalDays ?? enrollment.totalDays,
   });
 
   return <Navigate to={destination} replace />;

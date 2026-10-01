@@ -30,8 +30,13 @@ test("keeps the other destinations addressable so titles cannot drift", () => {
   assert.equal(documentTitle("/app/dashboard"), `Dashboard · ${APP_NAME}`);
   assert.equal(
     documentTitle("/app/courses/putting-course/learn/day/2"),
-    `Putting Course · ${APP_NAME}`,
+    `Courses · ${APP_NAME}`,
   );
+  assert.equal(
+    documentTitle("/app/courses/putting-course"),
+    `Courses · ${APP_NAME}`,
+  );
+  assert.equal(documentTitle("/app/courses"), `Courses · ${APP_NAME}`);
 });
 
 test("falls back to the product name where no destination claims the path", () => {
