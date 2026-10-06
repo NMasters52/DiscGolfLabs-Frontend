@@ -42,7 +42,9 @@ test("failed background refresh keeps cached cards and their open sheet usable",
   const viewModel = createCoursesViewModel({
     courses: [course],
     coursesError: error,
-    enrollmentResults: [{ ...enrollmentReady, data: { enrolled: false } }],
+    enrollmentByCourseId: new Map([
+      ["course-1", { ...enrollmentReady, data: { enrolled: false } }],
+    ]),
   });
 
   assert.equal(viewModel.state, "ready");
@@ -74,12 +76,15 @@ test("page is empty when no courses exist yet", () => {
 test("page is ready with one card per course, paired with its enrollment result", () => {
   const viewModel = createCoursesViewModel({
     courses: [course],
-    enrollmentResults: [
-      {
-        ...enrollmentReady,
-        data: { enrolled: true, currentDay: 3, totalDays: 5 },
-      },
-    ],
+    enrollmentByCourseId: new Map([
+      [
+        "course-1",
+        {
+          ...enrollmentReady,
+          data: { enrolled: true, currentDay: 3, totalDays: 5 },
+        },
+      ],
+    ]),
   });
 
   assert.equal(viewModel.state, "ready");
@@ -89,10 +94,54 @@ test("page is ready with one card per course, paired with its enrollment result"
   assert.equal(viewModel.cards[0].progress?.completedDays, 2);
 });
 
+test("enrollment checks pair by course ID, not list position", () => {
+  const courseA = { ...course, _id: "course-a" };
+  const courseB = { ...course, _id: "course-b", slug: "chipping-course" };
+  const viewModel = createCoursesViewModel({
+    courses: [courseA, courseB],
+    enrollmentByCourseId: new Map([
+      [
+        "course-b",
+        {
+          ...enrollmentReady,
+          data: { enrolled: true, currentDay: 2, totalDays: 5 },
+        },
+      ],
+    ]),
+  });
+
+  assert.equal(viewModel.cards[0].courseId, "course-a");
+  assert.equal(viewModel.cards[0].status, "loading");
+  assert.equal(viewModel.cards[1].courseId, "course-b");
+  assert.equal(viewModel.cards[1].status, "inProgress");
+});
+
+test("a course with a missing ID stays loading and does not shift other cards", () => {
+  const idLess = { ...course, _id: undefined, slug: "mystery-course" };
+  const viewModel = createCoursesViewModel({
+    courses: [idLess, course],
+    enrollmentByCourseId: new Map([
+      [
+        "course-1",
+        {
+          ...enrollmentReady,
+          data: { enrolled: true, currentDay: 4, totalDays: 5 },
+        },
+      ],
+    ]),
+  });
+
+  assert.equal(viewModel.cards[0].courseId, "");
+  assert.equal(viewModel.cards[0].status, "loading");
+  assert.equal(viewModel.cards[1].courseId, "course-1");
+  assert.equal(viewModel.cards[1].status, "inProgress");
+  assert.equal(viewModel.cards[1].currentDay, 4);
+});
+
 test("a card whose enrollment result has not arrived stays loading", () => {
   const viewModel = createCoursesViewModel({
     courses: [course],
-    enrollmentResults: [null],
+    enrollmentByCourseId: new Map(),
   });
 
   assert.equal(viewModel.cards[0].status, "loading");
@@ -103,7 +152,7 @@ test("a card with a failed enrollment check reports its own error", () => {
   const error = new Error("Enrollment check failed");
   const viewModel = createCoursesViewModel({
     courses: [course],
-    enrollmentResults: [{ ...enrollmentReady, error }],
+    enrollmentByCourseId: new Map([["course-1", { ...enrollmentReady, error }]]),
   });
 
   assert.equal(viewModel.cards[0].status, "error");

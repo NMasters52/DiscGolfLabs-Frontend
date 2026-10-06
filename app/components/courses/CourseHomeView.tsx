@@ -201,13 +201,18 @@ function DayList({ viewModel }: { viewModel: CourseHomeViewModel }) {
           {viewModel.days.map((day) => {
             const to = day.to;
 
+            // first:/last: must sit on the li — on the row element they
+            // always match, because each row is its li's only child.
             return (
-              <li key={day.dayNumber}>
+              <li
+                key={day.dayNumber}
+                className="py-2.5 first:pt-0 last:pb-0"
+              >
                 {to != null ? (
                   <Link
                     to={to}
                     data-status={day.status}
-                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 py-2.5 transition-colors hover:bg-muted/40 focus-visible:bg-muted/40 first:pt-0 last:pb-0"
+                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 transition-colors hover:bg-muted/40 focus-visible:bg-muted/40"
                   >
                     <DayRow day={day} />
                   </Link>
@@ -215,7 +220,7 @@ function DayList({ viewModel }: { viewModel: CourseHomeViewModel }) {
                   <div
                     data-status={day.status}
                     aria-disabled="true"
-                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 py-2.5 opacity-70 first:pt-0 last:pb-0"
+                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3"
                   >
                     <DayRow day={day} />
                   </div>

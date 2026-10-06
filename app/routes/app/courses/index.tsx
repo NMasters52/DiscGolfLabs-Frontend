@@ -21,11 +21,17 @@ export default function Courses() {
   );
   const enrollmentQueries = useEnrollments(courseIds, defaultQueryOptions);
 
+  // Paired by course ID, not list position: one missing ID must not shift
+  // later cards' enrollment state.
+  const enrollmentByCourseId = new Map(
+    courseIds.map((courseId, index) => [courseId, enrollmentQueries[index]]),
+  );
+
   const viewModel = createCoursesViewModel({
     courses,
     coursesLoading: coursesQuery.isPending,
     coursesError: coursesQuery.error,
-    enrollmentResults: enrollmentQueries,
+    enrollmentByCourseId,
   });
 
   // The course whose access sheet is open; null when no sheet is open. The
@@ -45,11 +51,8 @@ export default function Courses() {
 
   const sheetCard =
     viewModel.cards.find((card) => card.courseId === sheetCourseId) ?? null;
-  const enrollmentQueriesByCourseId = new Map(
-    courseIds.map((courseId, index) => [courseId, enrollmentQueries[index]]),
-  );
   const sheetEnrollmentQuery = sheetCourseId
-    ? enrollmentQueriesByCourseId.get(sheetCourseId)
+    ? enrollmentByCourseId.get(sheetCourseId)
     : undefined;
 
   const handleRetry = () => {

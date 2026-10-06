@@ -70,8 +70,11 @@ interface CoursesSnapshot {
   courses?: Array<Record<string, unknown>> | null;
   coursesLoading?: boolean;
   coursesError?: unknown;
-  enrollmentResults?: Array<EnrollmentResult | null> | null;
+  enrollmentByCourseId?: Map<string, EnrollmentResult> | null;
 }
+
+const courseIdOf = (course: Record<string, unknown>): string =>
+  String(course._id ?? course.id ?? "");
 
 const toPositiveInteger = (value: unknown, fallback: number) => {
   const number = Number(value);
@@ -86,7 +89,7 @@ export function createCourseCardViewModel(
   const totalDays = toPositiveInteger(course.totalDays, 1);
 
   const card: CourseCardViewModel = {
-    courseId: String(course._id ?? course.id ?? ""),
+    courseId: courseIdOf(course),
     slug: String(course.slug ?? ""),
     title: String(course.title ?? "Course"),
     description:
@@ -170,10 +173,13 @@ export function createCoursesViewModel(
 
   return {
     state: "ready",
-    cards: courses.map((course, index) =>
+    cards: courses.map((course) =>
       createCourseCardViewModel({
         course,
-        enrollment: snapshot.enrollmentResults?.[index] ?? null,
+        // Looked up by course ID, not list position, so a course with a
+        // missing ID cannot shift other cards' enrollment state.
+        enrollment:
+          snapshot.enrollmentByCourseId?.get(courseIdOf(course)) ?? null,
       }),
     ),
     error: null,
