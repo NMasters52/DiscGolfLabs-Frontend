@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-// @ts-expect-error Node's native type stripping requires the explicit extension.
-import { createCourseCardViewModel, createCoursesViewModel, resolveCardAction } from "./courses-view-model.ts";
+import {
+  createCourseCardViewModel,
+  createCoursesViewModel,
+  reconcileSheetCourseId,
+  resolveCardAction,
+  // @ts-expect-error Node's native type stripping requires the explicit extension.
+} from "./courses-view-model.ts";
 
 const course = {
   _id: "course-1",
@@ -30,6 +35,34 @@ test("page is loadError when the course list fails and keeps the error", () => {
 
   assert.equal(viewModel.state, "loadError");
   assert.equal(viewModel.error, error);
+});
+
+test("failed background refresh keeps cached cards and their open sheet usable", () => {
+  const error = new Error("background refresh failed");
+  const viewModel = createCoursesViewModel({
+    courses: [course],
+    coursesError: error,
+    enrollmentResults: [{ ...enrollmentReady, data: { enrolled: false } }],
+  });
+
+  assert.equal(viewModel.state, "ready");
+  assert.equal(viewModel.cards.length, 1);
+  assert.equal(viewModel.cards[0].courseId, course._id);
+  assert.equal(viewModel.cards[0].status, "notEnrolled");
+  assert.equal(resolveCardAction(viewModel.cards[0]).type, "openSheet");
+  assert.equal(reconcileSheetCourseId(viewModel, course._id), course._id);
+});
+
+test("a sheet selection becomes invalid when its course leaves the visible list", () => {
+  const viewModel = createCoursesViewModel({
+    courses: [{ ...course, _id: "course-2" }],
+  });
+  const recoveredViewModel = createCoursesViewModel({ courses: [course] });
+  const clearedCourseId = reconcileSheetCourseId(viewModel, course._id);
+
+  assert.equal(clearedCourseId, null);
+  assert.equal(reconcileSheetCourseId(viewModel, "course-2"), "course-2");
+  assert.equal(reconcileSheetCourseId(recoveredViewModel, clearedCourseId), null);
 });
 
 test("page is empty when no courses exist yet", () => {

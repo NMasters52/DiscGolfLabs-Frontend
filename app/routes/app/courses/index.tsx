@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CoursesView } from "~/components/courses/CoursesView";
-import { createCoursesViewModel } from "~/components/courses/courses-view-model";
+import {
+  createCoursesViewModel,
+  reconcileSheetCourseId,
+} from "~/components/courses/courses-view-model";
 import { defaultQueryOptions } from "~/queries/query-options";
 import useCourses from "~/queries/useCourses";
 import { useEnrollments } from "~/queries/useEnrollments";
@@ -30,6 +33,16 @@ export default function Courses() {
   // the sheet (or closes it, once the card is enrolled) instead of sitting
   // on a stale error.
   const [sheetCourseId, setSheetCourseId] = useState<string | null>(null);
+  useEffect(() => {
+    const reconciledCourseId = reconcileSheetCourseId(
+      viewModel,
+      sheetCourseId,
+    );
+    if (reconciledCourseId !== sheetCourseId) {
+      setSheetCourseId(reconciledCourseId);
+    }
+  }, [viewModel, sheetCourseId]);
+
   const sheetCard =
     viewModel.cards.find((card) => card.courseId === sheetCourseId) ?? null;
   const enrollmentQueriesByCourseId = new Map(

@@ -29,6 +29,22 @@ export interface CoursesViewModel {
   error: unknown | null;
 }
 
+/** Keep the sheet selection only while its course has a visible card. */
+export function reconcileSheetCourseId(
+  viewModel: CoursesViewModel,
+  courseId: string | null,
+): string | null {
+  if (
+    courseId === null ||
+    viewModel.state !== "ready" ||
+    !viewModel.cards.some((card) => card.courseId === courseId)
+  ) {
+    return null;
+  }
+
+  return courseId;
+}
+
 /** What clicking a course card should do, resolved from the card's state. */
 export type CourseCardAction =
   | { type: "navigate"; to: string }
@@ -135,7 +151,10 @@ export function createCoursesViewModel(
     return { state: "loading", cards: [], error: null };
   }
 
-  if (snapshot.coursesError) {
+  // A failed background refresh can leave the last successful list in cache.
+  // Keep those cards usable; only show the page-level error when there is no
+  // course data to render.
+  if (snapshot.coursesError && snapshot.courses == null) {
     return {
       state: "loadError",
       cards: [],
