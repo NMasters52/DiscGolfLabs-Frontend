@@ -101,6 +101,33 @@ function CourseHomeLoadError({
   );
 }
 
+// Not an alert: the API answered — this slug has no course — so there is
+// nothing to retry and the way forward is the courses index.
+function CourseHomeNotFound({
+  cta,
+}: {
+  cta: CourseHomeViewModel["primaryCta"];
+}) {
+  return (
+    <Card data-state="notFound">
+      <CardHeader>
+        <CardTitle>We couldn't find that course</CardTitle>
+        <CardDescription>
+          It may have been renamed or retired. Browse the courses index to
+          find it.
+        </CardDescription>
+      </CardHeader>
+      {cta && (
+        <CardContent>
+          <Button className="min-h-11" asChild>
+            <Link to={cta.to}>{cta.label}</Link>
+          </Button>
+        </CardContent>
+      )}
+    </Card>
+  );
+}
+
 function CourseSummary({ viewModel }: { viewModel: CourseHomeViewModel }) {
   const { course, progress } = viewModel;
 
@@ -283,6 +310,14 @@ export function CourseHomeView({
     return (
       <CourseHomeFrame title="Course">
         <CourseHomeLoadError onRetry={onRetry} isRetrying={isRetrying} />
+      </CourseHomeFrame>
+    );
+  }
+
+  if (viewModel.state === "notFound") {
+    return (
+      <CourseHomeFrame title="Course">
+        <CourseHomeNotFound cta={viewModel.primaryCta} />
       </CourseHomeFrame>
     );
   }

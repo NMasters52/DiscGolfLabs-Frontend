@@ -54,6 +54,39 @@ test("is loadError when the course or its enrollment fails", () => {
   assert.equal(failedEnrollment.state, "loadError");
 });
 
+test("a 404 course fetch is a not-found answer, not a retryable failure", () => {
+  const viewModel = createCourseHomeViewModel({
+    courseSlug: "putting-cours",
+    courseError: { name: "CourseApiError", status: 404 },
+  });
+
+  assert.equal(viewModel.state, "notFound");
+  assert.equal(viewModel.primaryCta?.label, "Browse courses");
+  assert.equal(viewModel.primaryCta?.to, "/app/courses");
+});
+
+test("a 404 course fetch wins over an enrollment error", () => {
+  const viewModel = createCourseHomeViewModel({
+    courseSlug: "putting-cours",
+    courseError: { name: "CourseApiError", status: 404 },
+    enrollmentError: new Error("Enrollment check failed"),
+  });
+
+  assert.equal(viewModel.state, "notFound");
+});
+
+test("non-404 course failures stay retryable loadErrors", () => {
+  const serverError = createCourseHomeViewModel({
+    courseError: { name: "CourseApiError", status: 500 },
+  });
+  const networkError = createCourseHomeViewModel({
+    courseError: new Error("network down"),
+  });
+
+  assert.equal(serverError.state, "loadError");
+  assert.equal(networkError.state, "loadError");
+});
+
 test("a signed-in non-enrollee sees locked days and the enroll path", () => {
   const viewModel = createCourseHomeViewModel({
     course,

@@ -4,6 +4,7 @@ import { createCourseProgress, getDayStatus, type CourseProgress, type DayStatus
 export type CourseHomeState =
   | "loading"
   | "loadError"
+  | "notFound"
   | "notEnrolled"
   | "inProgress"
   | "completed";
@@ -50,6 +51,18 @@ const toPositiveInteger = (value: unknown, fallback: number) => {
   const number = Number(value);
   return Number.isInteger(number) && number > 0 ? number : fallback;
 };
+
+/**
+ * Whether a course fetch failed because the slug has no course (404) —
+ * an answer, not a failure. Duck-checked by `status` so the detection
+ * works on the plain object the API layer throws as well as on real
+ * Error instances, and stays unit-testable without the network layer.
+ */
+export const isCourseNotFound = (error: unknown): boolean =>
+  typeof error === "object" &&
+  error !== null &&
+  "status" in error &&
+  (error as { status?: unknown }).status === 404;
 
 const normalizeCourse = (course: Record<string, unknown>): CourseHomeCourse => {
   const totalDays = toPositiveInteger(course.totalDays, 1);
@@ -114,6 +127,18 @@ const errorViewModel = (error: unknown): CourseHomeViewModel => ({
   error,
 });
 
+const notFoundViewModel = (error: unknown): CourseHomeViewModel => ({
+  state: "notFound",
+  course: null,
+  progress: null,
+  days: [],
+  primaryCta: { label: "Browse courses", to: "/app/courses" },
+  headline: "We couldn't find that course",
+  description:
+    "It may have been renamed or retired. Browse the courses index to find it.",
+  error,
+});
+
 export function createCourseHomeViewModel(
   snapshot: CourseHomeSnapshot,
 ): CourseHomeViewModel {
@@ -123,6 +148,13 @@ export function createCourseHomeViewModel(
 
   if (requiredDataIsLoading) {
     return loadingViewModel();
+  }
+
+  // A 404 from the course fetch means the slug has no course. It must win
+  // over enrollment errors, which can only exist because the course never
+  // resolved — retrying either one would just re-hit the same 404.
+  if (isCourseNotFound(snapshot.courseError)) {
+    return notFoundViewModel(snapshot.courseError);
   }
 
   const error = snapshot.courseError || snapshot.enrollmentError;
