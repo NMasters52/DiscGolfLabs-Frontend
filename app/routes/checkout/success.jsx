@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import useCourse from "../../queries/useCourse";
+import { queryKeys } from "../../queries/keys";
 import { fetchEnrollment } from "../../api/enrollment";
 import { useAuth } from "@clerk/react-router";
 
@@ -9,6 +11,7 @@ const TIMEOUT_MS = 20000;
 
 export default function CheckoutSuccess() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [params] = useSearchParams();
   const slug = params.get("slug");
 
@@ -40,6 +43,11 @@ export default function CheckoutSuccess() {
         const res = await fetchEnrollment(token, course._id);
 
         if (res.enrolled) {
+          // Seed the shared enrollment check with the answer we just
+          // fetched, so the learn gate, course home, and index cards render
+          // this enrollment instead of the pre-checkout cache, which stays
+          // fresh for five minutes.
+          queryClient.setQueryData(queryKeys.enrollment.check(course._id), res);
           navigate(`/app/courses/${slug}/learn`, { replace: true });
           return;
         }

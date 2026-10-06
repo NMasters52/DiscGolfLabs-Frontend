@@ -13,6 +13,7 @@ import { dark } from "@clerk/themes"; // Import Clerk's dark theme
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider, useTheme } from "next-themes"; // Import theme provider
 import { MotionConfig } from "motion/react";
+import { AuthCacheReset } from "~/components/app/AuthCacheReset";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -82,6 +83,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ClerkThemeWrapper>
         <MotionConfig reducedMotion="user">
+          <AuthCacheReset />
           <Outlet />
         </MotionConfig>
       </ClerkThemeWrapper>
