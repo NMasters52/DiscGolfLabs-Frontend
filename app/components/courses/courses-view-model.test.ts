@@ -3,7 +3,6 @@ import test from "node:test";
 import {
   createCourseCardViewModel,
   createCoursesViewModel,
-  reconcileSheetCourseId,
   resolveCardAction,
   // @ts-expect-error Node's native type stripping requires the explicit extension.
 } from "./courses-view-model.ts";
@@ -52,19 +51,8 @@ test("failed background refresh keeps cached cards and their open sheet usable",
   assert.equal(viewModel.cards[0].courseId, course._id);
   assert.equal(viewModel.cards[0].status, "notEnrolled");
   assert.equal(resolveCardAction(viewModel.cards[0]).type, "openSheet");
-  assert.equal(reconcileSheetCourseId(viewModel, course._id), course._id);
-});
-
-test("a sheet selection becomes invalid when its course leaves the visible list", () => {
-  const viewModel = createCoursesViewModel({
-    courses: [{ ...course, _id: "course-2" }],
-  });
-  const recoveredViewModel = createCoursesViewModel({ courses: [course] });
-  const clearedCourseId = reconcileSheetCourseId(viewModel, course._id);
-
-  assert.equal(clearedCourseId, null);
-  assert.equal(reconcileSheetCourseId(viewModel, "course-2"), "course-2");
-  assert.equal(reconcileSheetCourseId(recoveredViewModel, clearedCourseId), null);
+  // An open sheet stays usable: its course still has a visible card.
+  assert(viewModel.cards.some((card) => card.courseId === course._id));
 });
 
 test("page is empty when no courses exist yet", () => {

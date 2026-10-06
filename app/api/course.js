@@ -1,3 +1,5 @@
+import { normalizeCourseDays } from "./course-days";
+
 /**
  * An API failure that keeps the HTTP status, so screens can tell "this
  * slug has no course" (404) apart from "the server is having a bad day".
@@ -24,7 +26,8 @@ export async function fetchCourse(slug) {
     );
   }
 
-  return res.json();
+  const course = await res.json();
+  return { ...course, days: normalizeCourseDays(course.days) };
 }
 
 export async function fetchCourses() {

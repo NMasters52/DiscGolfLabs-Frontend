@@ -8,7 +8,8 @@ export default function LearnIndex() {
     courseSlug: course.slug,
     currentDay: enrollment.currentDay,
     // Same derivation the day route uses, so the two can't disagree.
-    totalDays: course.days?.length ?? course.totalDays ?? enrollment.totalDays,
+    // fetchCourse normalizes days, so the array is always present.
+    totalDays: course.days.length,
   });
 
   return <Navigate to={destination} replace />;

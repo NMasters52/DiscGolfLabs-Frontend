@@ -29,22 +29,6 @@ export interface CoursesViewModel {
   error: unknown | null;
 }
 
-/** Keep the sheet selection only while its course has a visible card. */
-export function reconcileSheetCourseId(
-  viewModel: CoursesViewModel,
-  courseId: string | null,
-): string | null {
-  if (
-    courseId === null ||
-    viewModel.state !== "ready" ||
-    !viewModel.cards.some((card) => card.courseId === courseId)
-  ) {
-    return null;
-  }
-
-  return courseId;
-}
-
 /** What clicking a course card should do, resolved from the card's state. */
 export type CourseCardAction =
   | { type: "navigate"; to: string }
