@@ -10,8 +10,9 @@
     "test:dashboard": "node --experimental-strip-types --test app/components/dashboard/view-model.test.ts app/queries/query-options.test.ts app/queries/auth-cache.test.ts",
     "test:courses": "node --experimental-strip-types --test app/components/courses/course-progress.test.ts app/components/courses/courses-view-model.test.ts app/components/courses/course-home-view-model.test.ts",
     "test:app": "node --experimental-strip-types --test app/components/app/navigation.test.ts app/components/app/theme-options.test.ts app/components/app/document-title.test.ts app/components/ui/sidebar-state.test.ts",
-    "test": "npm run test:dashboard && npm run test:courses && npm run test:app",
+    "test": "npm run test:dashboard && npm run test:courses && npm run test:app && npm run test:unit",
     "test:e2e": "playwright test",
+    "test:unit": "playwright test --config=playwright.unit.config.ts",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
