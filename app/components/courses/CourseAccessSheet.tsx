@@ -46,7 +46,10 @@ export function CourseAccessSheet({
       >
         <SheetHeader>
           <SheetTitle>{courseTitle}</SheetTitle>
-          <SheetDescription>
+          {/* The message and actions swap while a retry is in flight; the
+              region must already exist for the swap to be announced, and it
+              does — the description mounts when the sheet opens. */}
+          <SheetDescription aria-live="polite">
             {accessState === "checking"
               ? "Checking your course access…"
               : accessState === "error"

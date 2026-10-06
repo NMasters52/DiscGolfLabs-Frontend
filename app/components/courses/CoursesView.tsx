@@ -161,41 +161,45 @@ function CourseCard({
         )}
       </CardHeader>
       <CardContent>
-        {card.progress ? (
-          <div className="space-y-2">
-            <div className="flex items-baseline justify-between gap-3">
-              <p className="font-mono text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">
-                  {card.progress.completedDays} of {card.progress.totalDays}
-                </span>{" "}
-                days completed
-              </p>
-              <p className="font-mono text-base font-semibold tabular-nums text-foreground">
-                {card.progress.percent}%
-              </p>
+        {/* Mounts with the card, so the checking → result swap is announced
+            to screen readers. */}
+        <div aria-live="polite">
+          {card.progress ? (
+            <div className="space-y-2">
+              <div className="flex items-baseline justify-between gap-3">
+                <p className="font-mono text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {card.progress.completedDays} of {card.progress.totalDays}
+                  </span>{" "}
+                  days completed
+                </p>
+                <p className="font-mono text-base font-semibold tabular-nums text-foreground">
+                  {card.progress.percent}%
+                </p>
+              </div>
+              <Progress
+                className="h-2"
+                value={card.progress.percent}
+                aria-label={`${card.title} progress`}
+              />
             </div>
-            <Progress
-              className="h-2"
-              value={card.progress.percent}
-              aria-label={`${card.title} progress`}
-            />
-          </div>
-        ) : card.status === "loading" ? (
-          <p className="text-sm text-muted-foreground">
-            Checking your enrollment…
-          </p>
-        ) : card.status === "error" ? (
-          <p className="text-sm text-muted-foreground">
-            We couldn't check your enrollment. Open for a retry.
-          </p>
-        ) : (
-          <p className="font-mono text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              {card.totalDays}-day course
-            </span>
-            {price ? <span> · {price}</span> : null}
-          </p>
-        )}
+          ) : card.status === "loading" ? (
+            <p className="text-sm text-muted-foreground">
+              Checking your enrollment…
+            </p>
+          ) : card.status === "error" ? (
+            <p className="text-sm text-muted-foreground">
+              We couldn't check your enrollment. Open for a retry.
+            </p>
+          ) : (
+            <p className="font-mono text-sm text-muted-foreground">
+              <span className="font-medium text-foreground">
+                {card.totalDays}-day course
+              </span>
+              {price ? <span> · {price}</span> : null}
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
