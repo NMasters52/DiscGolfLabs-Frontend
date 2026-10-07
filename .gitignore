@@ -1,6 +1,8 @@
 .DS_Store
 .env
 /.scratch/
+/output/playwright/
+/.playwright-mcp/
 /node_modules/
 
 # React Router

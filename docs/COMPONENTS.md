@@ -90,7 +90,7 @@ Structural shells and nav — pages compose content inside these.
 
 ### AppShell
 
-The one authenticated application shell for `/app/*` (`app/components/app/AppShell.tsx`). Rendered once by `routes/app/_layout.jsx` around its `<Outlet />`, so pages never wrap themselves in a shell. Owns the sidebar layout, responsive navigation, the sticky header with a dynamic page title resolved from `app/components/app/navigation.ts`, the shared Course access state, `ModeToggle`, and `SidebarTrigger`.
+The one authenticated application shell for `/app/*` (`app/components/app/AppShell.tsx`). Rendered once by `routes/app/_layout.jsx` around its `<Outlet />`, so pages never wrap themselves in a shell. Owns the sidebar layout, responsive navigation, and the sticky header with a dynamic page title resolved from `app/components/app/navigation.ts`. Enrollment gating is not shell business: the courses index owns the access sheet, per card.
 
 ```tsx
 // routes/app/_layout.jsx
@@ -103,7 +103,7 @@ The one authenticated application shell for `/app/*` (`app/components/app/AppShe
 
 ### AppSidebar
 
-Sidebar navigation for the authenticated app (`app/components/app/AppSidebar.tsx`), rendered by `AppShell` at widths of 768px and above. Its Course link receives access state and click handling from `AppShell`.
+Sidebar navigation for the authenticated app (`app/components/app/AppSidebar.tsx`), rendered by `AppShell` at widths of 768px and above. Dashboard and Courses are plain links; active states resolve through `resolveDestination`.
 
 ```tsx
 <AppSidebar />
@@ -113,7 +113,7 @@ Sidebar navigation for the authenticated app (`app/components/app/AppSidebar.tsx
 
 ### MobileNav
 
-Below 768px, `MobileNav` replaces the sidebar with Dashboard, Course, and More. The More button opens `MoreSheet`. Its Course link consumes the shared `useCourseAccess` state and opens `CourseAccessSheet` when enrollment is required or access checking fails.
+Below 768px, `MobileNav` replaces the sidebar with Dashboard, Courses, and More. The More button opens `MoreSheet`.
 
 ---
 
@@ -125,7 +125,7 @@ Mobile-only bottom sheet for Account & Settings, Appearance, and Sign Out. It ow
 
 ### CourseAccessSheet
 
-Shared bottom sheet for Course navigation when the player needs a decision or access retry. It offers `Stay Here` and `View Course` for an unenrolled player. If an already-open access check is loading, it shows disabled `Checking...`; after an error, it shows Retry. `AppShell` renders the desktop instance; `MobileNav` renders the mobile instance.
+Bottom sheet for course access decisions, rendered by the courses index (`app/components/courses/CourseAccessSheet.tsx`) for whichever card opened it, at both breakpoints. It offers `Stay Here` and `View Course` for an unenrolled player; after an enrollment-check error it offers Retry. The sheet derives its title and marketing link from the card's course data, and it renders the live card state — a retry that enrolls the account closes the sheet and hands focus back to the card.
 
 ---
 
@@ -150,6 +150,25 @@ All dashboard UI states (`loading`, `loadError`, `notEnrolled`, `firstSession`,
 `inProgress`, `completed`) derive from `createDashboardViewModel` in
 `app/components/dashboard/view-model.ts` — the pure seam covered by
 `view-model.test.ts` (`npm run test:dashboard`).
+
+---
+
+## Course Components
+
+Components behind `/app/courses*`, following the same route-orchestrates /
+pure-view-model / dumb-view pattern as the dashboard.
+
+### CoursesView
+
+The courses index view (`app/components/courses/CoursesView.tsx`). Renders the course card grid with per-card status, the page-level loading/error/empty states, and the `CourseAccessSheet`. Cards resolve their click behavior through `resolveCardAction`: enrolled cards are links to the course home, not-enrolled and errored cards open the sheet, loading cards are inert.
+
+### CourseHomeView
+
+The course home view (`app/components/courses/CourseHomeView.tsx`). Renders the summary card (progress plus `data-state` for tests), the day list with per-day `completed` / `current` / `locked` status, and the state-aware CTA. Day rows for open days link into the learn day route; locked rows are inert with an `aria-disabled` hint.
+
+### course-progress.ts / courses-view-model.ts / course-home-view-model.ts
+
+The pure seams behind the two views (`app/components/courses/`), covered by `npm run test:courses`. `createCourseProgress` and `getDayStatus` share the dashboard's `currentDay` clamp semantics, so the dashboard and course pages cannot disagree about what "5 of 5 days" means.
 
 ---
 

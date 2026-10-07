@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { QueryClient } from "@tanstack/react-query";
 // @ts-expect-error Node's native type stripping requires the explicit extension.
-import { dashboardQueryOptions } from "./dashboard-options.ts";
+import { defaultQueryOptions } from "./query-options.ts";
 
-test("retries a failed dashboard query once and returns recovered data", async () => {
+test("retries a failed query once and returns recovered data", async () => {
   const queryClient = new QueryClient();
   let attempts = 0;
 
   const result = await queryClient.fetchQuery({
-    queryKey: ["dashboard-retry-success"],
+    queryKey: ["query-retry-success"],
     queryFn: async () => {
       attempts += 1;
 
@@ -17,28 +17,28 @@ test("retries a failed dashboard query once and returns recovered data", async (
         throw new Error("temporary network failure");
       }
 
-      return "dashboard loaded";
+      return "loaded";
     },
-    ...dashboardQueryOptions,
+    ...defaultQueryOptions,
     retryDelay: 0,
   });
 
-  assert.equal(result, "dashboard loaded");
+  assert.equal(result, "loaded");
   assert.equal(attempts, 2);
 });
 
-test("stops after the dashboard retry is exhausted", async () => {
+test("stops after the retry is exhausted", async () => {
   const queryClient = new QueryClient();
   let attempts = 0;
 
   await assert.rejects(
     queryClient.fetchQuery({
-      queryKey: ["dashboard-retry-failure"],
+      queryKey: ["query-retry-failure"],
       queryFn: async () => {
         attempts += 1;
         throw new Error("network unavailable");
       },
-      ...dashboardQueryOptions,
+      ...defaultQueryOptions,
       retryDelay: 0,
     }),
     /network unavailable/,

@@ -1,7 +1,7 @@
 /**
  * Mobile navigation (issue #48): below the shell's 768px breakpoint the
  * desktop sidebar is replaced by a sticky compact header and a fixed
- * Dashboard / Course / More bottom bar, with More opening a content-sized
+ * Dashboard / Courses / More bottom bar, with More opening a content-sized
  * bottom sheet.
  *
  * Every read here is a runtime read per docs/browser-qa-protocol.md:
@@ -11,17 +11,19 @@
  *
  * Layout proofs run at both required widths (320px and 390px); interaction
  * proofs run at 390px. Course screens are enrollment-gated, so those checks
- * branch on the Playwright project (nicholas = enrolled, nick = not) the way
+ * branch on the Playwright project (paid = enrolled, free = not) the way
  * titles.spec.ts does.
  */
 import { expect, type Locator, test } from "@playwright/test";
 
 import {
   COURSE_DAY_PATH,
+  COURSE_HOME_PATH,
   COURSE_MARKETING_PATH,
   THEMES,
   bottomBar,
-  expectLearnEntryDestination,
+  courseCards,
+  dayRows,
   mobileHeader,
   moreSheet,
   openMobileWithTheme,
@@ -61,7 +63,7 @@ async function scrollToBottom(page: Parameters<typeof bottomBar>[0]) {
 /** The three and only three bottom-bar targets, per the issue. */
 const TABS = [
   { role: "link", name: "Dashboard" },
-  { role: "link", name: "Course" },
+  { role: "link", name: "Courses" },
   { role: "button", name: "More" },
 ] as const;
 
@@ -182,13 +184,13 @@ test.describe("mobile layout", () => {
   });
 });
 
-test.describe("Course tab access", () => {
-  test("enrolled account opens training or the completed dashboard", async ({
+test.describe("Courses tab access", () => {
+  test("enrolled account reaches the courses index and its course home", async ({
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account",
     );
 
     await openMobileWithTheme(
@@ -197,13 +199,21 @@ test.describe("Course tab access", () => {
       "light",
       INTERACTION_VIEWPORT,
     );
-    const courseTab = tab(page, "Course");
-    await expect(courseTab).toHaveAttribute("data-access", "enrolled");
 
-    await courseTab.click();
-    await settle(page);
+    const coursesTab = tab(page, "Courses");
+    await coursesTab.click();
+    await expect(page).toHaveURL(/\/app\/courses$/);
 
-    await expectLearnEntryDestination(page);
+    const card = courseCards(page).first();
+    await expect(card).toHaveAttribute(
+      "data-state",
+      /inProgress|completed/,
+      { timeout: 20_000 },
+    );
+    await card.click();
+
+    await expect(page).toHaveURL(new RegExp(`${COURSE_HOME_PATH}$`));
+    await expect(dayRows(page)).toHaveCount(5);
     await expect(bottomBar(page)).toBeVisible();
   });
 
@@ -211,8 +221,8 @@ test.describe("Course tab access", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
     await openMobileWithTheme(
@@ -221,16 +231,20 @@ test.describe("Course tab access", () => {
       "light",
       INTERACTION_VIEWPORT,
     );
-    const courseTab = tab(page, "Course");
-    await expect(courseTab).toHaveAttribute(
-      "data-access",
-      "enrollment-required",
-    );
 
-    await courseTab.click();
+    const coursesTab = tab(page, "Courses");
+    await coursesTab.click();
+    await expect(page).toHaveURL(/\/app\/courses$/);
 
-    const accessSheet = page.getByRole("dialog", { name: "Putting Course" });
-    await expect(page).toHaveURL(/\/app\/dashboard$/);
+    const card = courseCards(page).first();
+    await expect(card).toHaveAttribute("data-state", "notEnrolled", {
+      timeout: 20_000,
+    });
+
+    const title = await card.locator('[data-slot="card-title"]').innerText();
+    await card.click();
+
+    const accessSheet = page.getByRole("dialog", { name: title });
     await expect(accessSheet).toBeVisible();
     await expect(
       accessSheet.getByText("Enroll before starting the course."),
@@ -238,9 +252,9 @@ test.describe("Course tab access", () => {
 
     await accessSheet.getByRole("button", { name: "Stay here" }).click();
     await expect(accessSheet).toBeHidden();
-    await expect(courseTab).toBeFocused();
+    await expect(card).toBeFocused();
 
-    await courseTab.click();
+    await card.click();
     await accessSheet.getByRole("link", { name: "View course" }).click();
 
     await expect(page).toHaveURL(new RegExp(`${COURSE_MARKETING_PATH}$`));
@@ -253,16 +267,19 @@ test.describe("mobile bar persistence on course screens", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account; nick's behavior is the next test",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account; free's behavior is the next test",
     );
 
     await openMobileWithTheme(page, COURSE_DAY_PATH, "light", INTERACTION_VIEWPORT);
     await settle(page);
 
-    await expect(page).toHaveURL(new RegExp(COURSE_DAY_PATH));
+    // A new paid account is on day 1: the requested day 2 is locked and
+    // correctly redirects to the current day. Assert the lesson actually rendered.
+    await expect(page).toHaveURL(/\/app\/courses\/putting-course\/learn\/day\/\d+$/);
+    await expect(page.getByRole("heading", { name: /^Day \d+:/ })).toBeVisible();
     await expectBarAtViewportBottom(page);
-    await expect(mobileHeader(page)).toContainText("Putting Course");
+    await expect(mobileHeader(page)).toContainText("Courses");
     await scrollToBottom(page);
     await expectAboveBar(page, page.getByRole("button", { name: "Complete Day", exact: true }));
   });
@@ -272,7 +289,7 @@ test.describe("mobile bar persistence on course screens", () => {
     testInfo,
   ) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
+      testInfo.project.name !== "paid",
       "the putting game renders inside enrolled course day screens",
     );
 
@@ -294,11 +311,11 @@ test.describe("mobile bar persistence on course screens", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick is the unenrolled account; nicholas's behavior is the previous test",
+      testInfo.project.name !== "free",
+      "free is the unenrolled account; paid's behavior is the previous test",
     );
 
-    // The enrollment guard redirects nick to the marketing page, which is
+    // The enrollment guard redirects free to the marketing page, which is
     // outside the app shell — no mobile chrome there by design.
     await page.setViewportSize(INTERACTION_VIEWPORT);
     await page.goto(COURSE_DAY_PATH);
@@ -317,21 +334,21 @@ test.describe("mobile active states", () => {
       "aria-current",
       "page",
     );
-    await expect(tab(page, "Course")).not.toHaveAttribute("aria-current");
+    await expect(tab(page, "Courses")).not.toHaveAttribute("aria-current");
     await expect(tab(page, "More")).toHaveAttribute("data-active", "false");
     await expect(tab(page, "More")).toHaveAttribute("aria-expanded", "false");
   });
 
-  test("Course tab owns course lesson screens", async ({ page }, testInfo) => {
+  test("Courses tab owns course lesson screens", async ({ page }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
+      testInfo.project.name !== "paid",
       "course screens need the enrolled account",
     );
 
     await openMobileWithTheme(page, COURSE_DAY_PATH, "light", INTERACTION_VIEWPORT);
     await settle(page);
 
-    await expect(tab(page, "Course")).toHaveAttribute("aria-current", "page");
+    await expect(tab(page, "Courses")).toHaveAttribute("aria-current", "page");
     await expect(tab(page, "Dashboard")).not.toHaveAttribute("aria-current");
   });
 

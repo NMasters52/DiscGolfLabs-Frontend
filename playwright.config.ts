@@ -16,16 +16,14 @@ import { existsSync } from "node:fs";
 
 import { defineConfig, devices } from "@playwright/test";
 
-// Fail here, with instructions, instead of erroring all 30 tests at context
-// creation. The storage states are live Clerk session cookies, so they are
-// gitignored and never travel with the clone; each developer exports their own.
-for (const account of ["nick", "nicholas"]) {
-  const state = `e2e/.auth/${account}.json`;
+// Fail early instead of erroring tests at context creation. These live Clerk
+// sessions are credentials and stay under the ignored playwright/.auth folder.
+for (const account of ["free", "paid"]) {
+  const state = `playwright/.auth/${account}.json`;
   if (!existsSync(state)) {
     throw new Error(
-      `Missing ${state}. Log in to the app as the "${account}" account, then ` +
-        `export its Playwright storage state to that path — see the accounts ` +
-        `table and "Hard proof beyond the MCP" section in docs/browser-qa-protocol.md.`,
+      `Missing ${state}. Run npm run auth:setup to sign in as the dedicated ` +
+        `${account} test user and create this Playwright state.`,
     );
   }
 }
@@ -50,23 +48,22 @@ export default defineConfig({
   testMatch: "**/*.spec.ts",
   // Each test gets its own page; theme/localStorage mutations stay isolated.
   fullyParallel: true,
-  // Two projects = the two Clerk accounts from the QA protocol accounts table.
-  // Both run the same specs; the paid/unpaid split is the point.
+  // Both projects run the same specs; the free/paid split is the point.
   projects: [
     {
-      name: "nick",
+      name: "free",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/nick.json",
+        storageState: "playwright/.auth/free.json",
         viewport: VIEWPORT,
         colorScheme: COLOR_SCHEME,
       },
     },
     {
-      name: "nicholas",
+      name: "paid",
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/nicholas.json",
+        storageState: "playwright/.auth/paid.json",
         viewport: VIEWPORT,
         colorScheme: COLOR_SCHEME,
       },
@@ -74,9 +71,12 @@ export default defineConfig({
   ],
   use: {
     baseURL: BASE_URL,
-    // System Chrome locally: no browser download, matches the MCP QA profiles.
+    // System Chromium locally: no browser download, matches CLI exploration.
     // CI runners only ship bundled Chromium, so fall back to it there.
-    channel: process.env.CI ? undefined : "chrome",
+    launchOptions: {
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
+        (!process.env.CI && existsSync("/usr/bin/chromium") ? "/usr/bin/chromium" : undefined),
+    },
     actionTimeout: 15_000,
     navigationTimeout: 30_000,
     trace: "retain-on-failure",

@@ -2,15 +2,10 @@ import * as React from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { BookOpen, LayoutDashboard, Menu, type LucideIcon } from "lucide-react";
 
-import {
-  COURSE_ROUTE,
-  resolveMobileTab,
-} from "~/components/app/navigation";
-import { CourseAccessSheet } from "~/components/app/CourseAccessSheet";
+import { resolveMobileTab } from "~/components/app/navigation";
 import { MoreSheet } from "~/components/app/MoreSheet";
 import { useIsMobile } from "~/hooks/use-mobile";
 import { cn } from "~/lib/utils";
-import type { CourseAccessState } from "~/components/app/useCourseAccess";
 
 /** Search parameter that marks the More sheet as open in the URL. */
 const MORE_PARAM = "more";
@@ -21,32 +16,21 @@ function MobileTab({
   icon: Icon,
   label,
   active,
-  linkRef,
-  onClick,
-  accessState,
 }: {
   to: string;
   icon: LucideIcon;
   label: string;
   active: boolean;
-  linkRef?: React.Ref<HTMLAnchorElement>;
-  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-  accessState?: "loading" | "error" | "enrolled" | "enrollment-required";
 }) {
   return (
     <Link
-      ref={linkRef}
       to={to}
-      onClick={onClick}
       aria-current={active ? "page" : undefined}
-      aria-disabled={accessState === "loading" ? true : undefined}
-      data-access={accessState}
       className={cn(
         "flex min-h-14 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors",
         active
           ? "text-primary"
           : "text-muted-foreground hover:text-foreground",
-        accessState === "loading" && "opacity-60",
       )}
     >
       <Icon className="size-5" aria-hidden="true" />
@@ -56,7 +40,7 @@ function MobileTab({
 }
 
 /**
- * The phone (<768px) navigation surface: a fixed Dashboard, Course,
+ * The phone (<768px) navigation surface: a fixed Dashboard, Courses,
  * More bottom bar plus the More sheet. Hidden at desktop widths, where the
  * sidebar is the only navigation chrome.
  *
@@ -66,26 +50,14 @@ function MobileTab({
  * a directly loaded sheet URL is closed in place. Destination links replace
  * the sheet entry so Back returns to the page with the sheet closed.
  */
-export function MobileNav({
-  courseAccessState,
-  retryCourseAccess,
-}: {
-  courseAccessState: CourseAccessState;
-  retryCourseAccess: () => void;
-}) {
+export function MobileNav() {
   const location = useLocation();
   const { pathname } = location;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const moreButtonRef = React.useRef<HTMLButtonElement>(null);
-  const courseLinkRef = React.useRef<HTMLAnchorElement>(null);
-  const [courseAccessOpen, setCourseAccessOpen] = React.useState(false);
   const sheetOpen = searchParams.has(MORE_PARAM);
-
-  React.useEffect(() => {
-    if (courseAccessState === "enrolled") setCourseAccessOpen(false);
-  }, [courseAccessState]);
 
   const activeTab = resolveMobileTab(pathname);
   const moreActive = activeTab === "more" || sheetOpen;
@@ -119,17 +91,6 @@ export function MobileNav({
     });
   }, [location, pathname, searchParams, navigate]);
 
-  const handleCourseClick: React.MouseEventHandler<HTMLAnchorElement> = (
-    event,
-  ) => {
-    if (courseAccessState === "enrolled") return;
-
-    event.preventDefault();
-    if (courseAccessState === "enrollment-required" || courseAccessState === "error") {
-      setCourseAccessOpen(true);
-    }
-  };
-
   return (
     <>
       <nav
@@ -144,13 +105,10 @@ export function MobileNav({
           active={activeTab === "dashboard"}
         />
         <MobileTab
-          to={COURSE_ROUTE}
+          to="/app/courses"
           icon={BookOpen}
-          label="Course"
+          label="Courses"
           active={activeTab === "course"}
-          linkRef={courseLinkRef}
-          onClick={handleCourseClick}
-          accessState={courseAccessState}
         />
         <button
           type="button"
@@ -180,16 +138,6 @@ export function MobileNav({
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           moreButtonRef.current?.focus();
-        }}
-      />
-      <CourseAccessSheet
-        open={courseAccessOpen && isMobile}
-        accessState={courseAccessState}
-        onRetry={retryCourseAccess}
-        onOpenChange={setCourseAccessOpen}
-        onCloseAutoFocus={(event) => {
-          event.preventDefault();
-          courseLinkRef.current?.focus();
         }}
       />
     </>

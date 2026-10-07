@@ -5,7 +5,6 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
-import type { MouseEventHandler } from "react";
 import { SignOutButton, useUser } from "@clerk/react-router";
 import { Link, useLocation } from "react-router";
 
@@ -26,8 +25,7 @@ import {
 } from "~/components/ui/sidebar";
 import { ModeToggle } from "~/components/mode-toggle";
 import { ThemeChoice } from "~/components/app/theme-choice";
-import { COURSE_ROUTE, resolveDestination } from "~/components/app/navigation";
-import type { CourseAccessState } from "~/components/app/useCourseAccess";
+import { resolveDestination } from "~/components/app/navigation";
 import { cn } from "~/lib/utils";
 
 const PRIMARY_NAVIGATION: readonly {
@@ -43,8 +41,8 @@ const PRIMARY_NAVIGATION: readonly {
     icon: LayoutDashboard,
   },
   {
-    label: "Course",
-    to: COURSE_ROUTE,
+    label: "Courses",
+    to: "/app/courses",
     destinationPath: "/app/courses",
     icon: BookOpen,
   },
@@ -59,12 +57,8 @@ function NavigationItem({
   destinationPath,
   icon: Icon,
   activePath,
-  onClick,
-  accessState,
 }: (typeof PRIMARY_NAVIGATION)[number] & {
   activePath: string | undefined;
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-  accessState?: CourseAccessState;
 }) {
   const isActive = activePath === destinationPath;
 
@@ -78,11 +72,8 @@ function NavigationItem({
       >
         <Link
           to={to}
-          onClick={onClick}
           aria-label={label}
           aria-current={isActive ? "page" : undefined}
-          aria-disabled={accessState === "loading" ? true : undefined}
-          data-access={accessState}
         >
           <Icon aria-hidden="true" />
           <span className="group-data-[collapsible=icon]:hidden">{label}</span>
@@ -190,13 +181,7 @@ function SidebarThemeControl() {
   );
 }
 
-export function AppSidebar({
-  onCourseClick,
-  courseAccessState,
-}: {
-  onCourseClick?: MouseEventHandler<HTMLAnchorElement>;
-  courseAccessState?: CourseAccessState;
-}) {
+export function AppSidebar() {
   const { pathname } = useLocation();
   const activePath = resolveDestination(pathname)?.path;
   const settingsActive = activePath === "/app/settings";
@@ -233,16 +218,6 @@ export function AppSidebar({
                   key={item.label}
                   {...item}
                   activePath={activePath}
-                  onClick={
-                    item.destinationPath === "/app/courses"
-                      ? onCourseClick
-                      : undefined
-                  }
-                  accessState={
-                    item.destinationPath === "/app/courses"
-                      ? courseAccessState
-                      : undefined
-                  }
                 />
               ))}
             </SidebarMenu>

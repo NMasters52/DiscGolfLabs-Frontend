@@ -1,30 +1,42 @@
 import { expect, test } from "@playwright/test";
 
-import { openWithTheme, sidebar } from "./helpers";
+import {
+  COURSES_INDEX_PATH,
+  courseCards,
+  openWithTheme,
+  settle,
+  sidebar,
+} from "./helpers";
 
 test.describe("desktop Course access", () => {
-  test("unenrolled account stays in the app and opens the access sheet", async ({
+  test("unenrolled account browses the index and chooses from the card sheet", async ({
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
     await openWithTheme(page, "/app/dashboard", "light");
 
-    const courseLink = sidebar(page).getByRole("link", {
-      name: "Course",
-      exact: true,
-    });
-    await expect(courseLink).toHaveAttribute(
-      "data-access",
-      "enrollment-required",
-    );
-    await courseLink.click();
+    // Courses is a real destination now: the sidebar link navigates.
+    await sidebar(page).getByRole("link", { name: "Courses" }).click();
+    await expect(page).toHaveURL(new RegExp(`${COURSES_INDEX_PATH}$`));
 
-    const accessSheet = page.getByRole("dialog", { name: "Putting Course" });
-    await expect(page).toHaveURL(/\/app\/dashboard$/);
+    const card = courseCards(page).first();
+    await expect(card).toBeVisible();
+    await expect(card).toHaveAttribute("data-state", "notEnrolled", {
+      timeout: 20_000,
+    });
+
+    // The card's own title names the sheet — the title is data, not copy.
+    const title = await card
+      .locator('[data-slot="card-title"]')
+      .innerText();
+    await card.click();
+
+    const accessSheet = page.getByRole("dialog", { name: title });
+    await expect(page).toHaveURL(new RegExp(`${COURSES_INDEX_PATH}\\?course=`));
     await expect(accessSheet).toBeVisible();
     await expect(
       accessSheet.getByRole("button", { name: "Stay Here" }),
@@ -32,35 +44,44 @@ test.describe("desktop Course access", () => {
     await expect(
       accessSheet.getByRole("link", { name: "View Course" }),
     ).toBeVisible();
+
+    // Dismissing hands focus back to the card that opened the sheet.
+    await accessSheet.getByRole("button", { name: "Stay Here" }).click();
+    await expect(accessSheet).toBeHidden();
+    await expect(card).toBeFocused();
   });
 
-  test("clears the desktop access sheet when resizing through mobile", async ({
+  test("the card sheet survives crossing the mobile breakpoint", async ({
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
-    await openWithTheme(page, "/app/dashboard", "light");
+    await openWithTheme(page, COURSES_INDEX_PATH, "light");
 
-    const courseLink = sidebar(page).getByRole("link", {
-      name: "Course",
-      exact: true,
+    const card = courseCards(page).first();
+    await expect(card).toHaveAttribute("data-state", "notEnrolled", {
+      timeout: 20_000,
     });
-    await expect(courseLink).toHaveAttribute(
-      "data-access",
-      "enrollment-required",
-    );
-    await courseLink.click();
+    await card.click();
 
-    const accessSheet = page.getByRole("dialog", { name: "Putting Course" });
+    const accessSheet = page.getByRole("dialog", {
+      name: await card.locator('[data-slot="card-title"]').innerText(),
+    });
     await expect(accessSheet).toBeVisible();
 
+    // One page-level sheet at both widths: crossing 768px in either
+    // direction keeps it open (and dismissible) instead of the shell
+    // tearing it down at the breakpoint.
     await page.setViewportSize({ width: 735, height: 900 });
-    await expect(accessSheet).toBeHidden();
+    await expect(accessSheet).toBeVisible();
 
     await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(accessSheet).toBeVisible();
+
+    await accessSheet.getByRole("button", { name: "Stay Here" }).click();
     await expect(accessSheet).toBeHidden();
   });
 });

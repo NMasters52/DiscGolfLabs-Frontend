@@ -8,7 +8,7 @@ High-level frontend layers and the request/data flow. Stub — captured from the
 
 ## High level
 
-React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`. The authenticated shell mounts once in `routes/app/_layout.jsx`. `AppShell` owns persistent chrome, page titles, responsive navigation, and the shared Course access check; nested routes render through its outlet.
+React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack Query). Routing is file-based, declared in `app/routes.ts`, with the route tree under `app/routes/`. The authenticated shell mounts once in `routes/app/_layout.jsx`. `AppShell` owns persistent chrome, page titles, and responsive navigation; nested routes render through its outlet. Enrollment decisions live on the courses index (`components/courses/`), which hosts the access sheet per card.
 
 ## Request / data flow
 
@@ -21,7 +21,7 @@ React Router v7 app. `root.tsx` mounts global providers (theme, Clerk, TanStack 
 | Folder                   | Responsibility                                                                                                                 |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | `app/routes/`            | route components + loaders/actions, split by domain (`_landing`, `app`, `checkout`)                                            |
-| `app/components/`        | UI: `landing/`, `app/` (shell + nav), `dashboard/`, `games/`, `ui/` (shadcn) + top-level `mode-toggle.tsx`, `require-auth.jsx` |
+| `app/components/`        | UI: `landing/`, `app/` (shell + nav), `courses/`, `dashboard/`, `games/`, `ui/` (shadcn) + top-level `mode-toggle.tsx`, `require-auth.jsx` |
 | `app/game/`              | game logic + state (e.g. Putting Ladder)                                                                                       |
 | `app/queries/`           | TanStack Query hooks                                                                                                           |
 | `app/api/`               | server-side resource routes                                                                                                    |
@@ -41,12 +41,16 @@ app/
 │   ├── app/                # Authenticated app shell + navigation
 │   │   ├── AppShell.tsx    # The shared shell (rendered by routes/app/_layout.jsx)
 │   │   ├── AppSidebar.tsx  # Sidebar nav (rendered by AppShell)
-│   │   ├── CourseAccessSheet.tsx # Course access choice/retry sheet
-│   │   ├── MobileNav.tsx   # Dashboard/Course/More navigation below 768px
+│   │   ├── MobileNav.tsx   # Dashboard/Courses/More navigation below 768px
 │   │   ├── MoreSheet.tsx   # Mobile Account/Appearance/Sign Out sheet
-│   │   ├── useCourseAccess.ts # Shared Course access query state
 │   │   ├── navigation.ts   # Typed /app destination + page-title config
 │   │   └── theme-choice.tsx  # Reusable System/Light/Dark control
+│   ├── courses/            # Courses index + course home
+│   │   ├── CoursesView.tsx     # Course card grid + access sheet hosting
+│   │   ├── CourseHomeView.tsx  # Progress, day list, state-aware CTA
+│   │   ├── CourseAccessSheet.tsx # Enrollment decision/retry sheet (per card)
+│   │   ├── course-progress.ts  # Shared currentDay clamp + day status
+│   │   ├── courses-view-model.ts / course-home-view-model.ts (+ tests)
 │   ├── dashboard/          # Dashboard-specific components
 │   │   ├── DashboardView.tsx  # The single responsive dashboard composition
 │   │   ├── view-model.ts      # createDashboardViewModel: pure state/derivation seam
@@ -82,7 +86,9 @@ app/
 │       └── variants.ts
 ├── queries/                # React Query hooks for data fetching
 │   ├── keys.js             # Centralized query-key factory
-│   ├── dashboard-options.ts  # Shared query options preset for the dashboard
+│   ├── query-options.ts    # Shared defaultQueryOptions preset (retry: 1)
+│   ├── useCourses.ts
+│   ├── useEnrollments.ts
 │   ├── useCourse.js
 │   ├── useEnrollment.js
 │   ├── useCompleteDay.js
@@ -90,9 +96,10 @@ app/
 │   ├── useCreateGameSession.js
 │   ├── usePuttingGameStats.js
 │   └── useWaitlist.js
-├── routes/                 # File-based routing
+├── routes/                 # Route components (tree declared in app/routes.ts)
 │   ├── _landing/           # Public landing pages
 │   ├── app/                # Authenticated app routes (`/app` = auth boundary + AppShell)
+│   │   ├── courses/        # Courses index + course home (no enrollment gate)
 │   │   ├── courses/learn/  # Course learning pages (enrollment-gated)
 │   │   ├── dashboard/      # Dashboard implementation
 │   │   └── settings/       # Settings (Appearance + Clerk Account/Security, `settings/*` splat)

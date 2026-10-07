@@ -9,8 +9,10 @@ export function getLearnIndexDestination({
   currentDay,
   totalDays,
 }: LearnIndexDestinationInput) {
+  // A completed enrollment has no current day to continue; land on the
+  // course home, where every completed day stays open for review.
   if (currentDay > totalDays) {
-    return "/app/dashboard";
+    return `/app/courses/${courseSlug}`;
   }
 
   const day = Math.max(1, currentDay);

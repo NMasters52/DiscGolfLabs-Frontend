@@ -3,7 +3,10 @@ export const queryKeys = {
     check: (courseId) => ["enrollment", "check", courseId],
   },
   course: {
-    bySlug: (slug) => ["course", slug],
+    // "detail" keeps a course with the slug "list" from colliding with the
+    // index's cache entry.
+    bySlug: (slug) => ["course", "detail", slug],
+    list: () => ["course", "list"],
   },
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
