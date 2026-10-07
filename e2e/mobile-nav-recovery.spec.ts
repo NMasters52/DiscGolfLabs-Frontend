@@ -113,7 +113,7 @@ test("a failed enrollment check recovers from the card sheet", async ({
   failing = false;
   await retry.click();
 
-  const enrolled = testInfo.project.name === "nicholas";
+  const enrolled = testInfo.project.name === "paid";
   if (enrolled) {
     // Recovery closes the sheet on its own: the live card no longer needs a
     // decision, so focus lands back on it and it navigates normally.

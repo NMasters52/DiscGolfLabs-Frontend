@@ -5,7 +5,7 @@
  * Before /app/courses/:slug existed, a completed enrollment (currentDay past
  * totalDays) was redirected from the learn index to the dashboard and had no
  * way back into the course. These specs pin the replacement behavior on both
- * projects: nicholas (paid/enrolled) and nick (unenrolled).
+ * projects: paid (paid/enrolled) and free (unenrolled).
  *
  * The enrolled account's progress is live data, so assertions branch on the
  * rendered data-state rather than assuming a day number.
@@ -46,8 +46,8 @@ test.describe("courses index", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account",
     );
 
     await openWithTheme(page, COURSES_INDEX_PATH, "light");
@@ -94,8 +94,8 @@ test.describe("courses index", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick is the unenrolled account",
+      testInfo.project.name !== "free",
+      "free is the unenrolled account",
     );
 
     await openWithTheme(page, COURSES_INDEX_PATH, "light");
@@ -121,8 +121,8 @@ test.describe("courses index", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick is the unenrolled account",
+      testInfo.project.name !== "free",
+      "free is the unenrolled account",
     );
 
     // Direct URLs stay safe outside the learn layout: the unenrolled variant
@@ -148,7 +148,7 @@ test.describe("learn entry", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
+      testInfo.project.name !== "paid",
       "the learn index authorizes enrollment",
     );
 

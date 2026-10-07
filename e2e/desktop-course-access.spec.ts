@@ -13,8 +13,8 @@ test.describe("desktop Course access", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
     await openWithTheme(page, "/app/dashboard", "light");
@@ -36,7 +36,7 @@ test.describe("desktop Course access", () => {
     await card.click();
 
     const accessSheet = page.getByRole("dialog", { name: title });
-    await expect(page).toHaveURL(new RegExp(`${COURSES_INDEX_PATH}$`));
+    await expect(page).toHaveURL(new RegExp(`${COURSES_INDEX_PATH}\\?course=`));
     await expect(accessSheet).toBeVisible();
     await expect(
       accessSheet.getByRole("button", { name: "Stay Here" }),
@@ -55,8 +55,8 @@ test.describe("desktop Course access", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
     await openWithTheme(page, COURSES_INDEX_PATH, "light");

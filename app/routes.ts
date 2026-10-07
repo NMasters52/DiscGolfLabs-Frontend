@@ -11,8 +11,8 @@ export default [
     route("courses/:slug", "routes/_landing/courses.$slug.jsx"),
   ]),
 
-  route("sign-in", "routes/sign-in.jsx"),
-  route("sign-up", "routes/sign-up.jsx"),
+  route("sign-in/*", "routes/sign-in.jsx"),
+  route("sign-up/*", "routes/sign-up.jsx"),
 
   route("checkout/success", "routes/checkout/success.jsx"),
 

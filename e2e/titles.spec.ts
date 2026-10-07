@@ -8,7 +8,7 @@
  * helper itself changes.
  *
  * The course day route is split out below because it is enrollment-gated:
- * enrolled nicholas renders it inside the shell, unenrolled nick is
+ * enrolled paid renders it inside the shell, unenrolled free is
  * redirected to the marketing page. Both behaviors are asserted, so the
  * suite stays green without weakening either check.
  */
@@ -53,8 +53,8 @@ test.describe(`title ${COURSE_DAY_PATH}`, () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account; nick's behavior is the next test",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account; free's behavior is the next test",
     );
 
     await page.goto(COURSE_DAY_PATH);
@@ -72,8 +72,8 @@ test.describe(`title ${COURSE_DAY_PATH}`, () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick is the unenrolled account; nicholas's behavior is the previous test",
+      testInfo.project.name !== "free",
+      "free is the unenrolled account; paid's behavior is the previous test",
     );
 
     await page.goto(COURSE_DAY_PATH);
@@ -81,7 +81,7 @@ test.describe(`title ${COURSE_DAY_PATH}`, () => {
 
     // The enrollment guard moves the user to the public marketing page, whose
     // title is the bare product name — the AppShell unmount reset, working as
-    // designed. If this ever fails because nick enrolled, update the accounts
+    // designed. If this ever fails because free enrolled, update the accounts
     // table in docs/browser-qa-protocol.md and swap this test's expectations.
     await expect(page).toHaveURL(new RegExp(`${COURSE_MARKETING_PATH}$`));
     await expect(page).toHaveTitle(APP_NAME);

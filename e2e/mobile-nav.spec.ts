@@ -11,7 +11,7 @@
  *
  * Layout proofs run at both required widths (320px and 390px); interaction
  * proofs run at 390px. Course screens are enrollment-gated, so those checks
- * branch on the Playwright project (nicholas = enrolled, nick = not) the way
+ * branch on the Playwright project (paid = enrolled, free = not) the way
  * titles.spec.ts does.
  */
 import { expect, type Locator, test } from "@playwright/test";
@@ -189,8 +189,8 @@ test.describe("Courses tab access", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account",
     );
 
     await openMobileWithTheme(
@@ -221,8 +221,8 @@ test.describe("Courses tab access", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick holds the unpaid/unenrolled account",
+      testInfo.project.name !== "free",
+      "free holds the unpaid/unenrolled account",
     );
 
     await openMobileWithTheme(
@@ -267,14 +267,17 @@ test.describe("mobile bar persistence on course screens", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
-      "nicholas holds the paid/enrolled account; nick's behavior is the next test",
+      testInfo.project.name !== "paid",
+      "paid holds the paid/enrolled account; free's behavior is the next test",
     );
 
     await openMobileWithTheme(page, COURSE_DAY_PATH, "light", INTERACTION_VIEWPORT);
     await settle(page);
 
-    await expect(page).toHaveURL(new RegExp(COURSE_DAY_PATH));
+    // A new paid account is on day 1: the requested day 2 is locked and
+    // correctly redirects to the current day. Assert the lesson actually rendered.
+    await expect(page).toHaveURL(/\/app\/courses\/putting-course\/learn\/day\/\d+$/);
+    await expect(page.getByRole("heading", { name: /^Day \d+:/ })).toBeVisible();
     await expectBarAtViewportBottom(page);
     await expect(mobileHeader(page)).toContainText("Courses");
     await scrollToBottom(page);
@@ -286,7 +289,7 @@ test.describe("mobile bar persistence on course screens", () => {
     testInfo,
   ) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
+      testInfo.project.name !== "paid",
       "the putting game renders inside enrolled course day screens",
     );
 
@@ -308,11 +311,11 @@ test.describe("mobile bar persistence on course screens", () => {
     page,
   }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nick",
-      "nick is the unenrolled account; nicholas's behavior is the previous test",
+      testInfo.project.name !== "free",
+      "free is the unenrolled account; paid's behavior is the previous test",
     );
 
-    // The enrollment guard redirects nick to the marketing page, which is
+    // The enrollment guard redirects free to the marketing page, which is
     // outside the app shell — no mobile chrome there by design.
     await page.setViewportSize(INTERACTION_VIEWPORT);
     await page.goto(COURSE_DAY_PATH);
@@ -338,7 +341,7 @@ test.describe("mobile active states", () => {
 
   test("Courses tab owns course lesson screens", async ({ page }, testInfo) => {
     test.skip(
-      testInfo.project.name !== "nicholas",
+      testInfo.project.name !== "paid",
       "course screens need the enrolled account",
     );
 

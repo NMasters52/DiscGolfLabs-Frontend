@@ -34,6 +34,10 @@ see docs/architecture.md for detail
 
 ## Browser QA
 
+For feature QA, read and apply `.agents/skills/dgl-qa/SKILL.md`. This is the repository's permanent QA workflow: maintain E2E coverage, run free and paid flows, investigate with Playwright CLI, and prove fixes with failing then passing regressions. Playwright MCP is a secondary browser tool for deeper investigation.
+
 Before running browser-based QA on an issue, read docs/browser-qa-protocol.md and follow it — evidence standards, accounts, and issue-sync rules live there.
+
+For local authenticated browser work, open the dedicated Linux account with `./scripts/dgl-browser.sh free` or `./scripts/dgl-browser.sh paid`. Continue CLI commands through that wrapper (for example, `./scripts/dgl-browser.sh paid snapshot`). The account state files are local credentials under ignored `playwright/.auth/` and must not be printed or committed.
 
 Note: TypeScript-first, but some modules (game logic, queries, api handlers) are still `.js/.jsx`.

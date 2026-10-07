@@ -13,6 +13,7 @@
     "test": "npm run test:dashboard && npm run test:courses && npm run test:app && npm run test:unit",
     "test:e2e": "playwright test",
     "test:unit": "playwright test --config=playwright.unit.config.ts",
+    "auth:setup": "node scripts/create-playwright-auth-states.mjs",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

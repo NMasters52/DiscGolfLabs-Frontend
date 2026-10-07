@@ -27,8 +27,8 @@ export const TITLE_PATHS = [
 
 /**
  * The course day route is enrollment-gated, so its title is asserted per
- * account in `titles.spec.ts`: enrolled (nicholas) renders inside the shell
- * with the destination title, unenrolled (nick) is redirected to the marketing
+ * account in `titles.spec.ts`: enrolled (paid) renders inside the shell
+ * with the destination title, unenrolled (free) is redirected to the marketing
  * page, which has no title of its own and shows the bare product name.
  */
 export const COURSE_DAY_PATH = "/app/courses/putting-course/learn/day/2";
