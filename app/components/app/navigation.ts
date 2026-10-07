@@ -11,7 +11,7 @@ export interface AppDestination {
 
 export const APP_DESTINATIONS = [
   { path: "/app/dashboard", title: "Dashboard" },
-  { path: "/app/courses", title: "Putting Course" },
+  { path: "/app/courses", title: "Courses" },
   { path: "/app/settings", title: "Settings" },
 ] as const satisfies readonly AppDestination[];
 
@@ -27,16 +27,6 @@ export function resolveDestination(
         pathname.startsWith(`${destination.path}/`),
     );
 }
-
-/**
- * Canonical Putting Course route. The app ships one course today, so the
- * mobile Course tab links straight to it; `resolveDestination` still matches
- * the shorter `/app/courses` prefix for titles and active states.
- */
-export const COURSE_ROUTE = "/app/courses/putting-course/learn";
-
-/** Public course details and enrollment route. */
-export const COURSE_MARKETING_ROUTE = "/courses/putting-course";
 
 export type MobileTab = "dashboard" | "course" | "more";
 

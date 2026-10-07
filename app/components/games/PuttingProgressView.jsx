@@ -46,7 +46,7 @@ export function PuttingProgressView({ gameSlug, courseId }) {
           </p>
 
           <h4>Performance by Distance:</h4>
-          <div style={{ display: "grid", gap: "0.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "0.5rem" }}>
             {Object.entries(session.distanceStats)
               .sort(([a], [b]) => Number(a) - Number(b))
               .map(([distance, stats]) => (
@@ -63,7 +63,7 @@ export function PuttingProgressView({ gameSlug, courseId }) {
                   <progress
                     value={stats.percentage}
                     max="100"
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, minWidth: 0 }}
                   />
                 </div>
               ))}

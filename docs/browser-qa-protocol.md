@@ -8,27 +8,38 @@ How an agent runs interactive browser QA against the local app and produces revi
 
 ## Accounts & environments
 
-| Chrome profile | Clerk account | Tier                   | Use for                                 |
-| -------------- | ------------- | ---------------------- | --------------------------------------- |
-| `Nick`         | Nick          | unpaid (no enrollment) | free-tier access checks                 |
-| `Nicholas`     | Nicholas      | paid                   | enrolled-content and persistence checks |
+| Playwright project | Clerk account | Tier                   | State file                       |
+| ------------------ | ------------- | ---------------------- | -------------------------------- |
+| `free`             | John Doe      | unpaid (no enrollment) | `playwright/.auth/free.json`     |
+| `paid`             | Jane Doe      | active enrollment      | `playwright/.auth/paid.json`     |
 
 - App runs at `http://localhost:5173`
 - Check that the app is running before starting it.
-- Never sign out, change security settings, or mutate account state during QA. Navigation, theme selection, and reloads are fine.
+- Use dedicated development accounts for automated feature QA. Session-recording tests may add putting sessions for Jane. Do not change security settings or enrollment; use controlled response overrides for enrollment variants. Never mutate personal or production accounts.
 - Every QA item names its profile up front; run it on that profile only.
+
+### Linux agent sessions
+
+Use the repo wrapper to open an isolated Playwright CLI session with the matching local Clerk state:
+
+```bash
+./scripts/dgl-browser.sh free
+./scripts/dgl-browser.sh paid
+```
+
+The sessions are named `dgl-free` and `dgl-paid`. Continue interacting with the selected session through the same wrapper, for example `./scripts/dgl-browser.sh paid snapshot` or `./scripts/dgl-browser.sh free goto http://localhost:5173/app/courses`. CLI snapshots and logs go under ignored `output/playwright/`. The credential files live in ignored `playwright/.auth/`; do not print, copy, or commit them. The wrapper refreshes expired or missing states with `npm run auth:setup` before opening a browser.
 
 ## The loop
 
 1. **Prepare** — confirm the branch matches the issue/PR and the worktree is clean. Read the issue's unchecked acceptance criteria, then the relevant code, to fill any gaps. Do not execute anything yet.
-2. **QA list** — produce a numbered list. Every item states: which profile, the steps, and a **definition of pass** written as observable end-state claims. The user approves the list before execution begins.
+2. **QA list** — produce a numbered list. Every item states: which profile, the steps, and a **definition of pass** written as observable end-state claims. A request to perform feature QA authorizes local execution of the list. Ask only for missing information or actions outside that scope.
 3. **Per item, in order:**
    1. Restate the definition of pass for this item.
    2. Execute on the named profile.
    3. **Capture evidence first** (see standards below).
    4. Derive the verdict from the evidence — verdict is the _last_ step, never the first.
-   5. Update the GitHub issue immediately (see sync rules) so `gh` state is always the source of truth.
-4. **On FAIL** — file a sub-issue (recipe below), then continue with the next item.
+   5. Save the result locally. Update GitHub issues only when the user requests issue reporting; then follow the sync rules.
+4. **On FAIL** — reproduce, add a failing regression, fix feature-caused bugs, and rerun. If issue reporting is requested, dedupe and file a sub-issue using the recipe below.
 5. **Session close** — reconcile and report (below).
 
 ## Evidence standards
@@ -82,7 +93,11 @@ Rules:
 
 Requirements for any browser-control driver, against a real Chrome profile: navigate, click/focus, accessibility-tree snapshot, full-page and element screenshots, JS evaluation, console and network capture, and multi-profile switching. The protocol does not depend on a specific tool.
 
-### Current setup — Playwright MCP (researched 2026-09-03)
+### Current Linux setup, verified 2026-10-07
+
+Playwright CLI through `scripts/dgl-browser.sh` is the exploration tool. Playwright MCP is registered as `playwright` in Codex and is a secondary tool for deeper investigation. Its tools become available after restarting the Codex session. Permanent specs use the installed `/usr/bin/chromium`, with `PLAYWRIGHT_CHROMIUM_EXECUTABLE` available as an override; CI uses bundled Chromium.
+
+### Historical macOS setup — Playwright MCP (researched 2026-09-03)
 
 One MCP server instance per account, each with its own persistent profile dir. Log in to Clerk once per profile; the session persists on disk.
 
@@ -113,15 +128,15 @@ Rules:
 
 ### Account-specific Course navigation
 
-`e2e/desktop-course-access.spec.ts` runs for the `nick` project. From `/app/dashboard`, it waits for the Course link to report `data-access="enrollment-required"`, clicks it, and asserts that the URL stays `/app/dashboard` and the `Putting Course` dialog exposes `Stay Here` and `View Course`. The `nicholas` project skips this test because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`.
+`e2e/desktop-course-access.spec.ts` runs for the `free` project. From `/app/dashboard`, it clicks the sidebar's Courses link, lands on `/app/courses`, and clicks the course card; the sheet is named by the card's own title (data, not copy) and exposes `Stay Here` and `View Course`. The spec also proves the page-level sheet survives crossing the 768px breakpoint. The `paid` project skips these tests because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`, and `e2e/courses-flow.spec.ts` pins the full index → course home → day path for both accounts, including the completed-course entry that used to be sealed off.
 
-Run the focused desktop check with `npx playwright test e2e/desktop-course-access.spec.ts --project=nick` after refreshing the local auth state if Clerk has expired it.
+Run the focused desktop check with `npx playwright test e2e/desktop-course-access.spec.ts --project=free` after refreshing the local auth state if Clerk has expired it.
 
 ### Hard proof beyond the MCP
 
 No browser MCP does pixel diffs or visual regression. For durable, diffable proof: use the MCP assertion tools (`browser_verify_*` — each emits the equivalent Playwright spec line) and export `browser_storage_state` per account, then codify as Playwright specs with `expect(page).toHaveScreenshot()` baselines run per profile. MCP session = investigation + one-off proof; specs = repeatable proof that fails CI on drift.
 
-The Playwright harness lives in the repo (`playwright.config.ts` + `e2e/`; run `npm run test:e2e`). Its two projects read their logged-in sessions from `e2e/.auth/nick.json` and `e2e/.auth/nicholas.json` — Clerk session cookies, so they are gitignored and never travel with the clone. After a fresh clone or an expired session: log in to each account through the MCP browsers (or a manual Chrome), call `browser_storage_state` per account, and save the exports to those paths. The config fails fast with this instruction if a file is missing.
+The Playwright harness lives in the repo (`playwright.config.ts` + `e2e/`; run `npm run test:e2e`). Create the dedicated Clerk sessions with `npm run auth:setup`; this signs in as John and Jane using the development email code, checks each session's Clerk user ID, and writes `playwright/.auth/free.json` and `playwright/.auth/paid.json`. These files contain live session credentials, are gitignored, and must stay local. Rerun the command after a fresh clone or when Clerk expires the sessions.
 
 ## See also
 

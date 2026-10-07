@@ -19,18 +19,23 @@ export type Theme = (typeof THEMES)[number];
 /** Destinations whose browser tab title must match `documentTitle()`. */
 export const TITLE_PATHS = [
   "/app/dashboard",
+  "/app/courses",
+  "/app/courses/putting-course",
   "/app/settings",
   "/app/settings/security",
 ] as const;
 
 /**
  * The course day route is enrollment-gated, so its title is asserted per
- * account in `titles.spec.ts`: enrolled (nicholas) renders inside the shell
- * with the destination title, unenrolled (nick) is redirected to the marketing
+ * account in `titles.spec.ts`: enrolled (paid) renders inside the shell
+ * with the destination title, unenrolled (free) is redirected to the marketing
  * page, which has no title of its own and shows the bare product name.
  */
 export const COURSE_DAY_PATH = "/app/courses/putting-course/learn/day/2";
 export const COURSE_MARKETING_PATH = "/courses/putting-course";
+/** The authenticated courses index and the putting course's home. */
+export const COURSES_INDEX_PATH = "/app/courses";
+export const COURSE_HOME_PATH = "/app/courses/putting-course";
 
 /** Visible desktop sidebar panel (the fixed, painted container). */
 export const sidebar = (page: Page): Locator =>
@@ -51,6 +56,14 @@ export const moreSheet = (page: Page): Locator =>
 /** The Sign Out control in the sidebar's Account group. */
 export const signOutButton = (page: Page): Locator =>
   page.getByRole("button", { name: "Sign Out" });
+
+/** The course cards on the courses index (one per course). */
+export const courseCards = (page: Page): Locator =>
+  page.locator("[data-course-card]");
+
+/** The day rows on a course home (each carrying its day status). */
+export const dayRows = (page: Page): Locator =>
+  page.locator("li [data-status]");
 
 /**
  * Opens `path` with `localStorage.theme` already set, so next-themes resolves
@@ -133,16 +146,19 @@ export async function settle(page: Page, timeout = 15_000): Promise<void> {
 }
 
 /**
- * Enrolled users enter the current lesson, unless their enrollment is
- * complete, in which case the learn index sends them back to the dashboard.
+ * The learn index is a pure redirector: an in-progress enrollment continues
+ * at its current day, and a completed enrollment lands on the course home,
+ * where every day is open for review.
  */
 export async function expectLearnEntryDestination(page: Page): Promise<void> {
   await expect(page).toHaveURL(
-    /\/app\/dashboard$|\/app\/courses\/putting-course\/learn\/day\/\d+$/,
+    /\/app\/courses\/putting-course$|\/app\/courses\/putting-course\/learn\/day\/\d+$/,
   );
 
-  if (page.url().endsWith("/app/dashboard")) {
-    await expect(page.locator('[data-state="completed"]')).toBeVisible();
+  if (new RegExp("/app/courses/putting-course$").test(page.url())) {
+    await expect(
+      page.locator('main [data-state="completed"]'),
+    ).toBeVisible();
   }
 }
 

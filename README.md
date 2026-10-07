@@ -169,3 +169,15 @@ npm run start
 # Type checking
 npm run typecheck
 ```
+
+## Browser test accounts
+
+Create the dedicated Clerk development users John Doe and Jane Doe, then set John to the free state and Jane to an active putting-course enrollment:
+
+```bash
+./scripts/setup-dgl-test-users.sh
+```
+
+Use `+clerk_test` email addresses on the Clerk development instance. Clerk uses the fixed sign-in code `424242` for these test addresses. The wizard saves the account emails and Clerk user IDs to this frontend's ignored `.env` file, then writes and checks the DGL records in MongoDB using `../DiscGolfLabs-api/.env`. John must not already have an active putting-course enrollment. Jane's enrollment is safe to rerun.
+
+For feature QA, follow [the DGL QA skill](.agents/skills/dgl-qa/SKILL.md). Run `npm run auth:setup` while the frontend and development API are running, then `npm run test:e2e -- --workers=2`. The suite uses free John and enrolled Jane, and session-recording tests add real practice sessions for Jane. Error and completed/locked enrollment variants use explicitly controlled API responses. Playwright MCP is the secondary exploration tool; `scripts/dgl-browser.sh` is the CLI entry point. See [Feature 61 QA](docs/Issue-Tickets/PR61-QA.md) for the first workflow run.

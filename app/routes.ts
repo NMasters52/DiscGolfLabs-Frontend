@@ -11,8 +11,8 @@ export default [
     route("courses/:slug", "routes/_landing/courses.$slug.jsx"),
   ]),
 
-  route("sign-in", "routes/sign-in.jsx"),
-  route("sign-up", "routes/sign-up.jsx"),
+  route("sign-in/*", "routes/sign-in.jsx"),
+  route("sign-up/*", "routes/sign-up.jsx"),
 
   route("checkout/success", "routes/checkout/success.jsx"),
 
@@ -22,6 +22,8 @@ export default [
   route("app", "routes/app/_layout.jsx", [
     index("routes/app/_index.jsx"),
     route("dashboard", "routes/app/dashboard/index.tsx"),
+    route("courses", "routes/app/courses/index.tsx"),
+    route("courses/:slug", "routes/app/courses/$slug.tsx"),
     route("courses/:slug/learn", "routes/app/courses/learn/_layout.jsx", [
       index("routes/app/courses/learn/index.jsx"),
       route("day/:dayNumber", "routes/app/courses/learn/day.jsx"),

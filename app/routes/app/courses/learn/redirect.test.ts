@@ -23,12 +23,22 @@ test("clamps a current day below one to day one", () => {
   assert.equal(destination, "/app/courses/putting-course/learn/day/1");
 });
 
-test("sends a completed enrollment to the dashboard", () => {
+test("sends a completed enrollment to the course home", () => {
   const destination = getLearnIndexDestination({
     courseSlug: "putting-course",
     currentDay: 6,
     totalDays: 5,
   });
 
-  assert.equal(destination, "/app/dashboard");
+  assert.equal(destination, "/app/courses/putting-course");
+});
+
+test("builds the completed destination from the course slug", () => {
+  const destination = getLearnIndexDestination({
+    courseSlug: "next-course",
+    currentDay: 8,
+    totalDays: 7,
+  });
+
+  assert.equal(destination, "/app/courses/next-course");
 });

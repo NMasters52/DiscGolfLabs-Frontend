@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 // @ts-expect-error Node's native type stripping requires the explicit extension.
-import { COURSE_ROUTE, resolveDestination, resolveMobileTab } from "./navigation.ts";
+import { resolveDestination, resolveMobileTab } from "./navigation.ts";
 
 test("resolves Settings for the settings page and Clerk sub-pages", () => {
   assert.equal(resolveDestination("/app/settings")?.title, "Settings");
@@ -20,10 +20,18 @@ test("leaves the other destinations and the bare app boundary untouched", () => 
   assert.equal(resolveDestination("/app/dashboard")?.title, "Dashboard");
   assert.equal(
     resolveDestination("/app/courses/putting-course/learn/day/2")?.title,
-    "Putting Course",
+    "Courses",
   );
   // The bare boundary has no single destination title; the shell falls back.
   assert.equal(resolveDestination("/app"), undefined);
+});
+
+test("claims the courses index and each course home for the Courses destination", () => {
+  assert.equal(resolveDestination("/app/courses")?.title, "Courses");
+  assert.equal(
+    resolveDestination("/app/courses/putting-course")?.title,
+    "Courses",
+  );
 });
 
 test("maps each bottom-bar destination to its tab", () => {
@@ -47,8 +55,15 @@ test("leaves unowned paths unclaimed for the bottom bar too", () => {
   assert.equal(resolveMobileTab("/app/settingsx"), undefined);
 });
 
-test("Course tab route stays inside the course destination", () => {
-  // Guards against the canonical route drifting away from the destination
+test("course sub-routes stay inside the Courses destination", () => {
+  // Guards against a course route drifting away from the /app/courses
   // prefix the active-state lookup uses.
-  assert.equal(resolveDestination(COURSE_ROUTE)?.title, "Putting Course");
+  assert.equal(
+    resolveDestination("/app/courses/putting-course/learn")?.title,
+    "Courses",
+  );
+  assert.equal(
+    resolveDestination("/app/courses/putting-course/learn/day/2")?.title,
+    "Courses",
+  );
 });

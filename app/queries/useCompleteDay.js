@@ -9,7 +9,6 @@ export default function useCompleteDay(courseId) {
 
   return useMutation({
     mutationFn: async (day) => {
-      console.log("🔥 MUTATION FN CALLED WITH DAY:", day);
       const token = await getToken();
       return completeDay(token, courseId, day);
     },
