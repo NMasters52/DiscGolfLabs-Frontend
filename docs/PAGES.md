@@ -149,7 +149,7 @@ Main dashboard after login. Shows course progress, stats, and practice options.
 
 - `useCourse("putting-course")` — fetches course data
 - `useEnrollment(courseId)` — fetches enrollment status (gates stats/sessions fetches)
-- `usePuttingGameStats()` — fetches user's putting stats
+- `usePuttingGameStats({ days })` — fetches the selected 7/30/90-day period, defaulting to 30
 - `useGameSessions("putting-course", courseId)` — fetches sessions for the last-session card
 
 All four run through the shared `defaultQueryOptions` preset (`app/queries/query-options.ts`), and their results are combined by `createDashboardViewModel` into the rendered state.

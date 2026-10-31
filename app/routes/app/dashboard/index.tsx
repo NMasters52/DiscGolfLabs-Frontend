@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { DashboardView } from "~/components/dashboard/DashboardView";
+import { DEFAULT_STATS_PERIOD_DAYS } from "~/components/dashboard/stats-period";
 import { createDashboardViewModel } from "~/components/dashboard/view-model";
 import { defaultQueryOptions } from "~/queries/query-options";
 import useCourse from "~/queries/useCourse";
@@ -10,6 +12,7 @@ const COURSE_SLUG = "putting-course";
 const GAME_SLUG = "putting-course";
 
 export default function Dashboard() {
+  const [statsDays, setStatsDays] = useState(DEFAULT_STATS_PERIOD_DAYS);
   const courseQuery = useCourse(COURSE_SLUG, defaultQueryOptions);
   const enrollmentQuery = useEnrollment(
     courseQuery.data?._id,
@@ -19,6 +22,7 @@ export default function Dashboard() {
   const statsQuery = usePuttingGameStats({
     ...defaultQueryOptions,
     enabled: isEnrolled,
+    days: statsDays,
   });
   const sessionsQuery = useGameSessions(
     GAME_SLUG,
@@ -33,11 +37,9 @@ export default function Dashboard() {
     sessions: sessionsQuery.data,
     courseLoading: courseQuery.isPending,
     enrollmentLoading: enrollmentQuery.isPending,
-    statsLoading: statsQuery.isPending,
     sessionsLoading: sessionsQuery.isPending,
     courseError: courseQuery.error,
     enrollmentError: enrollmentQuery.error,
-    statsError: statsQuery.error,
     sessionsError: sessionsQuery.error,
   });
 
@@ -64,6 +66,18 @@ export default function Dashboard() {
       viewModel={viewModel}
       onRetry={handleRetry}
       isRetrying={isRetrying}
+      statsPeriod={{
+        days: statsDays,
+        onDaysChange: setStatsDays,
+        period: statsQuery.data?.period,
+        loading: isEnrolled && statsQuery.isPending,
+        error: isEnrolled && statsQuery.isError
+          ? {
+              retry: () => { void statsQuery.refetch(); },
+              retrying: statsQuery.isFetching,
+            }
+          : undefined,
+      }}
     />
   );
 }
