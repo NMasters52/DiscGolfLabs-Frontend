@@ -12,6 +12,8 @@ export const queryKeys = {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
   puttingGame: {
-    stats: () => ["putting-game", "stats"],
+    stats: (days) => days === undefined
+      ? ["putting-game", "stats"]
+      : ["putting-game", "stats", days],
   },
 };

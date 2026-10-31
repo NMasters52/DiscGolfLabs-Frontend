@@ -22,7 +22,8 @@ queryKeys = {
   gameSession: {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
-  puttingGame: { stats: () => ["putting-game", "stats"] },
+  puttingGame: { stats: (days) => days === undefined
+    ? ["putting-game", "stats"] : ["putting-game", "stats", days] },
 };
 ```
 
@@ -36,7 +37,7 @@ A query key is referenced from **two places that don't know about each other**:
 If either side inlined the tuple, a typo or reordered argument would silently break invalidation — the mutation succeeds, the refetch never fires, the UI shows stale data with no error. `keys.js` is the contract that keeps producer and consumer in sync; centralizing it also means a rename catches every call site at once.
 
 - **Nested object** → mirrors the cache hierarchy. Keys are matched by prefix, so `["course", slug]` entries share an ancestor and can be invalidated together via `["course"]`. The nesting makes that grouping visible, and `queryKeys.course.` gives autocomplete instead of a magic string.
-- **Factory functions** → the array carries runtime args (`courseId`, `slug`), so it can't be a constant. The no-arg key (`stats`) is a function too, for one consistent access shape: every key is a call, never a property read.
+- **Factory functions** → the array carries runtime args (`courseId`, `slug`), so it can't be a constant. `stats(days)` identifies a period; `stats()` returns the prefix for invalidating every period.
 
 ### How to use them
 
@@ -139,21 +140,18 @@ const { data, isLoading } = useGameSessions(gameSlug, courseId);
 
 ---
 
-### usePuttingGameStats()
+### usePuttingGameStats(options?)
 
 Fetches aggregate putting game statistics for current user.
 
 ```js
-const { data, isLoading } = usePuttingGameStats();
+const { data, isLoading } = usePuttingGameStats({ days: 30 });
 ```
 
 **Returns:** stats object. The dashboard's view model reads the **nested** envelope — `overall.makeRate`, `overall.sessionCount` (and last-session `overall.made` / `overall.attempted` / `overall.percentage`).
 **Auth:** Requires Clerk session token.
 
-> **Open item (gated on backend, API #12):** confirm `GET` stats returns the nested
-> `overall` envelope (plus any `streaks` / `highlights` / `comparison` siblings) and
-> finish documenting the full response shape here. Earlier revisions of this doc
-> described a flat `overallMakeRate` field that no live code reads.
+The response also includes `period: { days, start, end }`, `comparison`, `distanceBreakdown`, `highlights`, and `streaks`. Period dates are UTC, with inclusive start and exclusive end. `comparison.previousPeriod` includes its own start/end. `options.days` defaults to 30; the API accepts integers 1–365.
 
 ---
 
@@ -255,3 +253,10 @@ const { data } = useWaitlistCount();
 - `PAGES.md` — where each hook is consumed
 - `COMPONENTS.md` — components that read this state
 - `ENV.md` — the API base URL the queries call
+
+
+## Make-rate periods
+
+The dashboard offers 7/30/90 days, defaulting to 30. Stats requests send `days`; cache keys are `["putting-game", "stats", days]`. Saving a session invalidates the shared stats prefix so every cached period refreshes. Account changes continue to clear the shared query cache.
+
+Loading and failed stats requests stay inside the make-rate card. Retry refetches the selected period. Exact dates come from API `period` metadata and are formatted in UTC, with the exclusive end converted to the last included day. Older responses fall back to "Last N days".

@@ -45,6 +45,20 @@ test("returns firstSession without fake performance values", () => {
   assert.equal(viewModel.latestSession, null);
 });
 
+test("keeps course progress and the latest session available without stats", () => {
+  const viewModel = createDashboardViewModel({
+    course,
+    enrollment: { ...enrolled, currentDay: 2 },
+    sessions: [{ id: "session-1", dayNumber: 1, overall: { percentage: 50 } }],
+  });
+
+  assert.equal(viewModel.state, "inProgress");
+  assert.equal(viewModel.progress.completedDays, 1);
+  assert.equal(viewModel.latestSession?.id, "session-1");
+  assert.equal(viewModel.makeRateStatus, "unavailable");
+  assert.equal(viewModel.error, null);
+});
+
 test("returns loadError after the request has exhausted its retries", () => {
   const viewModel = createDashboardViewModel({
     courseError: new Error("network unavailable"),

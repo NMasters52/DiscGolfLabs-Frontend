@@ -36,10 +36,10 @@ export async function fetchGameSession(gameSlug, courseId, token) {
   return res.json();
 }
 
-export async function fetchPuttingGameStats(token) {
+export async function fetchPuttingGameStats(token, days = 30) {
   const url = import.meta.env.VITE_API_URL;
 
-  const res = await fetch(`${url}/api/stats`, {
+  const res = await fetch(`${url}/api/stats?${new URLSearchParams({ days: String(days) })}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

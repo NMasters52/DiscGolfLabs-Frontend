@@ -1,3 +1,4 @@
+import { MakeRateCard } from "./MakeRateCard";
 import {
   CalendarDays,
   CircleDot,
@@ -18,7 +19,17 @@ import { Progress } from "~/components/ui/progress";
 import { Skeleton } from "~/components/ui/skeleton";
 import type { DashboardViewModel } from "./view-model";
 
-interface DashboardViewProps {
+export interface StatsCardProps {
+  statsDays?: number;
+  onStatsDaysChange?: (days: number) => void;
+  statsPeriod?: { days: number; start: string; end: string };
+  statsLoading?: boolean;
+  statsError?: boolean;
+  onStatsRetry?: () => void;
+  statsRetrying?: boolean;
+}
+
+interface DashboardViewProps extends StatsCardProps {
   viewModel: DashboardViewModel;
   onRetry: () => void;
   isRetrying?: boolean;
@@ -185,72 +196,6 @@ function CourseSummary({ viewModel }: { viewModel: DashboardViewModel }) {
   );
 }
 
-function MakeRateCard({ viewModel }: { viewModel: DashboardViewModel }) {
-  const displayValue =
-    viewModel.makeRate == null ? null : Math.round(viewModel.makeRate);
-  const accessibleValue =
-    displayValue == null
-      ? viewModel.makeRateStatus === "noRecentSessions"
-        ? "no sessions in the last 30 days"
-        : "unavailable"
-      : `${displayValue} percent`;
-  const supportingCopy = {
-    firstSession: "Complete your first session to establish a make rate.",
-    populated: "Your completed sessions from the last 30 days.",
-    zero: "Your completed sessions from the last 30 days.",
-    noRecentSessions: "No sessions in the last 30 days.",
-    unavailable: "Your 30-day make rate is unavailable.",
-  }[viewModel.makeRateStatus];
-
-  return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle className="text-base">Make rate</CardTitle>
-        <CardDescription>{supportingCopy}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-1 items-center justify-center">
-        <div
-          className="relative size-32"
-          role="img"
-          aria-label={`Current 30-day make rate: ${accessibleValue}`}
-        >
-          <svg aria-hidden="true" className="size-full" viewBox="0 0 120 120">
-            <circle
-              className="stroke-make-rate-track"
-              cx="60"
-              cy="60"
-              r="52"
-              fill="none"
-              strokeWidth="10"
-            />
-            {viewModel.makeRate != null && viewModel.makeRate > 0 && (
-              <circle
-                className="stroke-make-rate-arc"
-                cx="60"
-                cy="60"
-                r="52"
-                fill="none"
-                pathLength="100"
-                strokeDasharray={`${viewModel.makeRate} 100`}
-                strokeLinecap="round"
-                strokeWidth="10"
-                transform="rotate(-90 60 60)"
-              />
-            )}
-          </svg>
-          <span
-            className={`absolute inset-0 grid place-items-center font-mono text-3xl font-semibold tabular-nums tracking-tight ${
-              displayValue == null ? "text-muted-foreground" : "text-foreground"
-            }`}
-          >
-            {displayValue == null ? "—" : `${displayValue}%`}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 interface SessionMetricRowProps {
   icon: LucideIcon;
   label: string;
@@ -344,6 +289,7 @@ export function DashboardView({
   viewModel,
   onRetry,
   isRetrying,
+  ...statsProps
 }: DashboardViewProps) {
   if (viewModel.state === "loading") return <DashboardLoading />;
   if (viewModel.state === "loadError") {
@@ -355,7 +301,14 @@ export function DashboardView({
       <div className="space-y-6">
         <CourseSummary viewModel={viewModel} />
         <div className="grid gap-6 md:grid-cols-2">
-          <MakeRateCard viewModel={viewModel} />
+          <MakeRateCard
+            firstSessionHref={viewModel.state === "firstSession" && viewModel.course ? `/app/courses/${viewModel.course.slug}/learn/day/${viewModel.currentDay ?? 1}` : undefined}
+            stats={{ makeRate: viewModel.makeRate, status: viewModel.makeRateStatus, sessionCount: viewModel.recentSessionCount, period: statsProps.statsPeriod }}
+            selectedPeriod={statsProps.statsDays}
+            loading={statsProps.statsLoading}
+            error={statsProps.statsError ? { retry: statsProps.onStatsRetry, retrying: statsProps.statsRetrying } : undefined}
+            onPeriodChange={viewModel.state === "notEnrolled" ? undefined : statsProps.onStatsDaysChange}
+          />
           <LastSessionCard viewModel={viewModel} />
         </div>
       </div>
