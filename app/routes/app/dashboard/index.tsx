@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DashboardView } from "~/components/dashboard/DashboardView";
+import { DEFAULT_STATS_PERIOD_DAYS } from "~/components/dashboard/stats-period";
 import { createDashboardViewModel } from "~/components/dashboard/view-model";
 import { defaultQueryOptions } from "~/queries/query-options";
 import useCourse from "~/queries/useCourse";
@@ -11,7 +12,7 @@ const COURSE_SLUG = "putting-course";
 const GAME_SLUG = "putting-course";
 
 export default function Dashboard() {
-  const [statsDays, setStatsDays] = useState(30);
+  const [statsDays, setStatsDays] = useState(DEFAULT_STATS_PERIOD_DAYS);
   const courseQuery = useCourse(COURSE_SLUG, defaultQueryOptions);
   const enrollmentQuery = useEnrollment(
     courseQuery.data?._id,
@@ -62,16 +63,21 @@ export default function Dashboard() {
   // The shared shell comes from routes/app/_layout.jsx — no wrapper here.
   return (
     <DashboardView
-      statsDays={statsDays}
-      onStatsDaysChange={setStatsDays}
-      statsPeriod={statsQuery.data?.period}
-      statsLoading={isEnrolled && statsQuery.isPending}
-      statsError={isEnrolled && statsQuery.isError}
-      onStatsRetry={() => { void statsQuery.refetch(); }}
-      statsRetrying={statsQuery.isFetching}
       viewModel={viewModel}
       onRetry={handleRetry}
       isRetrying={isRetrying}
+      statsPeriod={{
+        days: statsDays,
+        onDaysChange: setStatsDays,
+        period: statsQuery.data?.period,
+        loading: isEnrolled && statsQuery.isPending,
+        error: isEnrolled && statsQuery.isError
+          ? {
+              retry: () => { void statsQuery.refetch(); },
+              retrying: statsQuery.isFetching,
+            }
+          : undefined,
+      }}
     />
   );
 }

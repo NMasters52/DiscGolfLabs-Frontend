@@ -1,5 +1,17 @@
+export interface StatsPeriod {
+  days: number;
+  start: string;
+  end: string;
+}
+
+/** Period windows the dashboard offers for the make-rate card. */
+export const STATS_PERIOD_DAYS = [7, 30, 90] as const;
+
+/** Period shown until the player picks another one. */
+export const DEFAULT_STATS_PERIOD_DAYS: number = 30;
+
 export function formatStatsPeriod(
-  period: { days: number; start: string; end: string } | undefined,
+  period: StatsPeriod | undefined,
   days: number,
 ): string {
   const fallback = `Last ${days} days`;

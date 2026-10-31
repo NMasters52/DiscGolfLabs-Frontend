@@ -1,4 +1,4 @@
-import { MakeRateCard } from "./MakeRateCard";
+import { MakeRateCard, type StatsPeriodSelection } from "./MakeRateCard";
 import {
   CalendarDays,
   CircleDot,
@@ -19,20 +19,12 @@ import { Progress } from "~/components/ui/progress";
 import { Skeleton } from "~/components/ui/skeleton";
 import type { DashboardViewModel } from "./view-model";
 
-export interface StatsCardProps {
-  statsDays?: number;
-  onStatsDaysChange?: (days: number) => void;
-  statsPeriod?: { days: number; start: string; end: string };
-  statsLoading?: boolean;
-  statsError?: boolean;
-  onStatsRetry?: () => void;
-  statsRetrying?: boolean;
-}
-
-interface DashboardViewProps extends StatsCardProps {
+interface DashboardViewProps {
   viewModel: DashboardViewModel;
   onRetry: () => void;
   isRetrying?: boolean;
+  /** Selection state for the make-rate card's stats period, owned by the route. */
+  statsPeriod: StatsPeriodSelection;
 }
 
 function DashboardLoading() {
@@ -289,7 +281,7 @@ export function DashboardView({
   viewModel,
   onRetry,
   isRetrying,
-  ...statsProps
+  statsPeriod,
 }: DashboardViewProps) {
   if (viewModel.state === "loading") return <DashboardLoading />;
   if (viewModel.state === "loadError") {
@@ -303,11 +295,8 @@ export function DashboardView({
         <div className="grid gap-6 md:grid-cols-2">
           <MakeRateCard
             firstSessionHref={viewModel.state === "firstSession" && viewModel.course ? `/app/courses/${viewModel.course.slug}/learn/day/${viewModel.currentDay ?? 1}` : undefined}
-            stats={{ makeRate: viewModel.makeRate, status: viewModel.makeRateStatus, sessionCount: viewModel.recentSessionCount, period: statsProps.statsPeriod }}
-            selectedPeriod={statsProps.statsDays}
-            loading={statsProps.statsLoading}
-            error={statsProps.statsError ? { retry: statsProps.onStatsRetry, retrying: statsProps.statsRetrying } : undefined}
-            onPeriodChange={viewModel.state === "notEnrolled" ? undefined : statsProps.onStatsDaysChange}
+            stats={{ makeRate: viewModel.makeRate, status: viewModel.makeRateStatus, sessionCount: viewModel.recentSessionCount }}
+            period={{ ...statsPeriod, onDaysChange: viewModel.state === "notEnrolled" ? undefined : statsPeriod.onDaysChange }}
           />
           <LastSessionCard viewModel={viewModel} />
         </div>

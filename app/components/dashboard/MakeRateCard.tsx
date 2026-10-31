@@ -6,40 +6,81 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/comp
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { formatStatsPeriod } from "./stats-period";
+import {
+  STATS_PERIOD_DAYS,
+  formatStatsPeriod,
+  type StatsPeriod,
+} from "./stats-period";
 import type { MakeRateStatus } from "./view-model";
+
+/** Everything the card needs to know about the selected stats window. */
+export interface StatsPeriodSelection {
+  /** Selected window in days; one of STATS_PERIOD_DAYS. */
+  days: number;
+  onDaysChange?: (days: number) => void;
+  /** API-reported metadata for the selected window. */
+  period?: StatsPeriod;
+  loading: boolean;
+  error?: { retry?: () => void; retrying?: boolean };
+}
 
 interface MakeRateCardProps {
   stats: {
     makeRate: number | null;
     status: MakeRateStatus;
     sessionCount: number | null;
-    period?: { days: number; start: string; end: string };
   };
+  period: StatsPeriodSelection;
   firstSessionHref?: string;
-  selectedPeriod?: number;
-  loading?: boolean;
-  error?: { retry?: () => void; retrying?: boolean };
-  onPeriodChange?: (days: number) => void;
 }
 
-export function MakeRateCard({ stats, selectedPeriod = 30, loading, error, onPeriodChange, firstSessionHref }: MakeRateCardProps) {
+interface MakeRateCopy {
+  title: string;
+  description: string;
+}
+
+// Precedence: loading, then error, then the view-model statuses, then the
+// rate/count availability checks. Keep the strings byte-identical — e2e
+// specs assert this copy.
+function getMakeRateDetails(
+  stats: { makeRate: number | null; status: MakeRateStatus; sessionCount: number | null },
+  selectedPeriod: number,
+  widerPeriod: number | undefined,
+  loading: boolean,
+  error: { retry?: () => void; retrying?: boolean } | undefined,
+): MakeRateCopy {
+  if (loading) {
+    return { title: "Getting your results", description: "Loading completed sessions for this period." };
+  }
+  if (error) {
+    return { title: "Unable to load results", description: "We couldn’t retrieve your make rate for this period." };
+  }
+  if (stats.status === "firstSession") {
+    return { title: "Your make rate starts here", description: "Complete your first putting session to see your percentage." };
+  }
+  if (stats.status === "noRecentSessions") {
+    return {
+      title: "Your history is still there",
+      description: `There are no sessions in these ${selectedPeriod} days. ${widerPeriod ? "Try a wider range." : "Complete a session to add a result for these dates."}`,
+    };
+  }
+  if (stats.makeRate == null) {
+    return { title: "Make rate unavailable", description: "Your make rate isn’t available for this period." };
+  }
+  if (stats.sessionCount == null) {
+    return { title: "Based on your completed sessions", description: "The percentage of attempted putts you made in this period." };
+  }
+  return {
+    title: `Based on ${stats.sessionCount} ${stats.sessionCount === 1 ? "session" : "sessions"}`,
+    description: "Only completed putting sessions count toward this result.",
+  };
+}
+
+export function MakeRateCard({ stats, period: { days: selectedPeriod, onDaysChange, period, loading, error }, firstSessionHref }: MakeRateCardProps) {
   const value = error || loading || stats.makeRate == null ? null : Math.round(stats.makeRate);
   const display = value == null ? "—" : `${value}%`;
-  const widerPeriod = [7, 30, 90].find(days => days > selectedPeriod);
-  const details = loading
-    ? { title: "Getting your results", description: "Loading completed sessions for this period." }
-    : error
-      ? { title: "Unable to load results", description: "We couldn’t retrieve your make rate for this period." }
-      : stats.status === "firstSession"
-        ? { title: "Your make rate starts here", description: "Complete your first putting session to see your percentage." }
-        : stats.status === "noRecentSessions"
-          ? { title: "Your history is still there", description: `There are no sessions in these ${selectedPeriod} days. ${widerPeriod ? "Try a wider range." : "Complete a session to add a result for these dates."}` }
-          : stats.makeRate == null
-            ? { title: "Make rate unavailable", description: "Your make rate isn’t available for this period." }
-            : stats.sessionCount == null
-              ? { title: "Based on your completed sessions", description: "The percentage of attempted putts you made in this period." }
-              : { title: `Based on ${stats.sessionCount} ${stats.sessionCount === 1 ? "session" : "sessions"}`, description: "Only completed putting sessions count toward this result." };
+  const widerPeriod = STATS_PERIOD_DAYS.find(days => days > selectedPeriod);
+  const details = getMakeRateDetails(stats, selectedPeriod, widerPeriod, loading, error);
 
   return (
     <Card className="h-full">
@@ -59,15 +100,15 @@ export function MakeRateCard({ stats, selectedPeriod = 30, loading, error, onPer
           </div>
         </div>
         <div className="flex w-full flex-col items-center gap-3 border-t pt-4">
-          {onPeriodChange && <Select value={String(selectedPeriod)} onValueChange={value => onPeriodChange(Number(value))}>
+          {onDaysChange && <Select value={String(selectedPeriod)} onValueChange={value => onDaysChange(Number(value))}>
             <SelectTrigger size="sm" className="w-40 max-w-full" aria-label="Make rate period"><SelectValue /></SelectTrigger>
             <SelectContent position="popper" align="center" sideOffset={6}>
-              <SelectGroup>{[7, 30, 90].map(days => <SelectItem key={days} value={String(days)}>Last {days} days</SelectItem>)}</SelectGroup>
+              <SelectGroup>{STATS_PERIOD_DAYS.map(days => <SelectItem key={days} value={String(days)}>Last {days} days</SelectItem>)}</SelectGroup>
             </SelectContent>
           </Select>}
           <div className="flex w-full flex-col gap-3 text-center">
               <div className="flex items-center justify-center gap-1">
-                <p className="text-xs text-muted-foreground" aria-description="Date ranges are based on UTC">{formatStatsPeriod(stats.period, selectedPeriod)}</p>
+                <p className="text-xs text-muted-foreground" aria-description="Date ranges are based on UTC">{formatStatsPeriod(period, selectedPeriod)}</p>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -84,7 +125,7 @@ export function MakeRateCard({ stats, selectedPeriod = 30, loading, error, onPer
                 <p className="text-xs leading-relaxed text-muted-foreground">{details.description}</p>
                 {error?.retry && <Button size="sm" variant="destructive-outline" className="mt-1 w-full" onClick={error.retry} disabled={error.retrying}>Retry</Button>}
                 {!loading && !error && stats.status === "firstSession" && firstSessionHref && <Button size="sm" className="mt-1 self-center" asChild><Link to={firstSessionHref}>Start a session</Link></Button>}
-                {!loading && !error && stats.status === "noRecentSessions" && widerPeriod && onPeriodChange && <Button size="sm" variant="outline" className="mt-1 cursor-pointer self-center" onClick={() => onPeriodChange(widerPeriod)}>View last {widerPeriod} days</Button>}
+                {!loading && !error && stats.status === "noRecentSessions" && widerPeriod && onDaysChange && <Button size="sm" variant="outline" className="mt-1 cursor-pointer self-center" onClick={() => onDaysChange(widerPeriod)}>View last {widerPeriod} days</Button>}
               </div>
             </div>
         </div>

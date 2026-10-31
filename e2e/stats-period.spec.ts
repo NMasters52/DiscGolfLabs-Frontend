@@ -174,18 +174,31 @@ test("controlled slow and empty period does not display another period's rate", 
   await expect(page.getByRole("combobox", { name: "Make rate period" })).toHaveText("Last 90 days");
 });
 
-for (const state of ["firstSession", "empty", "count", "unknownCount", "zero"] as const) {
+// Controlled /api/stats payloads that make each make-rate card state
+// reachable. "firstSession" additionally empties the sessions list.
+type MakeRateCardState = "firstSession" | "empty" | "count" | "unknownCount" | "zero";
+
+const MAKE_RATE_STATE_OVERALL: Record<MakeRateCardState, { makeRate: number; sessionCount?: number }> = {
+  firstSession: { makeRate: 68, sessionCount: 12 },
+  count: { makeRate: 68, sessionCount: 12 },
+  zero: { makeRate: 0, sessionCount: 12 },
+  empty: { makeRate: 0, sessionCount: 0 },
+  unknownCount: { makeRate: 68 },
+};
+
+async function stubMakeRateState(page: Page, state: MakeRateCardState) {
+  await page.route("**/api/stats?days=*", route => route.fulfill({ json: { overall: MAKE_RATE_STATE_OVERALL[state] } }));
+  if (state === "firstSession") {
+    await page.route("**/api/games/putting-course/sessions?*", route => route.fulfill({ json: [] }));
+  }
+}
+
+for (const state of ["firstSession", "empty", "count", "unknownCount", "zero"] as const satisfies readonly MakeRateCardState[]) {
   test(`selected make-rate treatment: ${state}`, async ({ page }, info) => {
     test.skip(info.project.name !== "paid", "Requires enrollment");
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
-    const overall = state === "empty" ? { makeRate: 0, sessionCount: 0 }
-      : state === "unknownCount" ? { makeRate: 68 }
-      : { makeRate: state === "zero" ? 0 : 68, sessionCount: 12 };
-    await page.route("**/api/stats?days=*", route => route.fulfill({ json: { overall } }));
-    if (state === "firstSession") {
-      await page.route("**/api/games/putting-course/sessions?*", route => route.fulfill({ json: [] }));
-    }
+    await stubMakeRateState(page, state);
     await page.goto("/app/dashboard");
     const card = page.getByRole("combobox", { name: "Make rate period" }).locator('xpath=ancestor::*[@data-slot="card"]');
     if (state === "firstSession") {
@@ -213,13 +226,7 @@ for (const state of ["firstSession", "empty", "count", "unknownCount", "zero"] a
 
   test(`make-rate appearance: ${state}`, async ({ page }, info) => {
     test.skip(info.project.name !== "paid", "Requires enrollment");
-    const overall = state === "empty" ? { makeRate: 0, sessionCount: 0 }
-      : state === "unknownCount" ? { makeRate: 68 }
-      : { makeRate: state === "zero" ? 0 : 68, sessionCount: 12 };
-    await page.route("**/api/stats?days=*", route => route.fulfill({ json: { overall } }));
-    if (state === "firstSession") {
-      await page.route("**/api/games/putting-course/sessions?*", route => route.fulfill({ json: [] }));
-    }
+    await stubMakeRateState(page, state);
     await page.goto("/app/dashboard");
     const card = page.getByRole("combobox", { name: "Make rate period" }).locator('xpath=ancestor::*[@data-slot="card"]');
     await expect(card.getByRole("img")).not.toHaveAccessibleName(/Loading$/);

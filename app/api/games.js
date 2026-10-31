@@ -1,3 +1,5 @@
+import { DEFAULT_STATS_PERIOD_DAYS } from "../components/dashboard/stats-period";
+
 export async function createGameSession(gameSlug, payload, token) {
   const url = import.meta.env.VITE_API_URL;
 
@@ -36,7 +38,7 @@ export async function fetchGameSession(gameSlug, courseId, token) {
   return res.json();
 }
 
-export async function fetchPuttingGameStats(token, days = 30) {
+export async function fetchPuttingGameStats(token, days = DEFAULT_STATS_PERIOD_DAYS) {
   const url = import.meta.env.VITE_API_URL;
 
   const res = await fetch(`${url}/api/stats?${new URLSearchParams({ days: String(days) })}`, {
