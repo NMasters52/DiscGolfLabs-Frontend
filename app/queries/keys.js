@@ -12,6 +12,11 @@ export const queryKeys = {
     bySlug: (gameSlug, courseId) => ["game-sessions", gameSlug, courseId],
   },
   puttingGame: {
-    stats: () => ["putting-game", "stats"],
+    // Called without a day window, stats() returns the shared prefix key:
+    // keys are matched by prefix, so invalidating it marks every cached
+    // period (7/30/90 days) stale at once.
+    stats: (days) => days === undefined
+      ? ["putting-game", "stats"]
+      : ["putting-game", "stats", days],
   },
 };

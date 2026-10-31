@@ -58,11 +58,9 @@ interface DashboardSnapshot {
   sessions?: Array<Record<string, any>> | null;
   courseLoading?: boolean;
   enrollmentLoading?: boolean;
-  statsLoading?: boolean;
   sessionsLoading?: boolean;
   courseError?: unknown;
   enrollmentError?: unknown;
-  statsError?: unknown;
   sessionsError?: unknown;
 }
 
@@ -180,8 +178,7 @@ export function createDashboardViewModel(
   const requiredDataIsLoading =
     snapshot.courseLoading ||
     (courseIsReady && snapshot.enrollmentLoading) ||
-    (snapshot.enrollment?.enrolled === true &&
-      (snapshot.statsLoading || snapshot.sessionsLoading));
+    (snapshot.enrollment?.enrolled === true && snapshot.sessionsLoading);
 
   if (requiredDataIsLoading) {
     return loadingViewModel();
@@ -190,7 +187,6 @@ export function createDashboardViewModel(
   const error =
     snapshot.courseError ||
     snapshot.enrollmentError ||
-    (snapshot.enrollment?.enrolled === true && snapshot.statsError) ||
     (snapshot.enrollment?.enrolled === true && snapshot.sessionsError);
 
   if (error) {
