@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/verify
+        with:
+          api-repo-token: ${{ secrets.API_REPO_TOKEN }}
+          vite-clerk-publishable-key: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          playwright-free-email: ${{ secrets.PLAYWRIGHT_FREE_EMAIL }}
+          playwright-free-clerk-user-id: ${{ secrets.PLAYWRIGHT_FREE_CLERK_USER_ID }}
+          playwright-paid-email: ${{ secrets.PLAYWRIGHT_PAID_EMAIL }}
+          playwright-paid-clerk-user-id: ${{ secrets.PLAYWRIGHT_PAID_CLERK_USER_ID }}
+          mongodb-uri: ${{ secrets.MONGODB_URI }}
+          clerk-secret-key: ${{ secrets.CLERK_SECRET_KEY }}
+          stripe-secret-key: ${{ secrets.STRIPE_SECRET_KEY }}
+          stripe-webhook-secret: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          admin-emails: ${{ secrets.ADMIN_EMAILS }}

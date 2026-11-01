@@ -1,0 +1,71 @@
+name: Promote dev
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Skip a commit that is already on main
+        id: gate
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          if git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "This commit is already on main."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Merge main into the candidate
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge origin/main -m "chore: merge main into dev for promote"
+
+      - uses: ./.github/actions/verify
+        if: steps.gate.outputs.skip == 'false'
+        with:
+          api-repo-token: ${{ secrets.API_REPO_TOKEN }}
+          vite-clerk-publishable-key: ${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }}
+          playwright-free-email: ${{ secrets.PLAYWRIGHT_FREE_EMAIL }}
+          playwright-free-clerk-user-id: ${{ secrets.PLAYWRIGHT_FREE_CLERK_USER_ID }}
+          playwright-paid-email: ${{ secrets.PLAYWRIGHT_PAID_EMAIL }}
+          playwright-paid-clerk-user-id: ${{ secrets.PLAYWRIGHT_PAID_CLERK_USER_ID }}
+          mongodb-uri: ${{ secrets.MONGODB_URI }}
+          clerk-secret-key: ${{ secrets.CLERK_SECRET_KEY }}
+          stripe-secret-key: ${{ secrets.STRIPE_SECRET_KEY }}
+          stripe-webhook-secret: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          admin-emails: ${{ secrets.ADMIN_EMAILS }}
+
+      - name: Fast-forward main and sync dev
+        if: steps.gate.outputs.skip == 'false'
+        run: |
+          set -euo pipefail
+          candidate=$(git rev-parse HEAD)
+          git push origin "$candidate:refs/heads/main"
+          git fetch origin dev
+          if git merge-base --is-ancestor "$candidate" origin/dev; then
+            echo "dev already contains $candidate"
+          elif git merge-base --is-ancestor origin/dev "$candidate"; then
+            git push origin "$candidate:refs/heads/dev"
+          else
+            echo "dev moved while tests ran. The queued promote run will pick up the new commit."
+          fi

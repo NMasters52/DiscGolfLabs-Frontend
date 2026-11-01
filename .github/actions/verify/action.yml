@@ -1,0 +1,158 @@
+name: Verify frontend
+description: Typecheck, unit tests, production build, and authenticated Playwright e2e against the dev API.
+
+inputs:
+  api-repo-token:
+    description: Token with contents read on NMasters52/DiscGolfLabs-api
+    required: true
+  vite-clerk-publishable-key:
+    description: Clerk publishable key for the Vite dev server
+    required: true
+  playwright-free-email:
+    description: Clerk test email for the free account
+    required: true
+  playwright-free-clerk-user-id:
+    description: Clerk user id for the free account
+    required: true
+  playwright-paid-email:
+    description: Clerk test email for the paid account
+    required: true
+  playwright-paid-clerk-user-id:
+    description: Clerk user id for the paid account
+    required: true
+  mongodb-uri:
+    description: Mongo connection string the API uses for e2e
+    required: true
+  clerk-secret-key:
+    description: Clerk secret key for the API
+    required: true
+  stripe-secret-key:
+    description: Stripe secret key for the API
+    required: true
+  stripe-webhook-secret:
+    description: Stripe webhook secret for the API
+    required: true
+  admin-emails:
+    description: Comma-separated admin emails for the API
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Check out the API dev branch
+      uses: actions/checkout@v4
+      with:
+        repository: NMasters52/DiscGolfLabs-api
+        ref: dev
+        path: .ci-api
+        token: ${{ inputs.api-repo-token }}
+        persist-credentials: false
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+
+    - name: Install frontend dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Typecheck
+      shell: bash
+      run: npm run typecheck
+
+    - name: Route tests
+      shell: bash
+      run: npm run test:routes
+
+    - name: Install Chromium
+      shell: bash
+      run: |
+        set -euo pipefail
+        # playwright.config.ts refuses to load until both auth files exist.
+        # Real sessions replace these placeholders before e2e.
+        mkdir -p playwright/.auth
+        for account in free paid; do
+          printf '%s\n' '{"cookies":[],"origins":[]}' > "playwright/.auth/${account}.json"
+        done
+        npx playwright install --with-deps chromium
+
+    - name: Unit tests
+      shell: bash
+      run: npm test
+
+    - name: Write the test env file
+      shell: bash
+      env:
+        VITE_CLERK_PUBLISHABLE_KEY: ${{ inputs.vite-clerk-publishable-key }}
+        PLAYWRIGHT_FREE_EMAIL: ${{ inputs.playwright-free-email }}
+        PLAYWRIGHT_FREE_CLERK_USER_ID: ${{ inputs.playwright-free-clerk-user-id }}
+        PLAYWRIGHT_PAID_EMAIL: ${{ inputs.playwright-paid-email }}
+        PLAYWRIGHT_PAID_CLERK_USER_ID: ${{ inputs.playwright-paid-clerk-user-id }}
+      run: |
+        set -euo pipefail
+        umask 077
+        {
+          printf 'VITE_API_URL=%s\n' "http://localhost:8000"
+          printf 'VITE_CLERK_PUBLISHABLE_KEY=%s\n' "$VITE_CLERK_PUBLISHABLE_KEY"
+          printf 'PLAYWRIGHT_FREE_EMAIL=%s\n' "$PLAYWRIGHT_FREE_EMAIL"
+          printf 'PLAYWRIGHT_FREE_CLERK_USER_ID=%s\n' "$PLAYWRIGHT_FREE_CLERK_USER_ID"
+          printf 'PLAYWRIGHT_PAID_EMAIL=%s\n' "$PLAYWRIGHT_PAID_EMAIL"
+          printf 'PLAYWRIGHT_PAID_CLERK_USER_ID=%s\n' "$PLAYWRIGHT_PAID_CLERK_USER_ID"
+        } > .env
+
+    - name: Production build
+      shell: bash
+      run: npm run build
+
+    - name: Install API dependencies
+      shell: bash
+      working-directory: .ci-api
+      run: npm ci
+
+    - name: End-to-end tests
+      shell: bash
+      env:
+        MONGODB_URI: ${{ inputs.mongodb-uri }}
+        CLERK_SECRET_KEY: ${{ inputs.clerk-secret-key }}
+        STRIPE_SECRET_KEY: ${{ inputs.stripe-secret-key }}
+        STRIPE_WEBHOOK_SECRET: ${{ inputs.stripe-webhook-secret }}
+        ADMIN_EMAILS: ${{ inputs.admin-emails }}
+        CLIENT_URL: http://localhost:5173
+        PORT: "8000"
+        PLAYWRIGHT_REUSE_WEBSERVER: "1"
+      run: |
+        set -euo pipefail
+        npm start --prefix .ci-api > /tmp/api.log 2>&1 &
+        api_pid=$!
+        npm run dev > /tmp/web.log 2>&1 &
+        web_pid=$!
+
+        cleanup() {
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            echo "----- API log -----"
+            cat /tmp/api.log || true
+            echo "----- web log -----"
+            cat /tmp/web.log || true
+          fi
+          kill "$api_pid" "$web_pid" >/dev/null 2>&1 || true
+          exit "$status"
+        }
+        trap cleanup EXIT
+
+        ready=0
+        for _ in $(seq 1 40); do
+          if curl -sf http://localhost:8000/health >/dev/null && curl -sf http://localhost:5173 >/dev/null; then
+            ready=1
+            break
+          fi
+          sleep 3
+        done
+        if [ "$ready" -ne 1 ]; then
+          echo "The API or the frontend did not become ready in time."
+          exit 1
+        fi
+
+        npm run auth:setup
+        npm run test:e2e
