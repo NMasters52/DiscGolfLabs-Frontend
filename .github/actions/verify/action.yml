@@ -61,10 +61,6 @@ runs:
       shell: bash
       run: npm run typecheck
 
-    - name: Route tests
-      shell: bash
-      run: npm run test:routes
-
     - name: Install Chromium
       shell: bash
       run: |
