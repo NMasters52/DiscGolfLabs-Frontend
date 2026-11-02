@@ -2,9 +2,7 @@ import { useParams } from "react-router";
 import { CourseHomeView } from "~/components/courses/CourseHomeView";
 import { createCourseHomeViewModel } from "~/components/courses/course-home-view-model";
 import { defaultQueryOptions } from "~/queries/query-options";
-// @ts-expect-error Legacy JavaScript hooks have no declaration files yet.
 import useCourse from "~/queries/useCourse";
-// @ts-expect-error Legacy JavaScript hooks have no declaration files yet.
 import useEnrollment from "~/queries/useEnrollment";
 
 // Sits outside the learn layout on purpose: course home must render for
