@@ -4,6 +4,7 @@
 /output/playwright/
 /.playwright-mcp/
 /node_modules/
+/.ci-api/
 
 # React Router
 /.react-router/

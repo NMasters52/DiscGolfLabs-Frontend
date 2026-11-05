@@ -1,8 +1,6 @@
 import { useQueries } from "@tanstack/react-query";
 import { useSession, useAuth } from "@clerk/react-router";
-// @ts-expect-error Legacy JavaScript API modules have no declaration files yet.
 import { fetchEnrollment } from "../api/enrollment";
-// @ts-expect-error Legacy JavaScript modules have no declaration files yet.
 import { queryKeys } from "./keys";
 
 /** The enrolled branch of GET /api/enrollments/check/:courseId. */

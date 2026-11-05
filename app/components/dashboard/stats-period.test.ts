@@ -2,7 +2,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 // @ts-expect-error Node strip-types requires the source extension.
 import { formatStatsPeriod } from "./stats-period.ts";
-// @ts-expect-error Legacy query key module has no declarations.
 import { queryKeys } from "../../queries/keys.js";
 import { QueryClient } from "@tanstack/react-query";
 

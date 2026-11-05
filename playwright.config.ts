@@ -101,7 +101,9 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
+    // The promote/CI job signs in before the suite, so it leaves the dev server up.
+    reuseExistingServer:
+      !process.env.CI || process.env.PLAYWRIGHT_REUSE_WEBSERVER === "1",
     timeout: 120_000,
     stdout: "ignore",
     stderr: "pipe",
