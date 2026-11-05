@@ -59,7 +59,13 @@ export default function LearnDay() {
       onComplete={handleComplete}
       isPending={isPending}
       errorMessage={isError ? error.message : null}
-      gameSlot={<PuttingLadderGame courseId={course._id} dayNumber={day} />}
+      gameSlot={
+        <PuttingLadderGame
+          key={`${course._id}:${day}`}
+          courseId={course._id}
+          dayNumber={day}
+        />
+      }
       progressSlot={
         <PuttingProgressView gameSlug={course.slug} courseId={course._id} />
       }

@@ -136,6 +136,44 @@ test.describe("lesson day composition", () => {
 });
 
 test.describe("complete day", () => {
+  test("switching lesson days resets practice for sidebar and Continue navigation", async ({ page }) => {
+    await pinEnrollment(page, () => 6);
+    await mockSessions(page);
+    await openWithTheme(page, DAY_1_PATH, "light");
+    for (let putt = 0; putt < 7; putt++) {
+      await page.getByRole("button", { name: /Make/ }).click();
+    }
+    await expect(page.getByTestId("current-distance-value")).toHaveText("15ft");
+    await expect(page.getByTestId("putts-remaining-value")).toHaveText("3");
+    await page.locator('[data-state="nav-days"]').getByRole("link", { name: "Day 2 (completed)", exact: true }).click();
+    await expect(page).toHaveURL(/\/day\/2$/);
+    await expect(page.getByTestId("current-distance-value")).toHaveText("10ft");
+    await expect(page.getByTestId("putts-remaining-value")).toHaveText("5");
+    await page.goBack();
+    await expect(page).toHaveURL(/\/day\/1$/);
+    await expect(page.getByTestId("putts-remaining-value")).toHaveText("5");
+    await page.getByRole("button", { name: /Make/ }).click();
+    await page.getByRole("link", { name: "Continue to Day 2", exact: true }).click();
+    await expect(page.getByTestId("putts-remaining-value")).toHaveText("5");
+
+    // Capture the save without changing the shared development account.
+    const saves: { dayNumber: number; totalPutts: number; madeByDistance: Record<string, { made: number; attempted: number }> }[] = [];
+    await page.route("**/api/games/putting-course/session", route => {
+      saves.push(route.request().postDataJSON());
+      return route.fulfill({ status: 201, json: { id: "day-switch-regression" } });
+    });
+    page.on("dialog", dialog => dialog.accept());
+    for (let putt = 0; putt < 30; putt++) {
+      await page.getByRole("button", { name: /Make/ }).click();
+    }
+    await expect.poll(() => saves.length).toBe(1);
+    expect(saves[0].dayNumber).toBe(2);
+    expect(saves[0].totalPutts).toBe(30);
+    expect(Object.values(saves[0].madeByDistance)).toEqual(
+      Array.from({ length: 6 }, () => ({ made: 5, attempted: 5 })),
+    );
+  });
+
   test("completing the current day greys out the control and offers the next day", async ({
     page,
   }) => {
