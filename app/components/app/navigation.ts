@@ -12,6 +12,7 @@ export interface AppDestination {
 export const APP_DESTINATIONS = [
   { path: "/app/dashboard", title: "Dashboard" },
   { path: "/app/courses", title: "Courses" },
+  { path: "/app/sessions", title: "Sessions" },
   { path: "/app/settings", title: "Settings" },
 ] as const satisfies readonly AppDestination[];
 
@@ -46,6 +47,9 @@ export function resolveMobileTab(pathname: string): MobileTab | undefined {
       return "dashboard";
     case "/app/courses":
       return "course";
+    case "/app/sessions":
+      // Sessions lives in the More sheet on mobile, like Settings.
+      return "more";
     case "/app/settings":
       return "more";
     default:

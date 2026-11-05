@@ -21,6 +21,7 @@ export const TITLE_PATHS = [
   "/app/dashboard",
   "/app/courses",
   "/app/courses/putting-course",
+  "/app/sessions",
   "/app/settings",
   "/app/settings/security",
 ] as const;
@@ -162,8 +163,14 @@ export async function expectLearnEntryDestination(page: Page): Promise<void> {
   }
 }
 
-/** Keyboard stop Sign Out occupies when tabbing from the top of the page. */
-export const SIGN_OUT_TAB_INDEX = 8;
+/**
+ * Keyboard stop Sign Out occupies when tabbing from the top of the page:
+ * logo, Dashboard, Courses, Sessions, the course's current day (the sidebar
+ * day list renders exactly one focusable row — the current day; completed
+ * days are also links, locked days are inert spans), the Account & Settings
+ * card, and the three theme buttons.
+ */
+export const SIGN_OUT_TAB_INDEX = 10;
 
 /**
  * Tabs from a blank focus state until Sign Out is focused.

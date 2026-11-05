@@ -90,17 +90,26 @@ test("paid user records a putting session that persists in progress and dashboar
   expect(response.status()).toBe(201);
   const { id } = await response.json();
   expect(id).toBeTruthy();
-  await expect(page.getByText(`Total Sessions: ${before.length + 1}`, { exact: true })).toBeVisible();
-  await page.reload();
-  await expect(page.getByText(`Total Sessions: ${before.length + 1}`, { exact: true })).toBeVisible();
+  // Session history lives on the Sessions page; the day page shows the
+  // latest-session snapshot and links there. The persistence proof follows
+  // the link and counts rows against the real API.
   await expect(page.getByText(/Overall:.*30\/30/).last()).toBeVisible();
+  await page.getByRole("link", { name: /View all sessions/i }).click();
+  await expect(page).toHaveURL(/\/app\/sessions/);
+  // Scope to the named session list — the app shell's nav also renders listitems.
+  const sessionList = page.getByRole("list", { name: "Session history" });
+  await expect(sessionList.getByRole("listitem")).toHaveCount(before.length + 1);
+  await page.reload();
+  await expect(sessionList.getByRole("listitem")).toHaveCount(before.length + 1);
+  await expect(page.getByText(/Overall:.*30\/30/).first()).toBeVisible();
   await page.goto("/app/dashboard");
   await expect(page.getByText("30/30", { exact: true })).toBeVisible();
   await expect(page.getByText("35ft", { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByText("30/30", { exact: true })).toBeVisible();
   await page.goto("/app/courses/putting-course/learn/day/1");
-  await expect(page.getByText(`Total Sessions: ${before.length + 1}`, { exact: true })).toBeVisible();
+  await expect(page.getByText(/Overall:.*30\/30/).last()).toBeVisible();
+  await expect(page.getByRole("link", { name: /View all sessions/i })).toBeVisible();
 });
 
 // Regression found during Feature 61 exploration: per-distance progress
@@ -117,6 +126,12 @@ test("putting progress fits a 320px phone after sessions exist", async ({ page }
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto("/app/courses/putting-course/learn/day/1");
   await expect(page.getByRole("heading", { name: "Your Putting Progress" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Performance by Distance:" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: /View all sessions/i })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  // The sessions page carries the same invariant: per-distance progress
+  // rows must not push the document wider than the phone viewport.
+  await page.getByRole("link", { name: /View all sessions/i }).click();
+  await expect(page).toHaveURL(/\/app\/sessions/);
+  await expect(page.getByRole("list", { name: "Session history" }).getByRole("listitem")).toHaveCount(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
 });

@@ -6,10 +6,12 @@ import {
 import useCompleteDay from "../../../../queries/useCompleteDay";
 import { PuttingLadderGame } from "../../../../components/games/PuttingLadderGame";
 import { PuttingProgressView } from "../../../../components/games/PuttingProgressView";
+import { LessonDayView } from "../../../../components/learn/LessonDayView";
+import { buildLessonDayViewModel } from "../../../../components/learn/lesson-day-view-model";
 import { getLearnDayRedirect } from "./redirect";
 
 export default function LearnDay() {
-  const { dayNumber } = useParams();
+  const { dayNumber, slug } = useParams();
   const { course, enrollment } = useOutletContext();
 
   if (!course || !enrollment) {
@@ -41,23 +43,26 @@ export default function LearnDay() {
     completeDay(day);
   };
 
+  const viewModel = buildLessonDayViewModel({
+    courseTitle: course.title,
+    dayNumber: lesson.dayNumber,
+    totalDays: course.days.length,
+    title: lesson.title,
+    description: lesson.description,
+    currentDay: enrollment.currentDay,
+    courseSlug: slug,
+  });
+
   return (
-    <div>
-      <h1>
-        Day {lesson.dayNumber}: {lesson.title}
-      </h1>
-
-      <p>{lesson.description}</p>
-
-      <button onClick={handleComplete} disabled={isPending}>
-        {isPending ? "Completing…" : "Complete Day"}
-      </button>
-
-      <PuttingLadderGame courseId={course._id} dayNumber={day} />
-
-      <PuttingProgressView gameSlug={course.slug} courseId={course._id} />
-
-      {isError && <p style={{ color: "red" }}>{error.message}</p>}
-    </div>
+    <LessonDayView
+      viewModel={viewModel}
+      onComplete={handleComplete}
+      isPending={isPending}
+      errorMessage={isError ? error.message : null}
+      gameSlot={<PuttingLadderGame courseId={course._id} dayNumber={day} />}
+      progressSlot={
+        <PuttingProgressView gameSlug={course.slug} courseId={course._id} />
+      }
+    />
   );
 }

@@ -50,6 +50,13 @@ test("maps Settings and its Clerk sub-pages to More", () => {
   assert.equal(resolveMobileTab("/app/settings/security"), "more");
 });
 
+test("Sessions owns its destination and rides More on mobile", () => {
+  assert.equal(resolveDestination("/app/sessions")?.title, "Sessions");
+  // The sidebar carries Sessions at desktop widths; on phones it lives in
+  // the More sheet next to Settings, so the More tab stays active there.
+  assert.equal(resolveMobileTab("/app/sessions"), "more");
+});
+
 test("leaves unowned paths unclaimed for the bottom bar too", () => {
   assert.equal(resolveMobileTab("/app"), undefined);
   assert.equal(resolveMobileTab("/app/settingsx"), undefined);

@@ -1,5 +1,20 @@
+import { Link } from "react-router";
 import { useGameSessions } from "../../queries/useGameSession";
 
+/**
+ * The Sessions page route. Exported so the day-page link and the Sessions
+ * page itself share one source of truth.
+ */
+export const SESSIONS_HREF = "/app/sessions";
+
+/**
+ * Compact progress summary for the lesson day page: the latest recorded
+ * session plus a link to the full history on the Sessions page. The full
+ * session list (and the "Total Sessions" counter) live on the Sessions
+ * page now. Pinned text contract kept here: "Overall: made/attempted(pct)%"
+ * renders with the label and fraction inside one element so spec regexes
+ * like /Overall:.*N\/N/ keep matching.
+ */
 export function PuttingProgressView({ gameSlug, courseId }) {
   const {
     data: sessions,
@@ -7,75 +22,77 @@ export function PuttingProgressView({ gameSlug, courseId }) {
     error,
   } = useGameSessions(gameSlug, courseId);
 
-  if (isLoading) return <div>Loading your progress...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!sessions?.length)
-    return <div>No sessions yet. Play your first game!</div>;
+  if (isLoading) {
+    return (
+      <p className="text-sm text-muted-foreground" data-state="loading">
+        Loading your progress…
+      </p>
+    );
+  }
+
+  if (error) {
+    return (
+      <p role="alert" className="text-sm font-medium text-destructive">
+        Error: {error.message}
+      </p>
+    );
+  }
+
+  if (!sessions?.length) {
+    return (
+      <p className="text-sm text-muted-foreground" data-state="empty">
+        No sessions yet. Play your first game!
+      </p>
+    );
+  }
+
+  // The API's ordering isn't a contract — pick the newest by timestamp.
+  const latest = sessions.reduce((newest, session) =>
+    new Date(session.createdAt).getTime() >
+    new Date(newest.createdAt).getTime()
+      ? session
+      : newest,
+  );
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h2>Your Putting Progress</h2>
-      <p>Total Sessions: {sessions.length}</p>
+    <div className="space-y-4" data-state="latest-session">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h3 className="text-sm font-semibold text-foreground">
+          Latest session
+          {latest.dayNumber && ` • Day ${latest.dayNumber}`}
+        </h3>
+        <p className="shrink-0 text-xs text-muted-foreground">
+          {new Date(latest.createdAt).toLocaleDateString()}
+        </p>
+      </div>
 
-      {sessions.map((session, idx) => (
-        <div
-          key={session.id}
-          style={{
-            marginBottom: "2rem",
-            padding: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "8px",
-          }}
-        >
-          <h3>
-            Session {idx + 1}
-            {session.dayNumber && ` • Day ${session.dayNumber}`}
-          </h3>
+      <div className="space-y-1.5 text-sm">
+        <p className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+            Overall:
+          </span>{" "}
+          <span className="font-mono tabular-nums text-foreground">
+            {latest.overall.made}/
+            {latest.overall.attempted}({latest.overall.percentage}%)
+          </span>
+        </p>
+        <p className="flex flex-wrap items-baseline gap-x-2">
+          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+            Max Distance
+          </span>
+          <span className="font-mono font-semibold tabular-nums text-foreground">
+            {latest.maxDistanceFt}ft
+          </span>
+        </p>
+      </div>
 
-          <p>
-            <strong>Max Distance:</strong> {session.maxDistanceFt}ft
-          </p>
-          <p>
-            <strong>Duration:</strong>{" "}
-            {Math.floor(session.durationSeconds / 60)}m{" "}
-            {session.durationSeconds % 60}s
-          </p>
-          <p>
-            <strong>Overall:</strong> {session.overall.made}/
-            {session.overall.attempted}({session.overall.percentage}%)
-          </p>
-
-          <h4>Performance by Distance:</h4>
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: "0.5rem" }}>
-            {Object.entries(session.distanceStats)
-              .sort(([a], [b]) => Number(a) - Number(b))
-              .map(([distance, stats]) => (
-                <div
-                  key={distance}
-                  style={{ display: "flex", gap: "1rem", alignItems: "center" }}
-                >
-                  <span style={{ fontWeight: "bold", width: "40px" }}>
-                    {distance}ft:
-                  </span>
-                  <span style={{ width: "120px" }}>
-                    {stats.made}/{stats.attempted} ({stats.percentage}%)
-                  </span>
-                  <progress
-                    value={stats.percentage}
-                    max="100"
-                    style={{ flex: 1, minWidth: 0 }}
-                  />
-                </div>
-              ))}
-          </div>
-
-          <p
-            style={{ fontSize: "0.875rem", color: "#666", marginTop: "0.5rem" }}
-          >
-            {new Date(session.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      ))}
+      <Link
+        to={SESSIONS_HREF}
+        data-state="view-all-sessions"
+        className="inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-[0.14em] text-primary hover:underline"
+      >
+        View all sessions <span aria-hidden="true">→</span>
+      </Link>
     </div>
   );
 }
