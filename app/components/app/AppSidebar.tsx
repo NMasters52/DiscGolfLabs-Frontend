@@ -1,7 +1,11 @@
 import {
   BookOpen,
+  Check,
   ChevronRight,
+  CircleDashed,
+  History,
   LayoutDashboard,
+  Lock,
   LogOut,
   type LucideIcon,
 } from "lucide-react";
@@ -26,6 +30,14 @@ import {
 import { ModeToggle } from "~/components/mode-toggle";
 import { ThemeChoice } from "~/components/app/theme-choice";
 import { resolveDestination } from "~/components/app/navigation";
+import {
+  getLessonDayState,
+  learnDayHref,
+} from "~/components/learn/lesson-day-view-model";
+import useCourse from "~/queries/useCourse";
+import useEnrollment from "~/queries/useEnrollment";
+import { defaultQueryOptions } from "~/queries/query-options";
+import { courseDayNavClassName } from "~/components/learn/course-day-nav-styles";
 import { cn } from "~/lib/utils";
 
 const PRIMARY_NAVIGATION: readonly {
@@ -45,6 +57,12 @@ const PRIMARY_NAVIGATION: readonly {
     to: "/app/courses",
     destinationPath: "/app/courses",
     icon: BookOpen,
+  },
+  {
+    label: "Sessions",
+    to: "/app/sessions",
+    destinationPath: "/app/sessions",
+    icon: History,
   },
 ];
 
@@ -80,6 +98,80 @@ function NavigationItem({
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
+  );
+}
+
+// The enrolled course's days as sidebar navigation: completed days stay
+// reviewable, the viewed day is highlighted, locked days are inert (the
+// routes' redirect enforces what this affordance shows). Shares the same
+// query keys the dashboard and learn layout use, so the rows flip live
+// when a completion invalidates the enrollment.
+const COURSE_SLUG = "putting-course";
+
+function CourseDayNav() {
+  const { pathname } = useLocation();
+  const courseQuery = useCourse(COURSE_SLUG, defaultQueryOptions);
+  const enrollmentQuery = useEnrollment(
+    courseQuery.data?._id,
+    defaultQueryOptions,
+  );
+  const course = courseQuery.data;
+  const enrollment = enrollmentQuery.data;
+  if (!course || enrollment?.enrolled !== true) return null;
+  const currentDay = enrollment.currentDay;
+
+  return (
+    <SidebarGroup
+      className="px-2 pt-1 group-data-[collapsible=icon]:hidden"
+      data-state="nav-days"
+    >
+      <SidebarGroupLabel>{course.title}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {course.days.map((day: { dayNumber: number }) => {
+            const state = getLessonDayState(day.dayNumber, currentDay);
+            if (state === "locked") {
+              return (
+                <SidebarMenuItem key={day.dayNumber}>
+                  <span
+                    aria-disabled="true"
+                    data-state="locked"
+                    title="Complete the previous day first"
+                    aria-label={`Day ${day.dayNumber} (locked). Complete the previous day first`}
+                    className={courseDayNavClassName({ selected: false, locked: true })}
+                  >
+                    <Lock aria-hidden="true" />
+                    Day {day.dayNumber}
+                  </span>
+                </SidebarMenuItem>
+              );
+            }
+            const isCurrent = state === "current";
+            const href = learnDayHref(COURSE_SLUG, day.dayNumber);
+            const isSelected = pathname.replace(/\/$/, "") === href;
+            return (
+              <SidebarMenuItem key={day.dayNumber}>
+                <Link
+                  to={href}
+                  aria-current={isSelected ? "page" : undefined}
+                  data-active={isSelected}
+                  data-state={state}
+                  aria-label={`Day ${day.dayNumber}${isCurrent ? " (current)" : " (completed)"}`}
+                  className={courseDayNavClassName({ selected: isSelected, locked: false })}
+                >
+                  {state === "completed" ? (
+                    <Check aria-hidden="true" className="text-primary" />
+                  ) : (
+                    <CircleDashed aria-hidden="true" className="text-primary" />
+                  )}
+                  Day {day.dayNumber}
+                </Link>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }
 
@@ -223,6 +315,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <CourseDayNav />
       </SidebarContent>
 
       <SidebarFooter className="gap-1 border-t border-sidebar-border p-3 group-data-[collapsible=icon]:p-2">

@@ -25,10 +25,12 @@ for (const path of ["/app/settings", "/app/settings/security"] as const) {
       await page.goto(path);
 
       const menuButtons = page.locator('[data-slot="sidebar-menu-button"]');
-      await expect(menuButtons).toHaveCount(3);
+      await expect(menuButtons).toHaveCount(4);
 
       // The current primary links and Sign Out control, in order.
-      await expect(menuButtons).toHaveText([/Dashboard/, /Course/, /Sign Out/], {
+      await expect(
+        menuButtons,
+      ).toHaveText([/Dashboard/, /Course/, /Sessions/, /Sign Out/], {
         useInnerText: true,
       });
 

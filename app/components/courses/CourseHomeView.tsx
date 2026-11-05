@@ -197,22 +197,26 @@ function DayList({ viewModel }: { viewModel: CourseHomeViewModel }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="divide-y divide-border/60">
+        <ul className="-mx-2 divide-y divide-border/60">
           {viewModel.days.map((day) => {
             const to = day.to;
 
             // first:/last: must sit on the li — on the row element they
             // always match, because each row is its li's only child.
+            // Spacing lives on the li (pt/pb only, no px) while the rows
+            // carry px-2/py-2 + rounded-lg, so the hover/focus pill is the
+            // full hit area and the -mx-2 keeps content aligned with the
+            // card header above.
             return (
               <li
                 key={day.dayNumber}
-                className="py-2.5 first:pt-0 last:pb-0"
+                className="py-0.5 first:pt-0 last:pb-0"
               >
                 {to != null ? (
                   <Link
                     to={to}
                     data-status={day.status}
-                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 transition-colors hover:bg-muted/40 focus-visible:bg-muted/40"
+                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-2 transition-colors outline-none hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <DayRow day={day} />
                   </Link>
@@ -220,7 +224,7 @@ function DayList({ viewModel }: { viewModel: CourseHomeViewModel }) {
                   <div
                     data-status={day.status}
                     aria-disabled="true"
-                    className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3"
+                    className="grid cursor-not-allowed grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-muted/20"
                   >
                     <DayRow day={day} />
                   </div>

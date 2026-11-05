@@ -2,6 +2,7 @@ import * as React from "react";
 import { Link } from "react-router";
 import {
   ChevronRight,
+  History,
   LogOut,
 } from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/react-router";
@@ -193,6 +194,22 @@ export function MoreSheet({
                 aria-hidden="true"
               />
             </div>
+          </Link>
+
+          {/* Sessions: a plain navigation row, replace-ing the sheet's
+              ?more history entry so the sheet closes like the account card. */}
+          <Link
+            to="/app/sessions"
+            replace
+            data-slot="more-sessions"
+            className="mt-3 flex min-h-12 items-center gap-3 rounded-xl border bg-card px-3 transition-colors outline-none hover:border-primary/50 hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <History className="size-5 text-muted-foreground" aria-hidden="true" />
+            <span className="text-sm font-semibold">Sessions</span>
+            <ChevronRight
+              className="ml-auto size-5 text-muted-foreground"
+              aria-hidden="true"
+            />
           </Link>
 
           <section aria-label="Appearance" className="mt-7">

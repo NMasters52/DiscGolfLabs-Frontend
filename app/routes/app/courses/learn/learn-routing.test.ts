@@ -26,7 +26,7 @@ test("keeps an enrolled visitor in the learn flow", () => {
 });
 
 test("returns to the learn index for invalid or locked days", () => {
-  for (const dayNumber of ["not-a-day", "0", "6"]) {
+  for (const dayNumber of ["not-a-day", "0", "5", "6"]) {
     assert.equal(
       getLearnDayRedirect({
         dayNumber,
