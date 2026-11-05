@@ -40,6 +40,19 @@ test("loading wins while enrollment is pending", () => {
   assert.equal(viewModel.totalSessionsLabel, null);
 });
 
+test("a course or enrollment error wins over pending or unenrolled state", () => {
+  for (const enrollmentPending of [true, false]) {
+    const viewModel = createSessionsViewModel({
+      ...readyInput,
+      enrollmentPending,
+      isEnrolled: false,
+      accessError: new Error("Enrollment check failed"),
+    });
+    assert.equal(viewModel.state, "loadError");
+    assert.equal(viewModel.errorMessage, "Enrollment check failed");
+  }
+});
+
 test("not-enrolled users get the enroll prompt and no rows", () => {
   const viewModel = createSessionsViewModel({
     ...readyInput,

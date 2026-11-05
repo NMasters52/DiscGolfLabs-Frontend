@@ -164,13 +164,11 @@ export async function expectLearnEntryDestination(page: Page): Promise<void> {
 }
 
 /**
- * Keyboard stop Sign Out occupies when tabbing from the top of the page:
- * logo, Dashboard, Courses, Sessions, the course's current day (the sidebar
- * day list renders exactly one focusable row — the current day; completed
- * days are also links, locked days are inert spans), the Account & Settings
- * card, and the three theme buttons.
+ * Fixed keyboard stops through Sign Out: logo, Dashboard, Courses, Sessions,
+ * Account & Settings, three theme buttons, and Sign Out. Enrolled accounts
+ * add one stop for each unlocked course day. Locked rows are inert spans.
  */
-export const SIGN_OUT_TAB_INDEX = 10;
+export const SIGN_OUT_BASE_TAB_INDEX = 9;
 
 /**
  * Tabs from a blank focus state until Sign Out is focused.

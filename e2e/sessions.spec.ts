@@ -63,6 +63,29 @@ function mockSessions(page: Page, sessions: typeof SESSIONS_FIXTURE) {
 }
 
 test.describe("sessions page", () => {
+  for (const endpoint of ["course", "enrollment"] as const) {
+    test(`a failed ${endpoint} request shows an error and recovers after reload`, async ({ page }) => {
+      let failing = true;
+      if (endpoint === "course") await mockEnrollment(page, true);
+      await mockSessions(page, SESSIONS_FIXTURE);
+      const pattern = endpoint === "course"
+        ? "**/api/courses/putting-course"
+        : "**/api/enrollments/check/*";
+      await page.route(pattern, route => failing
+        ? route.fulfill({ status: 503, json: { error: "Controlled QA outage" } })
+        : endpoint === "enrollment"
+          ? route.fulfill({ json: { enrolled: true, currentDay: 1, totalDays: 5 } })
+          : route.continue());
+      await openWithTheme(page, SESSIONS_PATH, "light");
+      await expect(page.getByRole("alert")).toContainText("Error:");
+      await expect(page.getByText(/Enroll in the putting course/)).toHaveCount(0);
+      failing = false;
+      await page.reload();
+      await expect(page.getByRole("list", { name: "Session history" })).toBeVisible();
+      await expect(page.getByRole("alert")).toHaveCount(0);
+    });
+  }
+
   test("lists history newest-first with the total counter", async ({
     page,
   }) => {

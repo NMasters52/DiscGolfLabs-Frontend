@@ -4,7 +4,7 @@
  * Protocol rule: "Reachable focus is not visible focus." QA #12 found Sign Out
  * tab-reachable and :focus-visible while its focused styles were byte-identical
  * to its resting styles. So this spec asserts the delta, not just reachability:
- *  - Sign Out is the 8th keyboard stop from the top of the page,
+ *  - Sign Out follows the shell controls and every unlocked course day,
  *  - while keyboard-focused it matches :focus-visible,
  *  - the focused box-shadow carries the current sidebar ring (2px),
  *  - after blur the resting box-shadow is back to none.
@@ -16,7 +16,7 @@ import {
   boxShadowOf,
   focusedBoxShadow,
   openWithTheme,
-  SIGN_OUT_TAB_INDEX,
+  SIGN_OUT_BASE_TAB_INDEX,
   signOutButton,
   tabToSignOut,
   THEMES,
@@ -27,18 +27,24 @@ const RING_PATTERN =
   /(?:rgb|rgba)\((?!0,\s*0,\s*0,\s*0\))[^)]+\)\s+0(?:px)?\s+0(?:px)?\s+0(?:px)?\s+2px/;
 
 for (const theme of THEMES) {
-  test(`Sign Out focus indicator in ${theme} mode`, async ({ page }) => {
+  test(`Sign Out focus indicator in ${theme} mode`, async ({ page }, testInfo) => {
     await openWithTheme(page, "/app/settings", theme);
     await expect(signOutButton(page)).toBeVisible();
+    if (testInfo.project.name === "paid") {
+      await expect(page.locator('[data-state="nav-days"]')).toBeVisible();
+    }
+
+    const expectedIndex = SIGN_OUT_BASE_TAB_INDEX +
+      await page.locator('[data-state="nav-days"] a').count();
 
     const { stops, index } = await tabToSignOut(page);
 
     // Evidence: the observed focus order travels with the failure message.
     expect(
       index,
-      `Sign Out should be keyboard stop #${SIGN_OUT_TAB_INDEX}; observed ` +
+      `Sign Out should be keyboard stop #${expectedIndex}; observed ` +
         `focus order ${JSON.stringify(stops)}`,
-    ).toBe(SIGN_OUT_TAB_INDEX);
+    ).toBe(expectedIndex);
 
     const signOut = signOutButton(page);
 

@@ -2,8 +2,7 @@ import { Link } from "react-router";
 import { useGameSessions } from "../../queries/useGameSession";
 
 /**
- * The Sessions page route. Exported so the day-page link and the Sessions
- * page itself share one source of truth.
+ * Destination for the lesson page's full session-history link.
  */
 export const SESSIONS_HREF = "/app/sessions";
 
@@ -59,7 +58,7 @@ export function PuttingProgressView({ gameSlug, courseId }) {
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h3 className="text-sm font-semibold text-foreground">
           Latest session
-          {latest.dayNumber && ` • Day ${latest.dayNumber}`}
+          {latest.dayNumber ? ` • Day ${latest.dayNumber}` : null}
         </h3>
         <p className="shrink-0 text-xs text-muted-foreground">
           {new Date(latest.createdAt).toLocaleDateString()}

@@ -23,6 +23,7 @@ export default function Sessions() {
   );
 
   const viewModel = createSessionsViewModel({
+    accessError: courseQuery.error ?? enrollmentQuery.error,
     enrollmentPending: enrollmentQuery.isPending,
     isEnrolled,
     sessions: sessionsQuery.data,

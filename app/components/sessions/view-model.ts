@@ -87,6 +87,7 @@ function toSessionRow(session: SessionRecord): SessionRow {
 }
 
 export function createSessionsViewModel({
+  accessError,
   enrollmentPending,
   isEnrolled,
   sessions,
@@ -94,6 +95,7 @@ export function createSessionsViewModel({
   sessionsError,
   courseSlug,
 }: {
+  accessError?: Error | null;
   enrollmentPending: boolean;
   isEnrolled: boolean;
   sessions?: SessionRecord[];
@@ -101,6 +103,16 @@ export function createSessionsViewModel({
   sessionsError: Error | null;
   courseSlug: string;
 }): SessionsViewModel {
+  if (accessError) {
+    return {
+      state: "loadError",
+      totalSessionsLabel: null,
+      rows: [],
+      courseHref: `/app/courses/${courseSlug}`,
+      errorMessage: accessError.message,
+    };
+  }
+
   // Enrollment gates the sessions query, so its pending state settles
   // first; a not-enrolled user never loads sessions at all.
   if (enrollmentPending) {
