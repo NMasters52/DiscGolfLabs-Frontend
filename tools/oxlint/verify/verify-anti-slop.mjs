@@ -12,10 +12,14 @@
 // never pollute `npm run lint:anti-slop`. That same ignore would also stop
 // explicit-path linting, so this command lints the fixtures through a
 // dedicated config, verify.config.json, which registers the same plugin and
-// the same rule severities without the ignore entry. Run via:
+// the same rule severities without the ignore entry. Because that config is a
+// manual copy of the production policy, the verifier also asserts parity with
+// oxlint.config.ts, so a production policy change fails this run instead of
+// drifting silently. Run via:
 //   npm run verify:anti-slop
 
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -69,6 +73,37 @@ const failures = [];
 function check(ok, message) {
   if (!ok) failures.push(message);
   return ok;
+}
+
+// --- Config parity: the smoke config must mirror the production gate. ---
+// verify.config.json duplicates the production severities because the root
+// config's ignorePatterns would hide the fixtures. If oxlint.config.ts changes
+// its policy, this block fails the run instead of letting the two drift.
+const prodConfig = readFileSync(join(repoRoot, "oxlint.config.ts"), "utf8");
+const smokeConfig = JSON.parse(readFileSync(config, "utf8"));
+function productionSeverity(rule) {
+  const match = new RegExp(`"${rule}":\\s*"(error|warn|off)"`).exec(prodConfig);
+  return match ? match[1] : "unregistered";
+}
+const failuresBeforeParity = failures.length;
+for (const { rule } of expectations) {
+  const inProduction = productionSeverity(rule);
+  const inSmoke = smokeConfig.rules[rule] ?? "unregistered";
+  check(
+    inProduction === inSmoke,
+    `config drift for ${rule}: oxlint.config.ts="${inProduction}" vs verify.config.json="${inSmoke}" — keep the smoke config in sync with the production gate`,
+  );
+}
+check(
+  /correctness:\s*"off"/.test(prodConfig),
+  "oxlint.config.ts no longer disables the correctness category; verify.config.json assumes it does — reconcile the two configs",
+);
+check(
+  prodConfig.includes("tools/oxlint/verify"),
+  "oxlint.config.ts no longer ignores tools/oxlint/verify; the fixtures would leak into the whole-repo gate",
+);
+if (failures.length === failuresBeforeParity) {
+  console.log("Config parity vs oxlint.config.ts: PASS");
 }
 
 // --- Bad fixtures: every expected rule must fire in its own fixture. ---

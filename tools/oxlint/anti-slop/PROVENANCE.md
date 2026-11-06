@@ -62,21 +62,32 @@ When adopting a new upstream revision:
    `package.json` to the same exact version the upstream revision targets (see
    its `package.json`). These two move as a pair; mismatched versions are not
    supported. Run `npm install` and commit the updated `package-lock.json`.
-2. **Merge upstream `src/` as a normal git merge.** The vendored tree is a
-   verbatim copy of upstream `src/` (`index.ts`, `rules/`, `effect/`,
-   `shared/`, `vendor/`). Local customization lives in `oxlint.config.ts` and
-   `tools/oxlint/verify/` — never in rule source. Merge the new upstream
-   commit into this directory and resolve conflicts in favor of upstream.
+2. **Sync upstream `src/` contents into this directory.** The vendored tree is
+   a verbatim copy of upstream `src/` (`index.ts`, `rules/`, `effect/`,
+   `shared/`, `vendor/`). Copy or merge the contents of the new upstream
+   `src/` into this directory and resolve in favor of upstream — this is a
+   content sync of the vendor tree, not a root-level git merge. Local
+   customization lives in `oxlint.config.ts` and `tools/oxlint/verify/` —
+   never in rule source.
 3. **Run the smoke test.** `npm run verify:anti-slop` must pass both ways: the
    bad fixtures (`tools/oxlint/verify/fixtures/bad/`, one per rule) must still
    trigger `oxc/no-accumulating-spread`, `anti-slop/no-reduce-accumulator-copy`,
    `anti-slop/no-chained-type-assertions`, and `anti-slop/no-widen-then-assert`
    as errors plus `anti-slop/no-array-filter-map` as a warning, and the clean
    fixtures (`tools/oxlint/verify/fixtures/clean/`) must produce zero
-   diagnostics. A failure means the upgrade changed detection or the plugin
-   API; do not ship it silently.
-4. **Run the local gate.** `npm run lint:anti-slop` (exit 0, no diagnostics),
-   `npm run typecheck` (exit 0), and `npm run test:unit` (all pass).
-5. **Record the revision.** Update the upstream commit, commit date, and
+   diagnostics. The verifier also asserts config parity against
+   `oxlint.config.ts`; if it reports drift, update
+   `tools/oxlint/verify/verify.config.json` to mirror the production
+   severities and category settings before continuing. A remaining failure
+   means the upgrade changed detection or the plugin API; do not ship it
+   silently.
+4. **Prove the production gate still detects.** The smoke fixtures run under
+   their own config, so also exercise the production command directly:
+   temporarily add a root-level file with one violation per gated rule, run
+   `npm run lint:anti-slop`, and require exit 1 with the four core errors plus
+   the filter/map warning. Delete the file and require exit 0 again.
+5. **Run the local checks.** `npm run lint:anti-slop` (exit 0, no diagnostics
+   on the clean tree), `npm run typecheck` (exit 0), and `npm run test:unit`
+   (all pass).
+6. **Record the revision.** Update the upstream commit, commit date, and
    "Vendored on" date at the top of this file before committing.
-
