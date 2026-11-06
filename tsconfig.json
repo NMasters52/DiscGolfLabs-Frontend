@@ -5,6 +5,9 @@
     "**/.client/**/*",
     ".react-router/types/**/*"
   ],
+  "exclude": [
+    "tools/oxlint/anti-slop/**"
+  ],
   "compilerOptions": {
     "allowJs": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
