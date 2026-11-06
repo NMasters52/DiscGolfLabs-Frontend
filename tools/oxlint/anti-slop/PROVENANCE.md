@@ -50,3 +50,33 @@ This repo installs the same exact versions as devDependencies; upgrade both toge
 ## Maintenance policy
 
 This directory is vendored and locally owned. Do not edit these files ad hoc; to update, re-copy from a named upstream revision and record the new commit here, preserving any local customizations explicitly.
+
+## Upgrade ritual
+
+Everything below lives outside this directory: severities, ignore patterns, and
+deferred rules are configured in `oxlint.config.ts`; fixtures and the smoke
+verifier live in `tools/oxlint/verify/` (run with `npm run verify:anti-slop`).
+When adopting a new upstream revision:
+
+1. **Bump the pins together.** Set `oxlint` and `@oxlint/plugins` in
+   `package.json` to the same exact version the upstream revision targets (see
+   its `package.json`). These two move as a pair; mismatched versions are not
+   supported. Run `npm install` and commit the updated `package-lock.json`.
+2. **Merge upstream `src/` as a normal git merge.** The vendored tree is a
+   verbatim copy of upstream `src/` (`index.ts`, `rules/`, `effect/`,
+   `shared/`, `vendor/`). Local customization lives in `oxlint.config.ts` and
+   `tools/oxlint/verify/` — never in rule source. Merge the new upstream
+   commit into this directory and resolve conflicts in favor of upstream.
+3. **Run the smoke test.** `npm run verify:anti-slop` must pass both ways: the
+   bad fixtures (`tools/oxlint/verify/fixtures/bad/`, one per rule) must still
+   trigger `oxc/no-accumulating-spread`, `anti-slop/no-reduce-accumulator-copy`,
+   `anti-slop/no-chained-type-assertions`, and `anti-slop/no-widen-then-assert`
+   as errors plus `anti-slop/no-array-filter-map` as a warning, and the clean
+   fixtures (`tools/oxlint/verify/fixtures/clean/`) must produce zero
+   diagnostics. A failure means the upgrade changed detection or the plugin
+   API; do not ship it silently.
+4. **Run the local gate.** `npm run lint:anti-slop` (exit 0, no diagnostics),
+   `npm run typecheck` (exit 0), and `npm run test:unit` (all pass).
+5. **Record the revision.** Update the upstream commit, commit date, and
+   "Vendored on" date at the top of this file before committing.
+

@@ -6,7 +6,8 @@
     ".react-router/types/**/*"
   ],
   "exclude": [
-    "tools/oxlint/anti-slop/**"
+    "tools/oxlint/anti-slop/**",
+    "tools/oxlint/verify/**"
   ],
   "compilerOptions": {
     "allowJs": true,
