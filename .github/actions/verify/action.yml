@@ -57,6 +57,10 @@ runs:
       shell: bash
       run: npm ci
 
+    - name: Anti-slop gate
+      shell: bash
+      run: npm run lint:anti-slop
+
     - name: Typecheck
       shell: bash
       run: npm run typecheck
