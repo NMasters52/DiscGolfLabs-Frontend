@@ -157,6 +157,9 @@ test.describe("mobile layout", () => {
   test("bar stays visible while the page scrolls", async ({ page }) => {
     await openMobileWithTheme(page, "/app/dashboard", "light", INTERACTION_VIEWPORT);
 
+    // Loading placeholders are shorter than the populated dashboard. Wait
+    // for the final card before scrolling so late data cannot move the bottom.
+    await expect(page.getByText("Last session", { exact: true })).toBeVisible();
     await expectBarAtViewportBottom(page);
     await scrollToBottom(page);
     await expect(mobileHeader(page)).toBeInViewport({ ratio: 1 });
