@@ -28,6 +28,10 @@ npm run start      # serve the production build
 npm run typecheck  # react-router typegen && tsc
 ```
 
+## Local development servers
+
+Before starting a dev server, check whether the expected port already has a listener with `ss -ltnp '( sport = :5173 or sport = :8000 )'` and reuse the existing server when appropriate. Start servers only when the user requests them or when needed to verify requested work; do not start them automatically for read-only or documentation tasks. Frontend: run `npm run dev` from `DiscGolfLabs-Frontend`; it binds to `127.0.0.1:5173` with strict port selection. Backend: run `npm run dev` from sibling `DiscGolfLabs-api`; it binds to `127.0.0.1:8000`. With the Mac connected to the same Tailscale network, open `https://masters.tailf8caf3.ts.net:10443`; this uses the existing Tailscale Serve mapping, and the frontend `/api` proxy forwards requests to the backend. Do not stop existing servers without a reason.
+
 ## Layout
 
 see docs/architecture.md for detail
