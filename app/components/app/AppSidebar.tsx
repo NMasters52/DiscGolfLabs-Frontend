@@ -330,7 +330,7 @@ export function AppSidebar() {
                 variant="outline"
                 tooltip="Sign Out"
                 aria-label="Sign Out"
-                className="h-10 rounded-lg px-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2"
+                className="h-10 justify-center rounded-lg px-3 group-data-[collapsible=icon]:px-2"
               >
                 <LogOut aria-hidden="true" />
                 <span className="group-data-[collapsible=icon]:hidden">
