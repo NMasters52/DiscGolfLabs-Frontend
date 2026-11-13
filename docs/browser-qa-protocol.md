@@ -1,145 +1,109 @@
-# Browser QA Protocol
+# Browser QA protocol
 
-> Status: **reference** · Part of: `docs/README.md` · Last verified: 2026-09-04 (QA #8–#12 run)
+Run commands from `DiscGolfLabs-Frontend`. Markdown links resolve relative to this file.
 
-## Why
+## Accounts and restrictions
 
-How an agent runs interactive browser QA against the local app and produces reviewable proof. Use it whenever an issue's acceptance criteria can only be verified in a real browser — routing/refresh/history, themes, Clerk panels, tab titles, responsive and keyboard behavior. Extracted from the issue #47 QA run; tool-agnostic by design.
+| Project | Dedicated development account | Enrollment | Local credentials |
+| --- | --- | --- | --- |
+| `free` | John Doe | Not enrolled | `playwright/.auth/free.json` |
+| `paid` | Jane Doe | Enrolled | `playwright/.auth/paid.json` |
 
-## Accounts & environments
+`paid` means course enrollment, not a real payment. Never use personal or production accounts, change security settings, or mutate enrollment to reach a test state. Use clearly labeled response overrides for errors and otherwise unreachable enrollment/day variants. Verify normal authentication and enrollment against the real backend.
 
-| Playwright project | Clerk account | Tier                   | State file                       |
-| ------------------ | ------------- | ---------------------- | -------------------------------- |
-| `free`             | John Doe      | unpaid (no enrollment) | `playwright/.auth/free.json`     |
-| `paid`             | Jane Doe      | active enrollment      | `playwright/.auth/paid.json`     |
+Session-recording checks may add putting sessions for Jane. Run these writes serially, separate from other runs using the same account. Credential files are ignored and must not be printed, copied, or committed.
 
-- App runs at `http://localhost:5173`
-- Check that the app is running before starting it.
-- Use dedicated development accounts for automated feature QA. Session-recording tests may add putting sessions for Jane. Do not change security settings or enrollment; use controlled response overrides for enrollment variants. Never mutate personal or production accounts.
-- Every QA item names its profile up front; run it on that profile only.
+## Setup and test commands
 
-### Linux agent sessions
+Check listeners on ports 5173 and 8000 and reuse appropriate servers as described in [AGENTS.md](../AGENTS.md#local-development-servers). The frontend is `http://localhost:5173`; the backend is required for real API checks.
 
-Use the repo wrapper to open an isolated Playwright CLI session with the matching local Clerk state:
+The harness is `playwright.config.ts` plus `e2e/`. Both account states must exist. Create missing or expired states with `npm run auth:setup` before a run. Do not refresh auth or run competing builds/suites during it. Local specs use `/usr/bin/chromium` when available, or `PLAYWRIGHT_CHROMIUM_EXECUTABLE`; CI uses bundled Chromium.
+
+```bash
+# Focused specs, both profiles. Replace <affected specs> with file paths.
+npm run test:e2e -- <affected specs> --workers=2
+# One profile, when a check is specific to it.
+npm run test:e2e -- e2e/desktop-course-access.spec.ts --project=free --workers=2
+# Session-writing flow, run separately.
+npm run test:e2e -- e2e/core-flows.spec.ts --project=paid --workers=1 -g 'paid user records a putting session'
+# Broader coverage when warranted.
+npm run test:e2e -- --workers=2
+```
+
+Use `npm test`, `npm run test:routes`, `npm run build`, and `npm run typecheck` when relevant to a fix. Course coverage starts in `e2e/desktop-course-access.spec.ts`, `e2e/courses-flow.spec.ts`, and `e2e/mobile-nav.spec.ts`; inspect the specs for account-specific skips.
+
+## Exploratory browser commands
+
+Check the CLI prerequisites:
+
+```bash
+command -v npm
+command -v npx
+test -x "${PLAYWRIGHT_CLI:-${CODEX_HOME:-$HOME/.codex}/skills/playwright/scripts/playwright_cli.sh}"
+```
+
+The wrapper requires that external executable. If installed elsewhere, set `PLAYWRIGHT_CLI` to its absolute path. If unavailable, report it and continue independent checks through the in-repo E2E harness when its dependencies, browser, servers, and auth states are available. Missing execution prerequisites block the affected checks, not inspection of requirements or existing specs.
+
+Open the selected account before sending session commands:
 
 ```bash
 ./scripts/dgl-browser.sh free
 ./scripts/dgl-browser.sh paid
+./scripts/dgl-browser.sh paid snapshot
+./scripts/dgl-browser.sh free goto http://localhost:5173/app/courses
 ```
 
-The sessions are named `dgl-free` and `dgl-paid`. Continue interacting with the selected session through the same wrapper, for example `./scripts/dgl-browser.sh paid snapshot` or `./scripts/dgl-browser.sh free goto http://localhost:5173/app/courses`. CLI snapshots and logs go under ignored `output/playwright/`. The credential files live in ignored `playwright/.auth/`; do not print, copy, or commit them. The wrapper refreshes expired or missing states with `npm run auth:setup` before opening a browser.
+These use isolated `dgl-free` and `dgl-paid` sessions. The open command refreshes missing/expired states, loads authentication, and navigates to the dashboard. Continue CLI commands through the same wrapper. `PLAYWRIGHT_BASE_URL` overrides the wrapper's app URL; the E2E harness uses localhost:5173.
 
-## The loop
+Capture fresh element refs after navigation or re-render, and confirm each action reached its expected URL, heading, or state. Use Playwright MCP as a secondary investigation tool when needed, with the same dedicated-account restrictions.
 
-1. **Prepare** — confirm the branch matches the issue/PR and the worktree is clean. Read the issue's unchecked acceptance criteria, then the relevant code, to fill any gaps. Do not execute anything yet.
-2. **QA list** — produce a numbered list. Every item states: which profile, the steps, and a **definition of pass** written as observable end-state claims. A request to perform feature QA authorizes local execution of the list. Ask only for missing information or actions outside that scope.
-3. **Per item, in order:**
-   1. Restate the definition of pass for this item.
-   2. Execute on the named profile.
-   3. **Capture evidence first** (see standards below).
-   4. Derive the verdict from the evidence — verdict is the _last_ step, never the first.
-   5. Save the result locally. Update GitHub issues only when the user requests issue reporting; then follow the sync rules.
-4. **On FAIL** — reproduce, add a failing regression, fix feature-caused bugs, and rerun. If issue reporting is requested, dedupe and file a sub-issue using the recipe below.
-5. **Session close** — reconcile and report (below).
+Inspect console errors, page exceptions, and failed API responses. Use CLI `run-code` response listeners, test diagnostics, or traces for network capture; this CLI has no `network` command. Attach diagnostics to test results. Unexpected app errors fail the check; explain deliberately injected errors.
 
-## Evidence standards
+## Evidence requirements
 
-Evidence is captured **before** the verdict. A check without its listed proof is `unverified`, not `pass`.
+Collect evidence before the verdict. Missing proof, blocked checks, and unexecuted checks are `unverified` or `blocked`, never `pass`.
 
-| Check type            | Required proof                                                                                            |
-| --------------------- | --------------------------------------------------------------------------------------------------------- |
-| Navigation / URL      | final URL + accessibility-tree snapshot after the action                                                  |
-| Visual / contrast     | full-page screenshot **and** element screenshot; measured contrast or computed styles, not "looked right" |
-| Tab / page title      | runtime read of `document.title` via JS evaluation — a code grep alone is not evidence                    |
-| Persistence           | state value captured before → after a full reload → after a cross-page round trip                         |
-| Theme                 | computed color values of named elements in both appearances                                               |
-| Keyboard / responsive | focus-order capture; screenshots at each required viewport size                                           |
+| Check | Required proof |
+| --- | --- |
+| Navigation | Final URL and accessibility snapshot after the action |
+| Visual / contrast | Full-page and element screenshots; computed styles or measured contrast |
+| Page title | Runtime `document.title` |
+| Persistence | State before, after full reload, and after a cross-page round trip; real API confirmation |
+| Theme | Computed colors of named elements in each relevant appearance |
+| Keyboard | Focus order and visible focus indicator, including computed-style changes |
+| Responsive | Screenshots at required viewport sizes and overflow checks |
 
-Rules:
+For changed navigation, cover desktop/mobile as relevant, Back, Escape, focus return, reload, and overflow. For shell visual checks, enumerate persistent sidebar items, sign-out, and header. Keyboard reachability alone does not prove visible focus; capture changes in background, outline, or box-shadow. Negative claims also require runtime assertions.
 
-- **Enumerate the shell before passing a visual check.** Verify _every_ persistent shell element (sidebar items, sign-out, header), not just the subject of the test. (Lesson from QA #7: a Light-mode pass was declared, then the Sign Out label was found invisible in the proof image.)
-- **Reachable focus is not visible focus.** A control can be tab-reachable and `:focus-visible` yet render no indicator. Capture the computed-style delta (background, outline, box-shadow) between keyboard-focused and resting states — `document.activeElement` order alone would have passed Sign Out in QA #12, whose focused styles were byte-identical to resting. Third-party components may indicate focus by background instead of ring (Clerk nav does) — that counts; nothing counts only if the delta is empty.
-- **Playwright pins `prefers-color-scheme: light` by default.** Every page a Playwright-driven browser opens emulates Light, so OS-appearance checks (System theme) silently test a fake Light device — flips never reach the page and reloads don't help. Call `page.emulateMedia({ colorScheme: null })` before measuring; the MCP exposes no emulateMedia tool, so route it through `browser_run_code_unsafe`. Probe `matchMedia('(prefers-color-scheme: dark)')` after disabling to confirm the OS signal is real. (Lesson from QA #9: the app was silently tested against a fake Light device while macOS was Dark.)
-- **Negatives need runtime assertions.** "No route title exists" requires reading the live page, not only searching the code.
-- **Re-snapshot before clicking a captured ref.** After a navigation or re-render, old element refs fail silently — the click "succeeds" and nothing happens. Confirm the click landed (URL or heading changed) before building on it. (Lesson from QA #11: a sidebar ref captured pre-navigation clicked through without navigating.)
-- **Simulate a clean first visit with a fresh incognito context, not by clearing storage.** `page.context().browser().newContext()` works inside the MCP (via `browser_run_code_unsafe`); clone the session cookies in with `addCookies` so the visit is authenticated without mutating account state, disable color-scheme emulation on the new page, and pass `recordVideo` at context creation — per-context video is the only way to record a page the MCP doesn't own. (Lesson from QA #10.)
-- **Flip macOS appearance programmatically and restore it.** `osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to …'` — expect a one-time automation permission prompt, sleep ~1.5 s before probing, and return the OS to its pre-test state at the end of the item. (Lesson from QA #9.)
-- Store artifacts under `.scratch/qa/<issue>/` (gitignored) and reference them from the issue comment: filename + one-line description.
-- **Artifact paths are inconsistent: only page/console snapshot artifacts honor `--output-dir`.** Screenshot and video filenames given to the named tools resolve against the MCP server's cwd (`$HOME`) — QA #8/#11 proof images initially landed in `$HOME` and had to be moved. Either pass absolute paths, or glob `$HOME` for the files after capture and move them into `.scratch/qa/<issue>/`.
+Use a fresh browser context for first-visit checks, loading only the needed dedicated authentication and explicitly controlling theme/media. Do not clear a shared session's storage. Configure video when creating the context if required.
 
-## Sub-issue recipe (on FAIL)
+### Theme checks
 
-1. **Dedupe first** — list the parent's existing sub-issues (`gh api repos/<org>/<repo>/issues/<n>/sub_issues`) and search open issues before creating anything.
-2. Create a **native sub-issue** of the parent, labeled `ready-for-agent`.
-3. Body structure (see #55 and #56 as the standard):
-   - **Problem** — what failed, with the observed evidence from the run.
-   - **Affected area** — concrete files/symbols.
-   - **Proposed solution** — the fix approach, including what _not_ to break.
-   - **Acceptance criteria** — checkboxes, always ending with "browser QA re-run passes on the original failing check."
-   - **Parent issue** — "Sub-issue of #N."
+- For explicit Light and Dark preferences, select the app preference and measure colors. Existing specs use `openWithTheme` in `e2e/helpers.ts`; testing the preference control itself requires clicking it.
+- For System, select System, then use `page.emulateMedia({ colorScheme: "light" })` and `{ colorScheme: "dark" }` in CLI `run-code` or a spec. Confirm `matchMedia('(prefers-color-scheme: dark)')`, resolved app theme, and computed colors after each switch. Media emulation does not override a saved Light/Dark preference; the harness defaults to light media.
+- Only if acceptance criteria require actual host-appearance integration, disable emulation with `colorScheme: null` and capture the host signal.
 
-## Issue sync rules
+### Artifacts
 
-- Maintain granular QA checkboxes in the issue body — one per QA item, not just the broad acceptance criteria.
-- Check an item only after an evidence-backed pass; record FAIL evidence inline on the item (bold `**FAIL:**` + specifics).
-- A broad acceptance criterion is checked only when _all_ subsumed QA items pass.
+| Source | Ignored output location |
+| --- | --- |
+| CLI exploration | `output/playwright/`; relative CLI paths resolve here |
+| Specs and diagnostics | `e2e/test-results/` |
+| HTML test report | `e2e/playwright-report/` |
+| Manual proof | `.scratch/qa/<issue-or-feature>/` |
 
-## Session close
+Use behavior assertions for regressions; add `expect(page).toHaveScreenshot()` baselines under `e2e/visual/` when visual regression coverage is needed. Reference artifact filenames and what they prove in the final report.
 
-1. **Reconcile** — verify every side effect actually landed: sub-issue count matches sub-issues created, checklist state matches the verdict table. Never report completion on faith.
-2. **Report** — a table of item → verdict → evidence pointer, open failures, sub-issues created, and what remains.
+## Issue reporting, only when requested
 
-## Tooling
+Keep results local unless the user requests GitHub issue reporting. When requested:
 
-Requirements for any browser-control driver, against a real Chrome profile: navigate, click/focus, accessibility-tree snapshot, full-page and element screenshots, JS evaluation, console and network capture, and multi-profile switching. The protocol does not depend on a specific tool.
+1. Dedupe failures against open issues and the parent's native sub-issues, using `gh api repos/<org>/<repo>/issues/<n>/sub_issues`.
+2. Create needed native sub-issues labeled `ready-for-agent`. Include the observed problem/evidence, affected files/symbols, proposed solution, acceptance checkboxes ending with the original browser check passing, and the parent issue.
+3. Maintain one QA checkbox per item in the issue body. Check only evidence-backed passes; record failure evidence inline. Check broad acceptance criteria only when all their checks pass.
+4. Verify that issue/checklist updates landed, then report the item/verdict/evidence table, open failures, created sub-issues, and remaining work.
 
-### Current Linux setup, verified 2026-10-07
+## References
 
-Playwright CLI through `scripts/dgl-browser.sh` is the exploration tool. Playwright MCP is registered as `playwright` in Codex and is a secondary tool for deeper investigation. Its tools become available after restarting the Codex session. Permanent specs use the installed `/usr/bin/chromium`, with `PLAYWRIGHT_CHROMIUM_EXECUTABLE` available as an override; CI uses bundled Chromium.
-
-### Historical macOS setup — Playwright MCP (researched 2026-09-03)
-
-One MCP server instance per account, each with its own persistent profile dir. Log in to Clerk once per profile; the session persists on disk.
-
-```bash
-claude mcp add qa-nick -s user -- npx @playwright/mcp@latest --browser chrome \
-  --user-data-dir="$HOME/.qa-chrome/nick" \
-  --caps=testing,storage,devtools,network --save-session \
-  --output-dir="$HOME/.qa-chrome/artifacts"
-
-claude mcp add qa-nicholas -s user -- npx @playwright/mcp@latest --browser chrome \
-  --user-data-dir="$HOME/.qa-chrome/nicholas" \
-  --caps=testing,storage,devtools,network --save-session \
-  --output-dir="$HOME/.qa-chrome/artifacts"
-```
-
-Register the same servers with `codex mcp add` for Codex CLI/Desktop (shared `~/.codex/config.toml`; set `startup_timeout_sec = 30` there or slow npx servers get silently dropped). Complement: `chrome-devtools-mcp` for Lighthouse a11y audits, Core Web Vitals, and heap snapshots.
-
-Rules:
-
-- **Never `--extension` mode** — it hangs on multi-profile macOS Chrome (playwright-mcp#1732) and there is no `--profile-directory` fix.
-- **Never point `--user-data-dir` at the real Chrome profile** — the dir locks while Chrome runs; use dedicated dirs under `~/.qa-chrome/`.
-- Two server instances must never share a profile dir.
-- `--caps` is comma-separated with no spaces; core tools (navigate/click/snapshot/screenshot/eval/console/network) are always on.
-- `--save-session` writes a replayable Trace Viewer zip per session (`npx playwright show-trace <file>.zip`) — the forensic fallback when a run dies mid-task.
-- Video capture needs `npx playwright install ffmpeg` (one-time per machine). Without it, `browser_start_video` errors _after_ arming the recorder — call `browser_stop_video` to clear the stuck state before retrying. (Hit at QA #8.)
-- OAuth round-trips (Clerk → Google → back) can orphan the MCP's page handle: subsequent calls fail with "No open pages available" and `browser_tabs` shows only `about:blank`. Re-navigate to recover; don't restart the server. Verify login state from cookies — `__session` (JWT with `sts: "active"`) plus `__client_uat`, and the JWT `sub` claim distinguishes the two accounts — not from page content. (Hit during the 2026-09-04 one-time logins.)
-- `browser_run_code_unsafe` is the escape hatch for anything the tool surface lacks: `emulateMedia`, keyboard loops, viewport sweeps, fresh contexts, absolute-path screenshots. (Proven across QA #9–#12.)
-
-### Account-specific Course navigation
-
-`e2e/desktop-course-access.spec.ts` runs for the `free` project. From `/app/dashboard`, it clicks the sidebar's Courses link, lands on `/app/courses`, and clicks the course card; the sheet is named by the card's own title (data, not copy) and exposes `Stay Here` and `View Course`. The spec also proves the page-level sheet survives crossing the 768px breakpoint. The `paid` project skips these tests because its account is enrolled. The mobile version is covered in `e2e/mobile-nav.spec.ts`, and `e2e/courses-flow.spec.ts` pins the full index → course home → day path for both accounts, including the completed-course entry that used to be sealed off.
-
-Run the focused desktop check with `npx playwright test e2e/desktop-course-access.spec.ts --project=free` after refreshing the local auth state if Clerk has expired it.
-
-### Hard proof beyond the MCP
-
-No browser MCP does pixel diffs or visual regression. For durable, diffable proof: use the MCP assertion tools (`browser_verify_*` — each emits the equivalent Playwright spec line) and export `browser_storage_state` per account, then codify as Playwright specs with `expect(page).toHaveScreenshot()` baselines run per profile. MCP session = investigation + one-off proof; specs = repeatable proof that fails CI on drift.
-
-The Playwright harness lives in the repo (`playwright.config.ts` + `e2e/`; run `npm run test:e2e`). Create the dedicated Clerk sessions with `npm run auth:setup`; this signs in as John and Jane using the development email code, checks each session's Clerk user ID, and writes `playwright/.auth/free.json` and `playwright/.auth/paid.json`. These files contain live session credentials, are gitignored, and must stay local. Rerun the command after a fresh clone or when Clerk expires the sessions.
-
-## See also
-
-- [`../AGENTS.md`](../AGENTS.md) — repo entry point for agents.
-- [`auth.md`](auth.md) — Clerk auth wiring and route guards (what the panels under test are).
-- [`PAGES.md`](PAGES.md) — route inventory (`/app/settings/*` under test).
+- [Authentication](auth.md)
+- [Route inventory](PAGES.md)
